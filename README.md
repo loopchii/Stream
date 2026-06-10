@@ -171,16 +171,31 @@ source venv/bin/activate  # On Windows: venv\Scripts\activate
 # Install dependencies
 pip install -r requirements.txt
 
-# Download the NLP models (this takes a minute)
-python -m spacy download en_core_web_lg
-python scripts/download_bert_models.py
-
-# Launch the dashboard
+# Launch the API server + dashboard
 python app.py
+# Then open http://localhost:8000 in your browser
 
-# Or just open the HTML directly
-# Open index.html in your browser for the interactive visualizations
+# Or run the analysis pipeline standalone
+python streamlens_processor.py
+
+# Or just open index.html directly in your browser for the static dashboard
 ```
+
+### API Endpoints
+
+| Endpoint | Method | Description |
+|---|---|---|
+| `/` | GET | Interactive dashboard |
+| `/api/health` | GET | Health check |
+| `/api/results` | GET | Full cached analysis results |
+| `/api/analyze?n_samples=N` | POST | Re-run the analysis pipeline |
+| `/api/metrics/overview` | GET | Diversity index + gender parity |
+| `/api/metrics/temporal` | GET | Year-over-year metrics |
+| `/api/metrics/platforms` | GET | Per-platform comparison |
+| `/api/metrics/bias` | GET | Bias detection results |
+| `/api/characters` | GET | Filterable character records (`platform`, `genre`, `year`, `limit`) |
+
+Interactive API docs are available at `http://localhost:8000/docs`.
 
 <div align="center">
   
@@ -311,28 +326,19 @@ results.to_csv('bias_analysis_results.csv')
 StreamLens-Analytics/
 │
 ├── index.html                    # The interactive dashboard (start here)
+├── app.py                        # FastAPI server (dashboard + REST API)
 ├── streamlens_processor.py       # Main processing pipeline
-├── streamlens_notebook.ipynb     # Jupyter notebook with full analysis
-├── requirements.txt              # Python dependencies
-│
-├── data/
-│   ├── processed/               # Clean, analysis-ready data
-│   └── raw/                     # Original data sources
-│
-├── scripts/
-│   ├── download_bert_models.py  # Gets the NLP models
-│   ├── initialize_db.py         # Sets up the database
-│   └── data_collector.py        # Scrapes/collects new data
-│
-├── static/
-│   ├── css/                     # Stylesheets for themes
-│   └── js/                      # Visualization scripts
+├── StreamLen_processors.ipynb    # Jupyter notebook with full analysis
+├── streaming-bias-index.html     # Legacy static dashboard
+├── analysis_results.json         # Latest exported analysis results
+├── requirements.txt              # Core Python dependencies
+├── requirements-full.txt         # Extended research stack
 │
 ├── tests/
-│   └── test_analyzer.py         # Unit tests (yes, I write tests)
+│   ├── test_analyzer.py          # Unit tests for the pipeline
+│   └── test_api.py               # API tests
 │
-└── docs/
-    └── methodology.md           # Detailed mathematical explanations
+└── .github/workflows/ci.yml     # CI: lint + tests on Python 3.11/3.12
 ```
 
 <div align="center">
