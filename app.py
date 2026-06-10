@@ -13,7 +13,7 @@ from typing import Optional
 import pandas as pd
 from fastapi import FastAPI, HTTPException, Query
 from fastapi.middleware.cors import CORSMiddleware
-from fastapi.responses import FileResponse
+from fastapi.responses import FileResponse, JSONResponse
 
 from streamlens_processor import DataProcessor
 
@@ -116,6 +116,111 @@ def platforms():
 @app.get("/api/metrics/bias")
 def bias():
     return cache.results()["bias_detection"]
+
+
+@app.get("/api/metrics/genres")
+def genres():
+    return cache.results()["genre_analysis"]
+
+
+@app.get("/api/metrics/network")
+def network():
+    return cache.results()["network_metrics"]
+
+
+@app.get("/api/metrics/intersectionality")
+def intersectionality(limit: int = Query(default=10, ge=1, le=50)):
+    """Most under- and over-represented intersectional groups"""
+    groups = cache.results()["overall_metrics"]["intersectionality"]
+    ranked = sorted(groups.items(), key=lambda kv: kv[1]["ratio"])
+    fmt = [
+        {"group": k, "representation": v["representation"],
+         "baseline": v["baseline"], "ratio": v["ratio"]}
+        for k, v in ranked
+    ]
+    return {
+        "most_underrepresented": fmt[:limit],
+        "most_overrepresented": fmt[-limit:][::-1],
+    }
+
+
+@app.get("/api/insights")
+def insights():
+    """Narrative findings generated from the latest analysis run"""
+    return cache.results()["insights"]
+
+
+@app.get("/api/export")
+def export():
+    """Download the full analysis results as JSON"""
+    return JSONResponse(
+        content=cache.results(),
+        headers={"Content-Disposition": "attachment; filename=streamlens_results.json"},
+    )
+
+
+LEARN_CONTENT = [
+    {
+        "id": "shannon",
+        "title": "Shannon Diversity Index",
+        "summary": "Borrowed from ecology, it measures how evenly demographic groups are represented.",
+        "detail": ("H = -sum(p_i * ln(p_i)), normalized by ln(k). A score of 1.0 means every "
+                   "group appears equally often; 0 means a single group dominates entirely. "
+                   "StreamLens applies it to character race distributions per platform, genre, and year."),
+        "try_it": "Filter to Documentary vs Action in Explore Data and compare the diversity values.",
+    },
+    {
+        "id": "parity",
+        "title": "Gender Parity Index",
+        "summary": "Distance from a 50/50 gender split, scaled 0-1.",
+        "detail": ("Parity = 1 - |0.5 - female_ratio| * 2. A cast that is 50% female scores 1.0; "
+                   "a 70/30 split scores 0.6. It is intentionally simple so trends over time are "
+                   "easy to read."),
+        "try_it": "Drag the year slider on the Dashboard and watch the parity index climb.",
+    },
+    {
+        "id": "chi-square",
+        "title": "Chi-Square Bias Detection",
+        "summary": "Compares observed dialogue/role distributions against an unbiased expectation.",
+        "detail": ("chi2 = (observed - expected)^2 / expected. Large values mean a demographic gets far "
+                   "more or less dialogue than chance would predict. StreamLens runs this per gender "
+                   "on dialogue word counts and per role type for stereotyping."),
+        "try_it": "Open GET /api/metrics/bias in the API docs to see raw chi-square scores.",
+    },
+    {
+        "id": "homophily",
+        "title": "Network Homophily",
+        "summary": "Do similar characters only interact with each other?",
+        "detail": ("Using the assortativity coefficient on character interaction graphs: +1 means "
+                   "characters interact only within their demographic group, 0 means mixing is random, "
+                   "and negative values mean cross-group interaction dominates."),
+        "try_it": "Drag nodes in the Character Interaction Network and look for color clustering.",
+    },
+    {
+        "id": "intersectionality",
+        "title": "Intersectionality Scores",
+        "summary": "Representation measured at the intersection of gender, race, and age.",
+        "detail": ("Each gender x race x age group is compared to a uniform population baseline. "
+                   "A ratio below 1.0 means the group is underrepresented relative to that baseline. "
+                   "Single-axis metrics can hide gaps that only appear at intersections."),
+        "try_it": "Check the Insights tab for the most underrepresented intersectional groups.",
+    },
+    {
+        "id": "bechdel",
+        "title": "Extended Bechdel Tests",
+        "summary": "Classic and extended low-bar tests of meaningful representation.",
+        "detail": ("The classic test asks whether two women talk about something other than a man. "
+                   "StreamLens extends the idea to race and age: do minority characters interact "
+                   "meaningfully with each other at all?"),
+        "try_it": "See BiasDetector.calculate_bechdel_extension in streamlens_processor.py.",
+    },
+]
+
+
+@app.get("/api/learn")
+def learn():
+    """Educational explanations of every metric used in the analysis"""
+    return LEARN_CONTENT
 
 
 @app.get("/api/characters")

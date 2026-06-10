@@ -255,13 +255,14 @@ class DataProcessor:
         data = []
 
         for i in range(n_samples):
-            year = np.random.randint(2015, 2025)
+            year = np.random.randint(2015, 2027)
             platform = np.random.choice(self.platforms)
             genre = np.random.choice(self.genres)
 
-            # Create realistic bias patterns
-            gender_bias = 0.3 if genre == 'action' else 0.1
-            age_bias = 0.2 if genre == 'drama' else 0.05
+            # Create realistic bias patterns that slowly improve over time
+            year_progress = (year - 2015) / 11
+            gender_bias = (0.3 if genre == 'action' else 0.1) * (1 - 0.4 * year_progress)
+            age_bias = (0.2 if genre == 'drama' else 0.05) * (1 - 0.3 * year_progress)
 
             # Generate character
             gender = np.random.choice(['male', 'female', 'non-binary'],
@@ -342,6 +343,28 @@ class DataProcessor:
 
         results['temporal_analysis'] = pd.DataFrame(yearly_metrics).to_dict('records')
 
+        # Genre analysis
+        genre_metrics = []
+        for genre in sorted(df['genre'].unique()):
+            genre_data = df[df['genre'] == genre]
+            leads = genre_data[genre_data['role_type'] == 'lead']
+            male_leads = leads[leads['gender'] == 'male'].shape[0]
+            dialogue_by_gender = genre_data.groupby('gender')['dialogue_words'].mean()
+            male_dialogue = dialogue_by_gender.get('male', 0)
+            female_dialogue = dialogue_by_gender.get('female', 0)
+            genre_metrics.append({
+                'genre': genre,
+                'diversity': self.analyzer.calculate_diversity_index(genre_data['race'].tolist()),
+                'gender_parity': self.analyzer.calculate_gender_parity(
+                    genre_data['gender'].value_counts().to_dict()
+                ),
+                'male_lead_share': male_leads / leads.shape[0] if leads.shape[0] > 0 else 0,
+                'dialogue_gap': (1 - female_dialogue / male_dialogue) if male_dialogue > 0 else 0,
+                'avg_screen_time': genre_data['screen_time'].mean(),
+                'sample_size': len(genre_data)
+            })
+        results['genre_analysis'] = genre_metrics
+
         # Platform comparison
         platform_metrics = []
         for platform in df['platform'].unique():
@@ -369,7 +392,102 @@ class DataProcessor:
         }
         results['bias_detection']['dialogue_bias'] = bias_detector.detect_dialogue_bias(dialogue_data)
 
+        # Network metrics: build an interaction network from a character sample
+        network_analyzer = NetworkAnalyzer()
+        rng = np.random.default_rng(42)
+        sample = df.sample(min(200, len(df)), random_state=42).reset_index(drop=True)
+        interactions = []
+        for _ in range(min(400, len(sample) * 2)):
+            i, j = rng.integers(0, len(sample), size=2)
+            if i == j:
+                continue
+            c1, c2 = sample.iloc[int(i)], sample.iloc[int(j)]
+            interactions.append({
+                'character1': c1['id'],
+                'character2': c2['id'],
+                'weight': 1,
+                'char1_attrs': {'gender': c1['gender'], 'race': c1['race']},
+                'char2_attrs': {'gender': c2['gender'], 'race': c2['race']},
+            })
+        graph = network_analyzer.build_character_network(interactions)
+        results['network_metrics'] = {
+            'nodes': graph.number_of_nodes(),
+            'edges': graph.number_of_edges(),
+            'gender_homophily': network_analyzer.detect_homophily(graph, 'gender'),
+            'racial_homophily': network_analyzer.detect_homophily(graph, 'race'),
+            'density': nx.density(graph) if graph.number_of_nodes() > 1 else 0,
+        }
+
+        # Generated narrative insights
+        results['insights'] = self.generate_insights(df, results)
+
         return results
+
+    def generate_insights(self, df: pd.DataFrame, results: Dict) -> List[Dict]:
+        """Generate human-readable findings from computed metrics"""
+        insights = []
+
+        temporal = results['temporal_analysis']
+        if len(temporal) >= 2:
+            delta = temporal[-1]['gender_parity'] - temporal[0]['gender_parity']
+            direction = 'improved' if delta >= 0 else 'declined'
+            insights.append({
+                'category': 'trend',
+                'title': 'Gender parity over time',
+                'detail': (f"Gender parity has {direction} by {abs(delta):.2f} points "
+                           f"between {temporal[0]['year']} and {temporal[-1]['year']}."),
+            })
+
+        platforms = results['platform_comparison']
+        if platforms:
+            best = max(platforms, key=lambda p: p['diversity'])
+            worst = min(platforms, key=lambda p: p['diversity'])
+            insights.append({
+                'category': 'platform',
+                'title': 'Platform diversity gap',
+                'detail': (f"{best['platform'].replace('_', ' ').title()} leads on diversity "
+                           f"({best['diversity']:.2f}) while {worst['platform'].replace('_', ' ').title()} "
+                           f"trails ({worst['diversity']:.2f})."),
+            })
+
+        genres = results.get('genre_analysis', [])
+        if genres:
+            most_biased = max(genres, key=lambda g: g['male_lead_share'])
+            insights.append({
+                'category': 'genre',
+                'title': 'Genre lead-role skew',
+                'detail': (f"{most_biased['genre'].title()} has the highest male lead share at "
+                           f"{most_biased['male_lead_share'] * 100:.0f}% of lead roles."),
+            })
+            widest_gap = max(genres, key=lambda g: g['dialogue_gap'])
+            insights.append({
+                'category': 'dialogue',
+                'title': 'Dialogue gap by genre',
+                'detail': (f"In {widest_gap['genre']}, female characters average "
+                           f"{widest_gap['dialogue_gap'] * 100:.0f}% fewer dialogue words than male characters."),
+            })
+
+        leads = df[df['role_type'] == 'lead']
+        if len(leads) > 0:
+            woc = leads[(leads['gender'] == 'female') & (leads['race'] != 'white')]
+            insights.append({
+                'category': 'intersectional',
+                'title': 'Intersectional representation',
+                'detail': (f"Women of color hold {len(woc) / len(leads) * 100:.0f}% "
+                           f"of lead roles across the dataset."),
+            })
+
+        network = results.get('network_metrics', {})
+        if network:
+            insights.append({
+                'category': 'network',
+                'title': 'Interaction homophily',
+                'detail': (f"Gender homophily in interaction networks is "
+                           f"{network['gender_homophily']:.2f} "
+                           f"(positive values mean characters interact mostly within their own group)."),
+            })
+
+        return insights
 
     def export_results(self, results: Dict, filename: str = 'analysis_results.json'):
         """Export results to JSON file"""

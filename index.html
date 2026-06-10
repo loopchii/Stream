@@ -556,6 +556,127 @@
         .loading-indicator.active {
             display: block;
         }
+
+        .nav-tabs {
+            display: flex;
+            gap: 0.5rem;
+            max-width: 1400px;
+            margin: 1.5rem auto 0;
+            padding: 0 2rem;
+            flex-wrap: wrap;
+        }
+
+        .nav-tab {
+            padding: 0.75rem 1.75rem;
+            border: 2px solid var(--primary-accent);
+            background: var(--primary-surface);
+            color: var(--primary-text);
+            border-radius: 12px 12px 0 0;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+        }
+
+        .nav-tab.active, .nav-tab:hover {
+            background: var(--primary-accent);
+            color: var(--primary-bg);
+        }
+
+        .tab-panel { display: none; }
+        .tab-panel.active { display: block; }
+
+        .action-bar {
+            display: flex;
+            gap: 1rem;
+            align-items: flex-end;
+            flex-wrap: wrap;
+        }
+
+        .action-btn {
+            padding: 0.75rem 1.5rem;
+            border: 2px solid var(--primary-secondary);
+            background: var(--primary-surface);
+            color: var(--primary-text);
+            border-radius: 10px;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+        }
+
+        .action-btn:hover { background: var(--primary-secondary); transform: translateY(-2px); }
+        .action-btn:disabled { opacity: 0.5; cursor: wait; transform: none; }
+
+        .status-text {
+            color: var(--primary-text-dim);
+            font-size: 0.9rem;
+            align-self: center;
+        }
+
+        .data-table-wrap {
+            overflow-x: auto;
+            border-radius: 12px;
+            border: 1px solid var(--primary-accent);
+        }
+
+        .data-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.9rem;
+        }
+
+        .data-table th, .data-table td {
+            padding: 0.6rem 0.9rem;
+            text-align: left;
+            border-bottom: 1px solid rgba(128, 128, 128, 0.25);
+        }
+
+        .data-table th {
+            background: var(--primary-bg);
+            color: var(--primary-accent);
+            text-transform: uppercase;
+            font-size: 0.78rem;
+            letter-spacing: 1px;
+            position: sticky;
+            top: 0;
+        }
+
+        .data-table tbody tr:hover { background: rgba(128, 128, 128, 0.12); }
+
+        .learn-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+            gap: 1.5rem;
+        }
+
+        .learn-card {
+            background: linear-gradient(135deg, var(--primary-bg) 0%, var(--primary-surface) 100%);
+            border: 1px solid var(--primary-accent);
+            border-radius: 15px;
+            padding: 1.5rem;
+            transition: all 0.3s ease;
+        }
+
+        .learn-card:hover { transform: translateY(-5px); box-shadow: 0 15px 30px rgba(0, 212, 255, 0.25); }
+        .learn-card h3 { color: var(--primary-accent); margin-bottom: 0.5rem; }
+        .learn-card .learn-summary { color: var(--primary-secondary); font-weight: 600; margin-bottom: 0.75rem; }
+        .learn-card p { color: var(--primary-text-dim); line-height: 1.6; font-size: 0.95rem; margin-bottom: 0.75rem; }
+        .learn-card .try-it {
+            background: var(--primary-bg);
+            border-left: 3px solid var(--primary-tertiary);
+            padding: 0.75rem;
+            border-radius: 8px;
+            font-size: 0.9rem;
+            color: var(--primary-text-dim);
+        }
+
+        .api-note {
+            color: var(--primary-text-dim);
+            font-size: 0.9rem;
+            margin-top: 1rem;
+        }
+        .api-note a { color: var(--primary-accent); }
     </style>
 </head>
 <body>
@@ -569,13 +690,22 @@
         </div>
         <div class="header-content">
             <h1>StreamLens Analytics</h1>
-            <div class="subtitle">Advanced Representation & Bias Analysis in Streaming Media (2015-2024)</div>
+            <div class="subtitle">Advanced Representation & Bias Analysis in Streaming Media (2015-2026)</div>
         </div>
     </div>
 
+    <div class="nav-tabs">
+        <button class="nav-tab active" data-tab="dashboard" onclick="showTab('dashboard', this)">Dashboard</button>
+        <button class="nav-tab" data-tab="explore" onclick="showTab('explore', this)">Explore Data</button>
+        <button class="nav-tab" data-tab="insights" onclick="showTab('insights', this)">Insights</button>
+        <button class="nav-tab" data-tab="learn" onclick="showTab('learn', this)">Learn</button>
+    </div>
+
+    <div id="tab-dashboard" class="tab-panel active">
+
     <div class="intro-section">
         <h2>Interactive Bias Detection Platform</h2>
-        <p>This dashboard visualizes representation patterns across 6 major streaming platforms and 6 content genres from 2015-2024. Each visualization updates dynamically based on your selections, revealing how bias manifests differently across platforms, genres, and time.</p>
+        <p>This dashboard visualizes representation patterns across 6 major streaming platforms and 6 content genres from 2015-2026. Each visualization updates dynamically based on your selections, revealing how bias manifests differently across platforms, genres, and time.</p>
         
         <h3 style="color: var(--primary-accent); margin-top: 1.5rem; margin-bottom: 1rem;">Control Guide</h3>
         <ul>
@@ -594,8 +724,8 @@
         <div class="control-group">
             <div class="control-item">
                 <label for="yearRange">Analysis Year</label>
-                <input type="range" id="yearRange" min="2015" max="2024" value="2024" step="1">
-                <div class="range-value" id="yearValue">2024</div>
+                <input type="range" id="yearRange" min="2015" max="2026" value="2026" step="1">
+                <div class="range-value" id="yearValue">2026</div>
             </div>
             <div class="control-item">
                 <label for="platform">Platform Filter</label>
@@ -630,6 +760,20 @@
                     <option value="sentiment">Character Sentiment</option>
                 </select>
             </div>
+        </div>
+        <div class="action-bar">
+            <div class="control-item">
+                <label for="sampleSize">Sample Size</label>
+                <select id="sampleSize">
+                    <option value="1000">1,000 characters</option>
+                    <option value="5000" selected>5,000 characters</option>
+                    <option value="10000">10,000 characters</option>
+                    <option value="25000">25,000 characters</option>
+                </select>
+            </div>
+            <button class="action-btn" id="runAnalysisBtn" onclick="StreamLensApp.runAnalysis()">Run New Analysis</button>
+            <a class="action-btn" href="/api/export" download style="text-decoration:none; display:inline-block;">Export Results (JSON)</a>
+            <span class="status-text" id="analysisStatus"></span>
         </div>
     </div>
 
@@ -744,6 +888,135 @@
         </div>
     </div>
 
+    </div><!-- end tab-dashboard -->
+
+    <div id="tab-explore" class="tab-panel">
+        <div class="visualization-container">
+            <div class="viz-section">
+                <h2 class="viz-title">Character Data Explorer</h2>
+                <div class="viz-explanation">
+                    <h4>Live Dataset</h4>
+                    <p>Browse the character-level records behind every metric. Filters query the backend API directly.</p>
+                </div>
+                <div class="control-group">
+                    <div class="control-item">
+                        <label for="explorePlatform">Platform</label>
+                        <select id="explorePlatform">
+                            <option value="">All Platforms</option>
+                            <option value="netflix">Netflix</option>
+                            <option value="amazon_prime">Amazon Prime</option>
+                            <option value="disney_plus">Disney+</option>
+                            <option value="hbo_max">HBO Max</option>
+                            <option value="apple_tv">Apple TV+</option>
+                            <option value="hulu">Hulu</option>
+                        </select>
+                    </div>
+                    <div class="control-item">
+                        <label for="exploreGenre">Genre</label>
+                        <select id="exploreGenre">
+                            <option value="">All Genres</option>
+                            <option value="drama">Drama</option>
+                            <option value="comedy">Comedy</option>
+                            <option value="action">Action</option>
+                            <option value="scifi">Sci-Fi</option>
+                            <option value="thriller">Thriller</option>
+                            <option value="documentary">Documentary</option>
+                        </select>
+                    </div>
+                    <div class="control-item">
+                        <label for="exploreYear">Year</label>
+                        <select id="exploreYear">
+                            <option value="">All Years</option>
+                        </select>
+                    </div>
+                    <div class="control-item">
+                        <label for="exploreLimit">Rows</label>
+                        <select id="exploreLimit">
+                            <option value="25" selected>25</option>
+                            <option value="50">50</option>
+                            <option value="100">100</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="data-table-wrap">
+                    <table class="data-table" id="exploreTable">
+                        <thead>
+                            <tr><th>ID</th><th>Platform</th><th>Genre</th><th>Year</th><th>Gender</th><th>Race</th><th>Age</th><th>Role</th><th>Screen Time</th><th>Dialogue Words</th><th>Sentiment</th></tr>
+                        </thead>
+                        <tbody id="exploreTableBody">
+                            <tr><td colspan="11">Loading…</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+                <p class="api-note" id="exploreCount"></p>
+                <p class="api-note">Power users: the full REST API is documented at <a href="/docs" target="_blank">/docs</a>.</p>
+            </div>
+
+            <div class="viz-section">
+                <h2 class="viz-title">Genre Analysis</h2>
+                <div class="viz-explanation">
+                    <h4>Computed Per-Genre Metrics</h4>
+                    <p>Diversity, parity, male lead share, and the dialogue gap computed live from the current dataset.</p>
+                </div>
+                <div class="data-table-wrap">
+                    <table class="data-table">
+                        <thead>
+                            <tr><th>Genre</th><th>Diversity</th><th>Gender Parity</th><th>Male Lead Share</th><th>Dialogue Gap</th><th>Avg Screen Time</th><th>Sample</th></tr>
+                        </thead>
+                        <tbody id="genreTableBody">
+                            <tr><td colspan="7">Loading…</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="tab-insights" class="tab-panel">
+        <div class="visualization-container">
+            <div class="viz-section">
+                <h2 class="viz-title">Generated Insights</h2>
+                <div class="viz-explanation">
+                    <h4>Computed From Live Data</h4>
+                    <p>These findings are generated by the analysis pipeline from the current dataset — re-run the analysis to regenerate them.</p>
+                </div>
+                <div id="liveInsightsList">
+                    <div class="insight-item">Loading insights…</div>
+                </div>
+            </div>
+            <div class="viz-section">
+                <h2 class="viz-title">Intersectional Representation</h2>
+                <div class="viz-explanation">
+                    <h4>Ratio vs Population Baseline</h4>
+                    <p>Groups with a ratio below 1.0 are underrepresented relative to a uniform baseline. The gaps below only appear when gender, race, and age are analyzed together.</p>
+                </div>
+                <div class="data-table-wrap">
+                    <table class="data-table">
+                        <thead><tr><th>Group (gender · race · age)</th><th>Representation</th><th>Baseline</th><th>Ratio</th></tr></thead>
+                        <tbody id="intersectionTableBody">
+                            <tr><td colspan="4">Loading…</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="tab-learn" class="tab-panel">
+        <div class="visualization-container">
+            <div class="viz-section">
+                <h2 class="viz-title">Learn the Methods</h2>
+                <div class="viz-explanation">
+                    <h4>Understand Every Metric</h4>
+                    <p>Each card explains one of the statistical methods used by StreamLens, with a hands-on way to see it in action.</p>
+                </div>
+                <div class="learn-grid" id="learnGrid">
+                    <div class="learn-card"><p>Loading content…</p></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <div class="author-citation">
         <h3>About This Analysis</h3>
         <p>StreamLens Analytics quantifies representation asymmetries in streaming media using advanced mathematical frameworks and machine learning algorithms.</p>
@@ -844,7 +1117,7 @@
             
             // Current state
             state: {
-                year: 2024,
+                year: 2026,
                 platform: 'all',
                 genre: 'all',
                 metric: 'representation',
@@ -854,8 +1127,152 @@
             // ==================== INITIALIZATION ====================
             init() {
                 this.attachEventListeners();
+                this.populateExploreYears();
                 this.updateAllVisualizations();
                 this.loadLiveMetrics();
+                this.loadExploreData();
+                this.loadGenreTable();
+                this.loadInsightsTab();
+                this.loadLearnTab();
+            },
+
+            populateExploreYears() {
+                const sel = document.getElementById('exploreYear');
+                if (!sel) return;
+                for (let y = 2026; y >= 2015; y--) {
+                    const opt = document.createElement('option');
+                    opt.value = y;
+                    opt.textContent = y;
+                    sel.appendChild(opt);
+                }
+            },
+
+            async runAnalysis() {
+                const btn = document.getElementById('runAnalysisBtn');
+                const status = document.getElementById('analysisStatus');
+                const n = document.getElementById('sampleSize').value;
+                btn.disabled = true;
+                status.textContent = `Running analysis on ${Number(n).toLocaleString()} characters…`;
+                try {
+                    const res = await fetch(`/api/analyze?n_samples=${n}`, { method: 'POST' });
+                    if (!res.ok) throw new Error(`API error ${res.status}`);
+                    const data = await res.json();
+                    const overall = data.overall_metrics;
+                    document.getElementById('diversityScore').textContent = (overall.diversity_index * 100).toFixed(1) + '%';
+                    document.getElementById('genderParity').textContent = overall.gender_parity.toFixed(2);
+                    status.textContent = `Analysis complete — ${Number(n).toLocaleString()} characters processed.`;
+                    this.loadExploreData();
+                    this.loadGenreTable();
+                    this.loadInsightsTab();
+                } catch (e) {
+                    status.textContent = 'Analysis unavailable — is the API server running? (python app.py)';
+                } finally {
+                    btn.disabled = false;
+                }
+            },
+
+            async loadExploreData() {
+                const body = document.getElementById('exploreTableBody');
+                if (!body) return;
+                const params = new URLSearchParams();
+                const platform = document.getElementById('explorePlatform').value;
+                const genre = document.getElementById('exploreGenre').value;
+                const year = document.getElementById('exploreYear').value;
+                const limit = document.getElementById('exploreLimit').value;
+                if (platform) params.set('platform', platform);
+                if (genre) params.set('genre', genre);
+                if (year) params.set('year', year);
+                params.set('limit', limit);
+                try {
+                    const res = await fetch(`/api/characters?${params}`);
+                    if (!res.ok) throw new Error();
+                    const rows = await res.json();
+                    document.getElementById('exploreCount').textContent = `${rows.length} record(s) shown.`;
+                    if (!rows.length) {
+                        body.innerHTML = '<tr><td colspan="11">No records match the selected filters.</td></tr>';
+                        return;
+                    }
+                    body.innerHTML = rows.map(r => `<tr>
+                        <td>${r.id}</td><td>${r.platform.replace('_', ' ')}</td><td>${r.genre}</td>
+                        <td>${r.year}</td><td>${r.gender}</td><td>${r.race}</td><td>${r.age_group}</td>
+                        <td>${r.role_type}</td><td>${r.screen_time.toFixed(1)}</td>
+                        <td>${r.dialogue_words}</td><td>${r.sentiment_score.toFixed(2)}</td>
+                    </tr>`).join('');
+                } catch (e) {
+                    body.innerHTML = '<tr><td colspan="11">Live data requires the API server — run <code>python app.py</code>.</td></tr>';
+                }
+            },
+
+            async loadGenreTable() {
+                const body = document.getElementById('genreTableBody');
+                if (!body) return;
+                try {
+                    const res = await fetch('/api/metrics/genres');
+                    if (!res.ok) throw new Error();
+                    const rows = await res.json();
+                    body.innerHTML = rows.map(g => `<tr>
+                        <td>${g.genre}</td><td>${g.diversity.toFixed(3)}</td>
+                        <td>${g.gender_parity.toFixed(3)}</td>
+                        <td>${(g.male_lead_share * 100).toFixed(0)}%</td>
+                        <td>${(g.dialogue_gap * 100).toFixed(0)}%</td>
+                        <td>${g.avg_screen_time.toFixed(1)} min</td>
+                        <td>${g.sample_size.toLocaleString()}</td>
+                    </tr>`).join('');
+                } catch (e) {
+                    body.innerHTML = '<tr><td colspan="7">Live data requires the API server — run <code>python app.py</code>.</td></tr>';
+                }
+            },
+
+            async loadInsightsTab() {
+                const list = document.getElementById('liveInsightsList');
+                const table = document.getElementById('intersectionTableBody');
+                if (!list || !table) return;
+                try {
+                    const [insRes, intRes] = await Promise.all([
+                        fetch('/api/insights'),
+                        fetch('/api/metrics/intersectionality?limit=8')
+                    ]);
+                    if (!insRes.ok || !intRes.ok) throw new Error();
+                    const insights = await insRes.json();
+                    const inter = await intRes.json();
+                    list.innerHTML = insights.map(i => `<div class="insight-item">
+                        <strong>${i.title}:</strong> ${i.detail}
+                    </div>`).join('');
+                    table.innerHTML = inter.most_underrepresented.map(g => `<tr>
+                        <td>${g.group.split('_').join(' · ')}</td>
+                        <td>${(g.representation * 100).toFixed(2)}%</td>
+                        <td>${(g.baseline * 100).toFixed(2)}%</td>
+                        <td>${g.ratio.toFixed(2)}</td>
+                    </tr>`).join('');
+                } catch (e) {
+                    list.innerHTML = '<div class="insight-item">Live insights require the API server — run <code>python app.py</code>.</div>';
+                    table.innerHTML = '<tr><td colspan="4">Unavailable in static mode.</td></tr>';
+                }
+            },
+
+            async loadLearnTab() {
+                const grid = document.getElementById('learnGrid');
+                if (!grid) return;
+                const render = (cards) => {
+                    grid.innerHTML = cards.map(c => `<div class="learn-card">
+                        <h3>${c.title}</h3>
+                        <div class="learn-summary">${c.summary}</div>
+                        <p>${c.detail}</p>
+                        <div class="try-it"><strong>Try it:</strong> ${c.try_it}</div>
+                    </div>`).join('');
+                };
+                try {
+                    const res = await fetch('/api/learn');
+                    if (!res.ok) throw new Error();
+                    render(await res.json());
+                } catch (e) {
+                    render([{
+                        title: 'Learning content unavailable',
+                        summary: 'Run the API server to load the full methodology library.',
+                        detail: 'Start the backend with python app.py and reload this page.',
+                        try_it: 'python app.py → http://localhost:8000'
+                    }]);
+                }
             },
 
             // Fetch live metrics from the backend API when available;
@@ -901,6 +1318,12 @@
                     this.state.metric = e.target.value;
                     this.updateAllVisualizations();
                 });
+
+                // Explore data filters
+                ['explorePlatform', 'exploreGenre', 'exploreYear', 'exploreLimit'].forEach(id => {
+                    const el = document.getElementById(id);
+                    if (el) el.addEventListener('change', () => this.loadExploreData());
+                });
             },
 
             // ==================== COLOR SYSTEM ====================
@@ -941,7 +1364,7 @@
                     genres.forEach(genre => {
                         const platformData = this.data.platforms[platform];
                         const genreData = this.data.genres[genre];
-                        const yearProgress = (this.state.year - 2015) / 9;
+                        const yearProgress = (this.state.year - 2015) / 11;
                         
                         // Calculate position and size with year progression
                         const x = (platformData.female_leads + yearProgress * platformData.improvement_rate * 10) * 100;
@@ -1228,7 +1651,7 @@
                     this.charts.radar.destroy();
                 }
                 
-                const yearModifier = (this.state.year - 2015) / 9;
+                const yearModifier = (this.state.year - 2015) / 11;
                 
                 this.charts.radar = new Chart(chartCtx, {
                     type: 'radar',
@@ -1271,7 +1694,7 @@
 
             // ==================== STATS UPDATE ====================
             updateStats() {
-                const yearProgress = (this.state.year - 2015) / 9;
+                const yearProgress = (this.state.year - 2015) / 11;
                 
                 // Calculate values based on year
                 const diversity = (45 + yearProgress * 33.4).toFixed(1);
@@ -1346,6 +1769,17 @@
                 });
             }
         };
+
+        // ==================== TAB NAVIGATION ====================
+        function showTab(tab, button) {
+            document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+            document.getElementById('tab-' + tab).classList.add('active');
+            document.querySelectorAll('.nav-tab').forEach(b => b.classList.remove('active'));
+            if (button) button.classList.add('active');
+            if (tab === 'dashboard') {
+                StreamLensApp.updateAllVisualizations();
+            }
+        }
 
         // ==================== THEME MANAGEMENT ====================
         function setTheme(theme, button) {

@@ -193,6 +193,12 @@ python streamlens_processor.py
 | `/api/metrics/temporal` | GET | Year-over-year metrics |
 | `/api/metrics/platforms` | GET | Per-platform comparison |
 | `/api/metrics/bias` | GET | Bias detection results |
+| `/api/metrics/genres` | GET | Per-genre diversity, parity, lead share, dialogue gap |
+| `/api/metrics/network` | GET | Interaction network homophily and density |
+| `/api/metrics/intersectionality` | GET | Most under/over-represented intersectional groups |
+| `/api/insights` | GET | Narrative findings generated from the data |
+| `/api/learn` | GET | Educational explanations of every metric |
+| `/api/export` | GET | Download full results as JSON |
 | `/api/characters` | GET | Filterable character records (`platform`, `genre`, `year`, `limit`) |
 
 Interactive API docs are available at `http://localhost:8000/docs`.

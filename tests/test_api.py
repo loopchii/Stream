@@ -55,3 +55,50 @@ def test_analyze_runs(client):
     res = client.post('/api/analyze', params={'n_samples': 200})
     assert res.status_code == 200
     assert 'overall_metrics' in res.json()
+
+
+def test_genres(client):
+    res = client.get('/api/metrics/genres')
+    assert res.status_code == 200
+    rows = res.json()
+    assert len(rows) > 0
+    assert {'genre', 'diversity', 'gender_parity', 'male_lead_share', 'dialogue_gap'} <= set(rows[0])
+
+
+def test_network(client):
+    res = client.get('/api/metrics/network')
+    assert res.status_code == 200
+    body = res.json()
+    assert body['nodes'] > 0
+    assert -1 <= body['gender_homophily'] <= 1
+
+
+def test_intersectionality(client):
+    res = client.get('/api/metrics/intersectionality', params={'limit': 5})
+    assert res.status_code == 200
+    body = res.json()
+    assert len(body['most_underrepresented']) <= 5
+    ratios = [g['ratio'] for g in body['most_underrepresented']]
+    assert ratios == sorted(ratios)
+
+
+def test_insights(client):
+    res = client.get('/api/insights')
+    assert res.status_code == 200
+    insights = res.json()
+    assert len(insights) > 0
+    assert {'category', 'title', 'detail'} <= set(insights[0])
+
+
+def test_learn(client):
+    res = client.get('/api/learn')
+    assert res.status_code == 200
+    cards = res.json()
+    assert len(cards) >= 5
+    assert all({'title', 'summary', 'detail', 'try_it'} <= set(c) for c in cards)
+
+
+def test_export_has_download_header(client):
+    res = client.get('/api/export')
+    assert res.status_code == 200
+    assert 'attachment' in res.headers['content-disposition']
