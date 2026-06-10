@@ -9,14 +9,14 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.0/chart.umd.js"></script>
     <style>
         :root {
-            /* Primary Theme */
-            --primary-bg: #0a0e27;
-            --primary-surface: #1a1f3a;
-            --primary-accent: #00d4ff;
-            --primary-secondary: #ff006e;
-            --primary-tertiary: #ffbe0b;
-            --primary-text: #ffffff;
-            --primary-text-dim: #94a3b8;
+            /* Primary Theme — Aurora (light, airy) */
+            --primary-bg: #f4f6ff;
+            --primary-surface: #ffffff;
+            --primary-accent: #6c5ce7;
+            --primary-secondary: #ff6ea8;
+            --primary-tertiary: #ffb84d;
+            --primary-text: #2d3250;
+            --primary-text-dim: #5c6386;
             
             /* Purple Ombre Theme */
             --purple-bg: #1a0033;
@@ -45,7 +45,8 @@
 
         body {
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
-            background: var(--primary-bg);
+            background: linear-gradient(160deg, var(--primary-bg) 0%, #eef1ff 50%, #fdf2fa 100%);
+            background-attachment: fixed;
             color: var(--primary-text);
             overflow-x: hidden;
             transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
@@ -89,6 +90,68 @@
             background: radial-gradient(circle, var(--primary-accent) 0%, transparent 70%);
             opacity: 0.1;
             animation: pulse 4s ease-in-out infinite;
+        }
+
+        #particleField {
+            position: absolute;
+            inset: 0;
+            pointer-events: none;
+            overflow: hidden;
+        }
+
+        .particle {
+            position: absolute;
+            border-radius: 50%;
+            pointer-events: none;
+            opacity: 0.5;
+            animation: floaty linear infinite;
+        }
+
+        @keyframes floaty {
+            0% { transform: translateY(110%) scale(0.6); opacity: 0; }
+            15% { opacity: 0.55; }
+            85% { opacity: 0.55; }
+            100% { transform: translateY(-130%) scale(1.1); opacity: 0; }
+        }
+
+        select, input[type="range"] {
+            transition: box-shadow 0.25s ease, transform 0.25s ease;
+        }
+
+        select:hover, select:focus {
+            box-shadow: 0 0 0 3px rgba(108, 92, 231, 0.25);
+            outline: none;
+        }
+
+        input[type="range"]::-webkit-slider-thumb {
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+        }
+
+        input[type="range"]:hover::-webkit-slider-thumb {
+            transform: scale(1.25);
+            box-shadow: 0 0 12px rgba(108, 92, 231, 0.6);
+        }
+
+        .stat-card {
+            position: relative;
+            overflow: hidden;
+        }
+
+        .stat-card::after {
+            content: '';
+            position: absolute;
+            top: 0; left: -75%;
+            width: 50%; height: 100%;
+            background: linear-gradient(120deg, transparent, rgba(255, 255, 255, 0.45), transparent);
+            transform: skewX(-20deg);
+            transition: left 0.6s ease;
+        }
+
+        .stat-card:hover::after { left: 125%; }
+
+        .stat-card:hover {
+            transform: translateY(-6px) scale(1.02);
+            box-shadow: 0 18px 35px rgba(108, 92, 231, 0.25);
         }
 
         @keyframes pulse {
@@ -692,6 +755,7 @@
             <h1>StreamLens Analytics</h1>
             <div class="subtitle">Advanced Representation & Bias Analysis in Streaming Media (2015-2026)</div>
         </div>
+        <div id="particleField"></div>
     </div>
 
     <div class="nav-tabs">
@@ -826,6 +890,19 @@
             </div>
         </div>
 
+        <div class="viz-section" style="animation-delay: 0.15s;">
+            <h2 class="viz-title">3D Representation Landscape</h2>
+
+            <div class="viz-explanation">
+                <h4>Three Dimensions of Equity</h4>
+                <p>Drag to rotate, scroll to zoom. Each point is a platform-genre combination positioned by female lead share (x), diversity index (y), and dialogue equity (z). Marker size grows with overall equality.</p>
+            </div>
+
+            <div class="chart-container" style="height: 550px;">
+                <div id="scatter3d" style="width: 100%; height: 100%;"></div>
+            </div>
+        </div>
+
         <div class="viz-section" style="animation-delay: 0.2s;">
             <h2 class="viz-title">Character Interaction Networks</h2>
             
@@ -883,8 +960,8 @@
         </div>
 
         <div class="methodology-note">
-            <h3 style="color: var(--primary-accent); margin-bottom: 1rem;">Technical Implementation</h3>
-            <p>This analysis employs Random Forest (200 trees), Gradient Boosting, Neural Networks (4-layer MLP), and Gaussian Process classifiers for bias detection. NLP analysis uses BERT transformers for sentiment analysis. Statistical methods include bootstrap confidence intervals, Benjamini-Hochberg correction for multiple comparisons, and difference-in-differences for causal inference. All visualizations update in real-time using D3.js force simulation, Chart.js canvas rendering, and Plotly.js WebGL acceleration.</p>
+            <h3 style="color: var(--primary-accent); margin-bottom: 1rem;">Technical Implementation — What Actually Runs</h3>
+            <p>Metrics are computed live by the Python backend: Shannon entropy for diversity, a distance-from-parity index for gender balance, chi-square statistics for dialogue / age / racial bias, intersectional representation ratios against a uniform baseline, and assortativity coefficients on character interaction graphs (NetworkX). Visualizations use a real D3.js force simulation (charge, spring, and collision forces), Chart.js canvas rendering, and Plotly.js including WebGL-accelerated 3D. The demo dataset is synthetic, generated by a seeded, documented statistical model — see the Learn tab for the honesty note.</p>
         </div>
     </div>
 
@@ -924,6 +1001,18 @@
                         </select>
                     </div>
                     <div class="control-item">
+                        <label for="exploreMedia">Media Type</label>
+                        <select id="exploreMedia">
+                            <option value="">All Media</option>
+                            <option value="series">Series</option>
+                            <option value="film">Film</option>
+                            <option value="docuseries">Docuseries</option>
+                            <option value="animation">Animation</option>
+                            <option value="reality">Reality</option>
+                            <option value="limited_series">Limited Series</option>
+                        </select>
+                    </div>
+                    <div class="control-item">
                         <label for="exploreYear">Year</label>
                         <select id="exploreYear">
                             <option value="">All Years</option>
@@ -941,7 +1030,7 @@
                 <div class="data-table-wrap">
                     <table class="data-table" id="exploreTable">
                         <thead>
-                            <tr><th>ID</th><th>Platform</th><th>Genre</th><th>Year</th><th>Gender</th><th>Race</th><th>Age</th><th>Role</th><th>Screen Time</th><th>Dialogue Words</th><th>Sentiment</th></tr>
+                            <tr><th>ID</th><th>Platform</th><th>Genre</th><th>Media</th><th>Year</th><th>Gender</th><th>Race</th><th>Age</th><th>Role</th><th>Screen Time</th><th>Dialogue Words</th><th>Sentiment</th></tr>
                         </thead>
                         <tbody id="exploreTableBody">
                             <tr><td colspan="11">Loading…</td></tr>
@@ -950,6 +1039,24 @@
                 </div>
                 <p class="api-note" id="exploreCount"></p>
                 <p class="api-note">Power users: the full REST API is documented at <a href="/docs" target="_blank">/docs</a>.</p>
+            </div>
+
+            <div class="viz-section">
+                <h2 class="viz-title">Media Type Analysis</h2>
+                <div class="viz-explanation">
+                    <h4>Diversity Across Formats</h4>
+                    <p>The same equity metrics computed per media format — series, film, docuseries, animation, reality, and limited series.</p>
+                </div>
+                <div class="data-table-wrap">
+                    <table class="data-table">
+                        <thead>
+                            <tr><th>Media Type</th><th>Diversity</th><th>Gender Parity</th><th>Avg Sentiment</th><th>Sample</th></tr>
+                        </thead>
+                        <tbody id="mediaTableBody">
+                            <tr><td colspan="5">Loading…</td></tr>
+                        </tbody>
+                    </table>
+                </div>
             </div>
 
             <div class="viz-section">
@@ -984,6 +1091,22 @@
                     <div class="insight-item">Loading insights…</div>
                 </div>
             </div>
+            <div class="viz-section">
+                <h2 class="viz-title">Bias Breakdown</h2>
+                <div class="viz-explanation">
+                    <h4>Four Bias Dimensions</h4>
+                    <p>Sentiment, screen time, age, and racial dialogue bias — each computed live with the methods described in the Learn tab.</p>
+                </div>
+                <div class="data-table-wrap">
+                    <table class="data-table">
+                        <thead><tr><th>Bias Type</th><th>Group</th><th>Value</th><th>Interpretation</th></tr></thead>
+                        <tbody id="biasTableBody">
+                            <tr><td colspan="4">Loading…</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
             <div class="viz-section">
                 <h2 class="viz-title">Intersectional Representation</h2>
                 <div class="viz-explanation">
@@ -1128,12 +1251,47 @@
             init() {
                 this.attachEventListeners();
                 this.populateExploreYears();
+                this.spawnParticles();
                 this.updateAllVisualizations();
                 this.loadLiveMetrics();
                 this.loadExploreData();
                 this.loadGenreTable();
+                this.loadMediaTable();
+                this.loadBiasTable();
                 this.loadInsightsTab();
                 this.loadLearnTab();
+            },
+
+            spawnParticles() {
+                const field = document.getElementById('particleField');
+                if (!field) return;
+                const colors = ['#6c5ce7', '#ff6ea8', '#ffb84d', '#4dd4c0'];
+                for (let i = 0; i < 24; i++) {
+                    const p = document.createElement('div');
+                    p.className = 'particle';
+                    const size = 4 + Math.random() * 10;
+                    p.style.width = p.style.height = size + 'px';
+                    p.style.left = (Math.random() * 100) + '%';
+                    p.style.bottom = '-20px';
+                    p.style.background = colors[i % colors.length];
+                    p.style.animationDuration = (6 + Math.random() * 10) + 's';
+                    p.style.animationDelay = (Math.random() * 10) + 's';
+                    field.appendChild(p);
+                }
+            },
+
+            animateValue(id, endValue, formatter, duration = 700) {
+                const el = document.getElementById(id);
+                if (!el) return;
+                const start = performance.now();
+                const startValue = parseFloat(el.textContent) || 0;
+                const step = (now) => {
+                    const t = Math.min(1, (now - start) / duration);
+                    const eased = 1 - Math.pow(1 - t, 3);
+                    el.textContent = formatter(startValue + (endValue - startValue) * eased);
+                    if (t < 1) requestAnimationFrame(step);
+                };
+                requestAnimationFrame(step);
             },
 
             populateExploreYears() {
@@ -1163,6 +1321,8 @@
                     status.textContent = `Analysis complete — ${Number(n).toLocaleString()} characters processed.`;
                     this.loadExploreData();
                     this.loadGenreTable();
+                    this.loadMediaTable();
+                    this.loadBiasTable();
                     this.loadInsightsTab();
                 } catch (e) {
                     status.textContent = 'Analysis unavailable — is the API server running? (python app.py)';
@@ -1177,10 +1337,12 @@
                 const params = new URLSearchParams();
                 const platform = document.getElementById('explorePlatform').value;
                 const genre = document.getElementById('exploreGenre').value;
+                const media = document.getElementById('exploreMedia').value;
                 const year = document.getElementById('exploreYear').value;
                 const limit = document.getElementById('exploreLimit').value;
                 if (platform) params.set('platform', platform);
                 if (genre) params.set('genre', genre);
+                if (media) params.set('media_type', media);
                 if (year) params.set('year', year);
                 params.set('limit', limit);
                 try {
@@ -1189,17 +1351,18 @@
                     const rows = await res.json();
                     document.getElementById('exploreCount').textContent = `${rows.length} record(s) shown.`;
                     if (!rows.length) {
-                        body.innerHTML = '<tr><td colspan="11">No records match the selected filters.</td></tr>';
+                        body.innerHTML = '<tr><td colspan="12">No records match the selected filters.</td></tr>';
                         return;
                     }
                     body.innerHTML = rows.map(r => `<tr>
                         <td>${r.id}</td><td>${r.platform.replace('_', ' ')}</td><td>${r.genre}</td>
+                        <td>${(r.media_type || '—').replace('_', ' ')}</td>
                         <td>${r.year}</td><td>${r.gender}</td><td>${r.race}</td><td>${r.age_group}</td>
                         <td>${r.role_type}</td><td>${r.screen_time.toFixed(1)}</td>
                         <td>${r.dialogue_words}</td><td>${r.sentiment_score.toFixed(2)}</td>
                     </tr>`).join('');
                 } catch (e) {
-                    body.innerHTML = '<tr><td colspan="11">Live data requires the API server — run <code>python app.py</code>.</td></tr>';
+                    body.innerHTML = '<tr><td colspan="12">Live data requires the API server — run <code>python app.py</code>.</td></tr>';
                 }
             },
 
@@ -1220,6 +1383,61 @@
                     </tr>`).join('');
                 } catch (e) {
                     body.innerHTML = '<tr><td colspan="7">Live data requires the API server — run <code>python app.py</code>.</td></tr>';
+                }
+            },
+
+            async loadMediaTable() {
+                const body = document.getElementById('mediaTableBody');
+                if (!body) return;
+                try {
+                    const res = await fetch('/api/metrics/media');
+                    if (!res.ok) throw new Error();
+                    const rows = await res.json();
+                    if (!rows.length) throw new Error();
+                    body.innerHTML = rows.map(m => `<tr>
+                        <td>${m.media_type.replace('_', ' ')}</td>
+                        <td>${m.diversity.toFixed(3)}</td>
+                        <td>${m.gender_parity.toFixed(3)}</td>
+                        <td>${m.avg_sentiment.toFixed(2)}</td>
+                        <td>${m.sample_size.toLocaleString()}</td>
+                    </tr>`).join('');
+                } catch (e) {
+                    body.innerHTML = '<tr><td colspan="5">Live data requires the API server — run <code>python app.py</code>.</td></tr>';
+                }
+            },
+
+            async loadBiasTable() {
+                const body = document.getElementById('biasTableBody');
+                if (!body) return;
+                try {
+                    const res = await fetch('/api/metrics/bias');
+                    if (!res.ok) throw new Error();
+                    const bias = await res.json();
+                    const rows = [];
+                    Object.entries(bias.sentiment_bias || {}).forEach(([group, v]) => {
+                        const dir = v.deviation_from_mean >= 0 ? 'above' : 'below';
+                        rows.push(['Sentiment', group, v.avg_sentiment.toFixed(3),
+                            `${Math.abs(v.deviation_from_mean).toFixed(3)} ${dir} the overall mean tone`]);
+                    });
+                    Object.entries(bias.screen_time_bias || {}).forEach(([group, v]) => {
+                        const pct = ((v.ratio_vs_overall - 1) * 100).toFixed(0);
+                        rows.push(['Screen time', group, v.avg_screen_time.toFixed(1) + ' min',
+                            `${Math.abs(pct)}% ${pct >= 0 ? 'more' : 'less'} screen time than average`]);
+                    });
+                    Object.entries(bias.age_bias || {}).forEach(([key, v]) => {
+                        rows.push(['Age dialogue', key.replace('dialogue_', ''),
+                            v.percentage.toFixed(1) + '%',
+                            `chi-square ${v.bias_score.toFixed(0)} vs equal-share expectation`]);
+                    });
+                    Object.entries(bias.racial_dialogue_bias || {}).forEach(([key, v]) => {
+                        rows.push(['Racial dialogue', key.replace('dialogue_', ''),
+                            v.percentage.toFixed(1) + '%',
+                            `chi-square ${v.bias_score.toFixed(0)} vs equal-share expectation`]);
+                    });
+                    body.innerHTML = rows.map(r =>
+                        `<tr><td>${r[0]}</td><td>${r[1]}</td><td>${r[2]}</td><td>${r[3]}</td></tr>`).join('');
+                } catch (e) {
+                    body.innerHTML = '<tr><td colspan="4">Live data requires the API server — run <code>python app.py</code>.</td></tr>';
                 }
             },
 
@@ -1320,7 +1538,7 @@
                 });
 
                 // Explore data filters
-                ['explorePlatform', 'exploreGenre', 'exploreYear', 'exploreLimit'].forEach(id => {
+                ['explorePlatform', 'exploreGenre', 'exploreMedia', 'exploreYear', 'exploreLimit'].forEach(id => {
                     const el = document.getElementById(id);
                     if (el) el.addEventListener('change', () => this.loadExploreData());
                 });
@@ -1442,7 +1660,7 @@
                                 },
                                 min: 0,
                                 max: 100,
-                                grid: { color: 'rgba(255,255,255,0.1)' }
+                                grid: { color: 'rgba(128,128,128,0.18)' }
                             },
                             y: {
                                 title: { 
@@ -1452,7 +1670,7 @@
                                 },
                                 min: 0,
                                 max: 10,
-                                grid: { color: 'rgba(255,255,255,0.1)' }
+                                grid: { color: 'rgba(128,128,128,0.18)' }
                             }
                         }
                     }
@@ -1525,10 +1743,16 @@
                     .attr('height', height);
                 
                 const simulation = d3.forceSimulation(nodes)
-                    .force('link', d3.forceLink(links).id(d => d.id))
-                    .force('charge', d3.forceManyBody().strength(-50))
+                    .force('link', d3.forceLink(links).id(d => d.id)
+                        .distance(l => 40 + (1 - l.value) * 80)
+                        .strength(l => 0.3 + l.value * 0.5))
+                    .force('charge', d3.forceManyBody().strength(-60))
                     .force('center', d3.forceCenter(width / 2, height / 2))
-                    .force('collision', d3.forceCollide(d => d.radius + 2));
+                    .force('x', d3.forceX(width / 2).strength(0.03))
+                    .force('y', d3.forceY(height / 2).strength(0.03))
+                    .force('collision', d3.forceCollide(d => d.radius + 2))
+                    .alphaDecay(0.015)
+                    .velocityDecay(0.35);
                 
                 const link = svg.append('g')
                     .selectAll('line')
@@ -1551,10 +1775,25 @@
                         };
                         return colors[d.gender];
                     })
+                    .style('cursor', 'grab')
+                    .on('mouseover', function (event, d) {
+                        d3.select(this).transition().duration(150)
+                            .attr('r', d.radius * 1.4)
+                            .attr('stroke', '#2d3250').attr('stroke-width', 2);
+                        link.transition().duration(150)
+                            .attr('stroke-opacity', l => (l.source.id === d.id || l.target.id === d.id) ? 0.9 : 0.08);
+                    })
+                    .on('mouseout', function (event, d) {
+                        d3.select(this).transition().duration(150)
+                            .attr('r', d.radius).attr('stroke', null);
+                        link.transition().duration(150).attr('stroke-opacity', 0.3);
+                    })
                     .call(d3.drag()
                         .on('start', dragstarted)
                         .on('drag', dragged)
                         .on('end', dragended));
+
+                node.append('title').text(d => `${d.gender} · reach ${d.radius.toFixed(1)}`);
                 
                 simulation.on('tick', () => {
                     link
@@ -1626,11 +1865,11 @@
                 const layout = {
                     xaxis: { 
                         title: 'Year',
-                        gridcolor: 'rgba(255,255,255,0.1)'
+                        gridcolor: 'rgba(128,128,128,0.18)'
                     },
                     yaxis: { 
                         title: 'Representation Score',
-                        gridcolor: 'rgba(255,255,255,0.1)'
+                        gridcolor: 'rgba(128,128,128,0.18)'
                     },
                     paper_bgcolor: 'transparent',
                     plot_bgcolor: 'transparent',
@@ -1685,11 +1924,57 @@
                             r: {
                                 beginAtZero: true,
                                 max: 100,
-                                grid: { color: 'rgba(255,255,255,0.1)' }
+                                grid: { color: 'rgba(128,128,128,0.18)' }
                             }
                         }
                     }
                 });
+            },
+
+            // ==================== 3D LANDSCAPE ====================
+            create3DChart() {
+                const container = document.getElementById('scatter3d');
+                if (!container) return;
+
+                const points = { x: [], y: [], z: [], text: [], color: [], size: [] };
+                const platforms = this.state.platform === 'all' ?
+                    Object.keys(this.data.platforms) : [this.state.platform];
+                const genres = this.state.genre === 'all' ?
+                    Object.keys(this.data.genres) : [this.state.genre];
+                const yearProgress = (this.state.year - 2015) / 11;
+
+                platforms.forEach(platform => {
+                    genres.forEach(genre => {
+                        const p = this.data.platforms[platform];
+                        const g = this.data.genres[genre];
+                        points.x.push(Math.min(100, (p.female_leads + yearProgress * p.improvement_rate * 10) * 100));
+                        points.y.push(Math.min(10, (p.diversity + yearProgress * 0.1) * 10));
+                        points.z.push((1 - g.dialogue_gap) * 100);
+                        points.text.push(`${platform.replace('_', ' ')} · ${genre}`);
+                        points.color.push(this.getColor(platform, genre, 0.9));
+                        points.size.push(8 + (1 - g.male_bias) * 16);
+                    });
+                });
+
+                Plotly.newPlot('scatter3d', [{
+                    type: 'scatter3d',
+                    mode: 'markers',
+                    x: points.x, y: points.y, z: points.z,
+                    text: points.text,
+                    hovertemplate: '%{text}<br>Female leads: %{x:.1f}%<br>Diversity: %{y:.1f}<br>Dialogue equity: %{z:.0f}%<extra></extra>',
+                    marker: { size: points.size, color: points.color, opacity: 0.85,
+                              line: { width: 1, color: 'rgba(45,50,80,0.5)' } }
+                }], {
+                    scene: {
+                        xaxis: { title: 'Female Leads %', gridcolor: 'rgba(128,128,128,0.25)' },
+                        yaxis: { title: 'Diversity (0-10)', gridcolor: 'rgba(128,128,128,0.25)' },
+                        zaxis: { title: 'Dialogue Equity %', gridcolor: 'rgba(128,128,128,0.25)' },
+                        camera: { eye: { x: 1.6, y: 1.4, z: 0.9 } }
+                    },
+                    margin: { l: 0, r: 0, t: 0, b: 0 },
+                    paper_bgcolor: 'transparent',
+                    font: { color: getComputedStyle(document.body).getPropertyValue('--primary-text') }
+                }, { responsive: true });
             },
 
             // ==================== STATS UPDATE ====================
@@ -1702,11 +1987,11 @@
                 const ethnic = (3.5 + yearProgress * 2.7).toFixed(1);
                 const age = (4.2 - yearProgress * 0.4).toFixed(1);
                 
-                // Update DOM
-                document.getElementById('diversityScore').textContent = diversity + '%';
-                document.getElementById('genderParity').textContent = parity;
-                document.getElementById('ethnicDiversity').textContent = ethnic;
-                document.getElementById('ageScore').textContent = age;
+                // Update DOM with animated counters
+                this.animateValue('diversityScore', parseFloat(diversity), v => v.toFixed(1) + '%');
+                this.animateValue('genderParity', parseFloat(parity), v => v.toFixed(2));
+                this.animateValue('ethnicDiversity', parseFloat(ethnic), v => v.toFixed(1));
+                this.animateValue('ageScore', parseFloat(age), v => v.toFixed(1));
                 
                 // Update changes
                 document.getElementById('diversityChange').textContent = 
@@ -1756,6 +2041,7 @@
                 // Update all components
                 requestAnimationFrame(() => {
                     this.createBubbleChart();
+                    this.create3DChart();
                     this.createNetworkGraph();
                     this.createTimeSeriesChart();
                     this.createRadarChart();

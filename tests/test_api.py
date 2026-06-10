@@ -65,6 +65,31 @@ def test_genres(client):
     assert {'genre', 'diversity', 'gender_parity', 'male_lead_share', 'dialogue_gap'} <= set(rows[0])
 
 
+def test_media_types(client):
+    res = client.get('/api/metrics/media')
+    assert res.status_code == 200
+    rows = res.json()
+    assert len(rows) > 0
+    assert {'media_type', 'diversity', 'gender_parity', 'avg_sentiment', 'sample_size'} <= set(rows[0])
+
+
+def test_characters_media_type_filter(client):
+    res = client.get('/api/characters', params={'media_type': 'film', 'limit': 10})
+    assert res.status_code == 200
+    records = res.json()
+    assert all(r['media_type'] == 'film' for r in records)
+
+
+def test_bias_dimensions(client):
+    res = client.get('/api/metrics/bias')
+    assert res.status_code == 200
+    body = res.json()
+    for key in ('age_bias', 'racial_dialogue_bias', 'sentiment_bias', 'screen_time_bias'):
+        assert key in body
+    for v in body['sentiment_bias'].values():
+        assert 'avg_sentiment' in v and 'deviation_from_mean' in v
+
+
 def test_network(client):
     res = client.get('/api/metrics/network')
     assert res.status_code == 200

@@ -192,8 +192,9 @@ python streamlens_processor.py
 | `/api/metrics/overview` | GET | Diversity index + gender parity |
 | `/api/metrics/temporal` | GET | Year-over-year metrics |
 | `/api/metrics/platforms` | GET | Per-platform comparison |
-| `/api/metrics/bias` | GET | Bias detection results |
+| `/api/metrics/bias` | GET | Bias detection: dialogue, age, racial dialogue, sentiment, screen time |
 | `/api/metrics/genres` | GET | Per-genre diversity, parity, lead share, dialogue gap |
+| `/api/metrics/media` | GET | Per-media-type (series, film, docuseries, animation…) metrics |
 | `/api/metrics/network` | GET | Interaction network homophily and density |
 | `/api/metrics/intersectionality` | GET | Most under/over-represented intersectional groups |
 | `/api/insights` | GET | Narrative findings generated from the data |

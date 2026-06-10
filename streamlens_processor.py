@@ -247,6 +247,7 @@ class DataProcessor:
         self.analyzer = RepresentationAnalyzer()
         self.platforms = ['netflix', 'amazon_prime', 'disney_plus', 'hbo_max', 'apple_tv', 'hulu']
         self.genres = ['drama', 'comedy', 'action', 'scifi', 'thriller', 'documentary']
+        self.media_types = ['series', 'film', 'docuseries', 'animation', 'reality', 'limited_series']
 
     def generate_synthetic_data(self, n_samples: int = 1000) -> pd.DataFrame:
         """Generate synthetic data for demonstration"""
@@ -258,6 +259,8 @@ class DataProcessor:
             year = np.random.randint(2015, 2027)
             platform = np.random.choice(self.platforms)
             genre = np.random.choice(self.genres)
+            media_type = np.random.choice(self.media_types,
+                                          p=[0.35, 0.3, 0.1, 0.12, 0.08, 0.05])
 
             # Create realistic bias patterns that slowly improve over time
             year_progress = (year - 2015) / 11
@@ -291,6 +294,7 @@ class DataProcessor:
                 'id': f'char_{i}',
                 'platform': platform,
                 'genre': genre,
+                'media_type': media_type,
                 'year': year,
                 'gender': gender,
                 'race': race,
@@ -365,6 +369,22 @@ class DataProcessor:
             })
         results['genre_analysis'] = genre_metrics
 
+        # Media type analysis
+        if 'media_type' in df.columns:
+            media_metrics = []
+            for media in sorted(df['media_type'].unique()):
+                media_data = df[df['media_type'] == media]
+                media_metrics.append({
+                    'media_type': media,
+                    'diversity': self.analyzer.calculate_diversity_index(media_data['race'].tolist()),
+                    'gender_parity': self.analyzer.calculate_gender_parity(
+                        media_data['gender'].value_counts().to_dict()
+                    ),
+                    'avg_sentiment': media_data['sentiment_score'].mean(),
+                    'sample_size': len(media_data)
+                })
+            results['media_type_analysis'] = media_metrics
+
         # Platform comparison
         platform_metrics = []
         for platform in df['platform'].unique():
@@ -391,6 +411,26 @@ class DataProcessor:
             'word_counts': df.groupby('gender')['dialogue_words'].sum().to_dict()
         }
         results['bias_detection']['dialogue_bias'] = bias_detector.detect_dialogue_bias(dialogue_data)
+
+        # Additional bias dimensions: age, racial dialogue share, sentiment by gender
+        results['bias_detection']['age_bias'] = bias_detector.detect_dialogue_bias({
+            'word_counts': df.groupby('age_group')['dialogue_words'].sum().to_dict()
+        })
+        results['bias_detection']['racial_dialogue_bias'] = bias_detector.detect_dialogue_bias({
+            'word_counts': df.groupby('race')['dialogue_words'].sum().to_dict()
+        })
+        sentiment_by_gender = df.groupby('gender')['sentiment_score'].mean()
+        results['bias_detection']['sentiment_bias'] = {
+            gender: {'avg_sentiment': float(score),
+                     'deviation_from_mean': float(score - df['sentiment_score'].mean())}
+            for gender, score in sentiment_by_gender.items()
+        }
+        screen_by_gender = df.groupby('gender')['screen_time'].mean()
+        results['bias_detection']['screen_time_bias'] = {
+            gender: {'avg_screen_time': float(minutes),
+                     'ratio_vs_overall': float(minutes / df['screen_time'].mean()) if df['screen_time'].mean() > 0 else 0}
+            for gender, minutes in screen_by_gender.items()
+        }
 
         # Network metrics: build an interaction network from a character sample
         network_analyzer = NetworkAnalyzer()
