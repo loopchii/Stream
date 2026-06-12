@@ -80,6 +80,23 @@ def test_characters_media_type_filter(client):
     assert all(r['media_type'] == 'film' for r in records)
 
 
+def test_bias_library(client):
+    res = client.get('/api/bias-library')
+    assert res.status_code == 200
+    body = res.json()
+    assert body['total'] >= 50
+    assert all({'id', 'category', 'name', 'definition', 'example', 'why_it_matters', 'measured_here'}
+               <= set(b) for b in body['items'])
+
+
+def test_bias_library_category_filter(client):
+    res = client.get('/api/bias-library', params={'category': 'gender'})
+    assert res.status_code == 200
+    body = res.json()
+    assert body['total'] > 0
+    assert all(b['category'] == 'gender' for b in body['items'])
+
+
 def test_bias_dimensions(client):
     res = client.get('/api/metrics/bias')
     assert res.status_code == 200

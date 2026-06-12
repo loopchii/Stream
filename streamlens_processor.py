@@ -247,7 +247,8 @@ class DataProcessor:
         self.analyzer = RepresentationAnalyzer()
         self.platforms = ['netflix', 'amazon_prime', 'disney_plus', 'hbo_max', 'apple_tv', 'hulu']
         self.genres = ['drama', 'comedy', 'action', 'scifi', 'thriller', 'documentary']
-        self.media_types = ['series', 'film', 'docuseries', 'animation', 'reality', 'limited_series']
+        self.media_types = ['series', 'film', 'docuseries', 'animation', 'reality', 'limited_series',
+                            'anime', 'standup', 'talk_show', 'kids', 'sports_doc']
 
     def generate_synthetic_data(self, n_samples: int = 1000) -> pd.DataFrame:
         """Generate synthetic data for demonstration"""
@@ -260,7 +261,8 @@ class DataProcessor:
             platform = np.random.choice(self.platforms)
             genre = np.random.choice(self.genres)
             media_type = np.random.choice(self.media_types,
-                                          p=[0.35, 0.3, 0.1, 0.12, 0.08, 0.05])
+                                          p=[0.27, 0.24, 0.08, 0.09, 0.07, 0.05,
+                                             0.07, 0.04, 0.04, 0.03, 0.02])
 
             # Create realistic bias patterns that slowly improve over time
             year_progress = (year - 2015) / 11

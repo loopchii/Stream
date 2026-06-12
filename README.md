@@ -199,6 +199,7 @@ python streamlens_processor.py
 | `/api/metrics/intersectionality` | GET | Most under/over-represented intersectional groups |
 | `/api/insights` | GET | Narrative findings generated from the data |
 | `/api/learn` | GET | Educational explanations of every metric |
+| `/api/bias-library` | GET | 50+ documented bias types, filterable by `?category=` |
 | `/api/export` | GET | Download full results as JSON |
 | `/api/characters` | GET | Filterable character records (`platform`, `genre`, `year`, `limit`) |
 

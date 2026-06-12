@@ -646,6 +646,84 @@
             color: var(--primary-bg);
         }
 
+        .story-strip {
+            max-width: 1400px;
+            margin: 1.5rem auto 0;
+            padding: 1.25rem 1.75rem;
+            border-radius: 16px;
+            background: linear-gradient(120deg, rgba(108, 92, 231, 0.10), rgba(255, 110, 168, 0.10));
+            border-left: 4px solid var(--primary-secondary);
+            animation: fadeIn 0.8s ease both;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(12px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .story-strip .act {
+            font-size: 0.8rem;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            color: var(--primary-secondary);
+            font-weight: 700;
+        }
+
+        .story-strip h3 { color: var(--primary-accent); margin: 0.25rem 0 0.4rem; }
+        .story-strip p { color: var(--primary-text-dim); line-height: 1.7; margin: 0; }
+
+        .chip-row { display: flex; gap: 0.5rem; flex-wrap: wrap; margin: 1rem 0; }
+
+        .chip {
+            padding: 0.4rem 1rem;
+            border-radius: 20px;
+            border: 1.5px solid var(--primary-accent);
+            background: transparent;
+            color: var(--primary-text);
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 0.85rem;
+            transition: all 0.25s ease;
+        }
+
+        .chip:hover { transform: translateY(-2px); box-shadow: 0 6px 14px rgba(108, 92, 231, 0.25); }
+        .chip.active { background: var(--primary-accent); color: #fff; }
+
+        .bias-card {
+            background: var(--primary-surface);
+            border-radius: 16px;
+            padding: 1.25rem;
+            border-top: 3px solid var(--primary-secondary);
+            transition: transform 0.25s ease, box-shadow 0.25s ease;
+            animation: fadeIn 0.5s ease both;
+        }
+
+        .bias-card:hover { transform: translateY(-5px) rotate(-0.3deg); box-shadow: 0 16px 30px rgba(108, 92, 231, 0.2); }
+        .bias-card .cat { font-size: 0.72rem; text-transform: uppercase; letter-spacing: 1.5px; color: var(--primary-secondary); font-weight: 700; }
+        .bias-card h4 { color: var(--primary-accent); margin: 0.3rem 0 0.5rem; }
+        .bias-card p { color: var(--primary-text-dim); font-size: 0.9rem; line-height: 1.6; margin-bottom: 0.4rem; }
+        .bias-card .why { border-left: 3px solid var(--primary-tertiary); padding-left: 0.6rem; font-style: italic; }
+        .bias-card .measured { display: inline-block; margin-top: 0.4rem; font-size: 0.75rem; font-weight: 700; color: #1b9e77; }
+
+        .slider-readout {
+            display: flex;
+            gap: 1.25rem;
+            flex-wrap: wrap;
+            margin-top: 0.5rem;
+            font-size: 0.85rem;
+            color: var(--primary-text-dim);
+        }
+
+        .slider-readout strong { color: var(--primary-accent); }
+
+        .era-label {
+            font-size: 0.8rem;
+            font-weight: 700;
+            color: var(--primary-secondary);
+            letter-spacing: 1px;
+            text-transform: uppercase;
+        }
+
         .tab-panel { display: none; }
         .tab-panel.active { display: block; }
 
@@ -762,7 +840,14 @@
         <button class="nav-tab active" data-tab="dashboard" onclick="showTab('dashboard', this)">Dashboard</button>
         <button class="nav-tab" data-tab="explore" onclick="showTab('explore', this)">Explore Data</button>
         <button class="nav-tab" data-tab="insights" onclick="showTab('insights', this)">Insights</button>
+        <button class="nav-tab" data-tab="library" onclick="showTab('library', this)">Bias Library</button>
         <button class="nav-tab" data-tab="learn" onclick="showTab('learn', this)">Learn</button>
+    </div>
+
+    <div class="story-strip" id="storyStrip">
+        <span class="act" id="storyAct">Act I — The Question</span>
+        <h3 id="storyTitle">Who gets to be the story?</h3>
+        <p id="storyText">Streaming reaches billions of hours of attention every day. The faces, voices, and lives on screen quietly teach us who counts as a hero, an expert, a love interest — or background. StreamLens turns that question into numbers you can interrogate yourself: start on the Dashboard, dig into the raw data in Explore, read what the pipeline found in Insights, browse 50+ named biases in the Bias Library, and learn the math in Learn.</p>
     </div>
 
     <div id="tab-dashboard" class="tab-panel active">
@@ -788,8 +873,18 @@
         <div class="control-group">
             <div class="control-item">
                 <label for="yearRange">Analysis Year</label>
-                <input type="range" id="yearRange" min="2015" max="2026" value="2026" step="1">
+                <input type="range" id="yearRange" min="2015" max="2026" value="2026" step="1" list="yearTicks">
+                <datalist id="yearTicks">
+                    <option value="2015"></option><option value="2017"></option><option value="2019"></option>
+                    <option value="2021"></option><option value="2023"></option><option value="2026"></option>
+                </datalist>
                 <div class="range-value" id="yearValue">2026</div>
+                <div class="era-label" id="eraLabel"></div>
+                <div class="slider-readout">
+                    <span>Parity then: <strong id="sliderParity">—</strong></span>
+                    <span>Diversity then: <strong id="sliderDiversity">—</strong></span>
+                    <span>vs 2015: <strong id="sliderDelta">—</strong></span>
+                </div>
             </div>
             <div class="control-item">
                 <label for="platform">Platform Filter</label>
@@ -1010,6 +1105,11 @@
                             <option value="animation">Animation</option>
                             <option value="reality">Reality</option>
                             <option value="limited_series">Limited Series</option>
+                            <option value="anime">Anime</option>
+                            <option value="standup">Stand-up</option>
+                            <option value="talk_show">Talk Show</option>
+                            <option value="kids">Kids</option>
+                            <option value="sports_doc">Sports Doc</option>
                         </select>
                     </div>
                     <div class="control-item">
@@ -1025,6 +1125,9 @@
                             <option value="50">50</option>
                             <option value="100">100</option>
                         </select>
+                    </div>
+                    <div class="control-item" style="justify-content: flex-end;">
+                        <button class="action-btn" id="resetFiltersBtn" onclick="StreamLensApp.resetExploreFilters()">Reset Filters</button>
                     </div>
                 </div>
                 <div class="data-table-wrap">
@@ -1045,7 +1148,10 @@
                 <h2 class="viz-title">Media Type Analysis</h2>
                 <div class="viz-explanation">
                     <h4>Diversity Across Formats</h4>
-                    <p>The same equity metrics computed per media format — series, film, docuseries, animation, reality, and limited series.</p>
+                    <p>The same equity metrics computed per media format — from series and film to anime, stand-up, talk shows, kids' content and sports docs. The donut shows the live catalog mix; the table shows how equity differs by format. Different formats have different production cultures, so bias patterns differ too.</p>
+                </div>
+                <div class="chart-container" style="height: 360px; margin-bottom: 1.5rem;">
+                    <canvas id="mediaDonut"></canvas>
                 </div>
                 <div class="data-table-wrap">
                     <table class="data-table">
@@ -1125,6 +1231,29 @@
         </div>
     </div>
 
+    <div id="tab-library" class="tab-panel">
+        <div class="visualization-container">
+            <div class="viz-section">
+                <h2 class="viz-title">The Bias Library</h2>
+                <div class="viz-explanation">
+                    <h4>50+ Named Biases, Explained</h4>
+                    <p>Every entry is a documented bias pattern studied in media-representation research — what it is, what it looks like, and why it matters. Entries marked <strong style="color:#1b9e77;">measured here</strong> are quantified live by the StreamLens pipeline; the rest are field knowledge to sharpen what you look for. Filter by category or search.</p>
+                </div>
+                <div class="chip-row" id="biasChips"></div>
+                <div class="control-group" style="grid-template-columns: 1fr; margin-bottom: 0.5rem;">
+                    <div class="control-item">
+                        <label for="biasSearch">Search</label>
+                        <input type="text" id="biasSearch" placeholder="e.g. dialogue, casting, algorithm…" style="padding: 0.6rem 1rem; border-radius: 10px; border: 1.5px solid var(--primary-accent); background: var(--primary-surface); color: var(--primary-text);">
+                    </div>
+                </div>
+                <p class="status-text" id="biasCount"></p>
+                <div class="learn-grid" id="biasGrid">
+                    <div class="bias-card"><p>Loading library…</p></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <div id="tab-learn" class="tab-panel">
         <div class="visualization-container">
             <div class="viz-section">
@@ -1142,7 +1271,7 @@
 
     <div class="author-citation">
         <h3>About This Analysis</h3>
-        <p>StreamLens Analytics quantifies representation asymmetries in streaming media using advanced mathematical frameworks and machine learning algorithms.</p>
+        <p>StreamLens Analytics quantifies representation asymmetries in streaming media using statistical and network-analysis methods, computed live on a clearly-labeled synthetic dataset.</p>
         <p class="author-name">Created by Cazandra Aporbo, MS</p>
         <p style="font-size: 0.9rem; margin-top: 0.5rem;">Mathematical Framework Development: September 10, 2024 - Present</p>
     </div>
@@ -1260,6 +1389,86 @@
                 this.loadBiasTable();
                 this.loadInsightsTab();
                 this.loadLearnTab();
+                this.loadBiasLibrary();
+                this.updateSliderReadout();
+            },
+
+            biasState: { items: [], category: '', query: '' },
+
+            async loadBiasLibrary() {
+                const grid = document.getElementById('biasGrid');
+                const chips = document.getElementById('biasChips');
+                if (!grid || !chips) return;
+                try {
+                    const res = await fetch('/api/bias-library');
+                    if (!res.ok) throw new Error();
+                    const data = await res.json();
+                    this.biasState.items = data.items;
+                    chips.innerHTML = ['<button class="chip active" data-cat="">All</button>']
+                        .concat(data.categories.map(c =>
+                            `<button class="chip" data-cat="${c}">${c.charAt(0).toUpperCase() + c.slice(1)}</button>`))
+                        .join('');
+                    chips.querySelectorAll('.chip').forEach(chip => {
+                        chip.addEventListener('click', () => {
+                            chips.querySelectorAll('.chip').forEach(c => c.classList.remove('active'));
+                            chip.classList.add('active');
+                            this.biasState.category = chip.dataset.cat;
+                            this.renderBiasLibrary();
+                        });
+                    });
+                    const search = document.getElementById('biasSearch');
+                    if (search) search.addEventListener('input', () => {
+                        this.biasState.query = search.value.toLowerCase();
+                        this.renderBiasLibrary();
+                    });
+                    this.renderBiasLibrary();
+                } catch (e) {
+                    grid.innerHTML = '<div class="bias-card"><p>The Bias Library is served by the API — run <code>python app.py</code>.</p></div>';
+                }
+            },
+
+            renderBiasLibrary() {
+                const grid = document.getElementById('biasGrid');
+                const count = document.getElementById('biasCount');
+                const { items, category, query } = this.biasState;
+                const filtered = items.filter(b =>
+                    (!category || b.category === category) &&
+                    (!query || (b.name + ' ' + b.definition + ' ' + b.example + ' ' + b.why_it_matters)
+                        .toLowerCase().includes(query)));
+                if (count) count.textContent = `${filtered.length} of ${items.length} bias types shown`;
+                grid.innerHTML = filtered.map((b, i) => `<div class="bias-card" style="animation-delay:${Math.min(i * 0.03, 0.6)}s">
+                    <span class="cat">${b.category}</span>
+                    <h4>${b.name}</h4>
+                    <p>${b.definition}</p>
+                    <p><em>Example:</em> ${b.example}</p>
+                    <p class="why">Why it matters: ${b.why_it_matters}</p>
+                    ${b.measured_here ? '<span class="measured">● Measured live by StreamLens</span>' : ''}
+                </div>`).join('') || '<div class="bias-card"><p>No bias types match your search.</p></div>';
+            },
+
+            updateSliderReadout() {
+                const year = this.state.year;
+                const yearProgress = (year - 2015) / 11;
+                const eras = [
+                    [2015, 'Early streaming catalog era'],
+                    [2018, 'Streaming wars ramp-up'],
+                    [2020, 'Lockdown viewing boom'],
+                    [2022, 'Peak-TV consolidation'],
+                    [2024, 'Algorithmic curation era'],
+                    [2026, 'Present day']
+                ];
+                let era = eras[0][1];
+                eras.forEach(([y, label]) => { if (year >= y) era = label; });
+                const eraEl = document.getElementById('eraLabel');
+                if (eraEl) eraEl.textContent = era;
+                const parity = 0.35 + yearProgress * 0.32;
+                const diversity = 45 + yearProgress * 33.4;
+                const p = document.getElementById('sliderParity');
+                const d = document.getElementById('sliderDiversity');
+                const delta = document.getElementById('sliderDelta');
+                if (p) p.textContent = parity.toFixed(2);
+                if (d) d.textContent = diversity.toFixed(1) + '%';
+                if (delta) delta.textContent = '+' + (diversity - 45).toFixed(1) + ' pts diversity';
             },
 
             spawnParticles() {
@@ -1386,6 +1595,56 @@
                 }
             },
 
+            resetExploreFilters() {
+                ['explorePlatform', 'exploreGenre', 'exploreMedia', 'exploreYear'].forEach(id => {
+                    const el = document.getElementById(id);
+                    if (el) el.value = '';
+                });
+                const limit = document.getElementById('exploreLimit');
+                if (limit) limit.value = '25';
+                this.loadExploreData();
+            },
+
+            renderMediaDonut(rows) {
+                const canvas = document.getElementById('mediaDonut');
+                if (!canvas || typeof Chart === 'undefined') return;
+                if (this.charts.mediaDonut) this.charts.mediaDonut.destroy();
+                const palette = ['#6c5ce7', '#ff6ea8', '#ffb84d', '#4dd4c0', '#74b9ff', '#a29bfe',
+                                 '#fd79a8', '#fdcb6e', '#55efc4', '#81ecec', '#e17055'];
+                this.charts.mediaDonut = new Chart(canvas, {
+                    type: 'doughnut',
+                    data: {
+                        labels: rows.map(m => m.media_type.replace('_', ' ')),
+                        datasets: [{
+                            data: rows.map(m => m.sample_size),
+                            backgroundColor: palette.slice(0, rows.length),
+                            borderWidth: 2,
+                            borderColor: getComputedStyle(document.body).getPropertyValue('--primary-surface'),
+                            hoverOffset: 14
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        animation: { animateRotate: true, animateScale: true, duration: 900 },
+                        plugins: {
+                            legend: {
+                                position: 'right',
+                                labels: { color: getComputedStyle(document.body).getPropertyValue('--primary-text') }
+                            },
+                            tooltip: {
+                                callbacks: {
+                                    label: (ctx) => {
+                                        const total = rows.reduce((s, m) => s + m.sample_size, 0);
+                                        return ` ${ctx.label}: ${ctx.raw.toLocaleString()} characters (${(ctx.raw / total * 100).toFixed(1)}%)`;
+                                    }
+                                }
+                            }
+                        }
+                    }
+                });
+            },
+
             async loadMediaTable() {
                 const body = document.getElementById('mediaTableBody');
                 if (!body) return;
@@ -1394,6 +1653,7 @@
                     if (!res.ok) throw new Error();
                     const rows = await res.json();
                     if (!rows.length) throw new Error();
+                    this.renderMediaDonut(rows);
                     body.innerHTML = rows.map(m => `<tr>
                         <td>${m.media_type.replace('_', ' ')}</td>
                         <td>${m.diversity.toFixed(3)}</td>
@@ -1516,6 +1776,7 @@
                 document.getElementById('yearRange').addEventListener('input', (e) => {
                     this.state.year = parseInt(e.target.value);
                     document.getElementById('yearValue').textContent = e.target.value;
+                    this.updateSliderReadout();
                     this.updateAllVisualizations();
                 });
 
@@ -2057,11 +2318,34 @@
         };
 
         // ==================== TAB NAVIGATION ====================
+        const STORY = {
+            dashboard: ['Act I — The Question', 'Who gets to be the story?',
+                'Streaming reaches billions of hours of attention every day. The faces, voices, and lives on screen quietly teach us who counts as a hero, an expert, a love interest — or background. Use the controls below to interrogate a decade of patterns yourself.'],
+            explore: ['Act II — The Evidence', 'Every metric starts as a row of data.',
+                'No summary should be taken on faith. This is the character-level dataset behind every number in the app — filter it by platform, genre, media type, and year, and check the aggregates against the raw records yourself.'],
+            insights: ['Act III — The Findings', 'What the numbers actually say.',
+                'These findings are generated by the analysis pipeline from the current dataset — not written in advance. They quantify where representation is improving, where it stalls, and which gaps only appear when you look at intersections.'],
+            library: ['Act IV — The Patterns', 'Bias has names. Learn to spot them.',
+                'Over fifty documented bias patterns from media research, each explained in plain language: what it is, what it looks like on screen, and why it matters. The ones StreamLens can quantify are marked; the rest train your eye.'],
+            learn: ['Act V — The Methods', 'Trust the math because you understand it.',
+                'Every metric in this app is explained here — Shannon entropy, chi-square, homophily, intersectional ratios — with pointers into the actual source code so you can verify that what is claimed is what is computed.']
+        };
+
         function showTab(tab, button) {
             document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
             document.getElementById('tab-' + tab).classList.add('active');
             document.querySelectorAll('.nav-tab').forEach(b => b.classList.remove('active'));
             if (button) button.classList.add('active');
+            const story = STORY[tab];
+            if (story) {
+                const strip = document.getElementById('storyStrip');
+                document.getElementById('storyAct').textContent = story[0];
+                document.getElementById('storyTitle').textContent = story[1];
+                document.getElementById('storyText').textContent = story[2];
+                strip.style.animation = 'none';
+                void strip.offsetWidth;
+                strip.style.animation = '';
+            }
             if (tab === 'dashboard') {
                 StreamLensApp.updateAllVisualizations();
             }

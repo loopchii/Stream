@@ -15,6 +15,7 @@ from fastapi import FastAPI, HTTPException, Query
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import FileResponse, JSONResponse
 
+from bias_library import BIAS_LIBRARY, CATEGORIES
 from streamlens_processor import DataProcessor
 
 BASE_DIR = Path(__file__).resolve().parent
@@ -257,6 +258,15 @@ LEARN_CONTENT = [
         "try_it": "Read DataProcessor.generate_synthetic_data to see exactly how each field is produced.",
     },
 ]
+
+
+@app.get("/api/bias-library")
+def bias_library(category: Optional[str] = None):
+    """Library of 50+ documented bias types; optional ?category= filter"""
+    items = BIAS_LIBRARY
+    if category:
+        items = [b for b in items if b["category"] == category]
+    return {"total": len(items), "categories": CATEGORIES, "items": items}
 
 
 @app.get("/api/learn")
