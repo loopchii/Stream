@@ -29,7 +29,7 @@ app = FastAPI(
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["*"],
-    allow_methods=["GET"],
+    allow_methods=["GET", "POST"],
     allow_headers=["*"],
 )
 
@@ -61,9 +61,13 @@ class AnalysisCache:
         return cached
 
     def dataframe(self) -> pd.DataFrame:
-        if self._df is None:
+        with self._lock:
+            df = self._df
+        if df is None:
             self.run()
-        return self._df
+            with self._lock:
+                df = self._df
+        return df
 
 
 cache = AnalysisCache()

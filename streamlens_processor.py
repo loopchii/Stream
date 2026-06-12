@@ -399,7 +399,8 @@ class DataProcessor:
                     (platform_data['role_type'] == 'lead')
                 ].shape[0] / platform_data[platform_data['role_type'] == 'lead'].shape[0])
                 if platform_data[platform_data['role_type'] == 'lead'].shape[0] > 0 else 0,
-                'avg_screen_time_disparity': platform_data.groupby('gender')['screen_time'].mean().std()
+                'avg_screen_time_disparity': float(np.nan_to_num(
+                    platform_data.groupby('gender')['screen_time'].mean().std()))
             })
 
         results['platform_comparison'] = pd.DataFrame(platform_metrics).to_dict('records')

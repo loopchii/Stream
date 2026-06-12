@@ -3,7 +3,7 @@
 <div align="center">
 
 [![Mathematical Framework](https://img.shields.io/badge/Mathematical%20Framework-Advanced%20Bias%20Detection-FFE4E1?style=for-the-badge)](https://github.com/Cazzy-Aporbo/StreamLens-Analytics)
-[![Data Analysis](https://img.shields.io/badge/Data%20Analysis-2015--2024%20Media-E6E6FA?style=for-the-badge)](https://github.com/Cazzy-Aporbo/StreamLens-Analytics)
+[![Data Analysis](https://img.shields.io/badge/Data%20Analysis-2015--2026%20Media-E6E6FA?style=for-the-badge)](https://github.com/Cazzy-Aporbo/StreamLens-Analytics)
 [![Interactive Dashboard](https://img.shields.io/badge/Interactive%20Dashboard-Real--time%20Visualizations-F0F8FF?style=for-the-badge)](https://github.com/Cazzy-Aporbo/StreamLens-Analytics)
 
 </div>
@@ -37,7 +37,7 @@
 
 > **My Philosophy for This Project:** Media representation should be measurable, patterns should be visible, and bias should be quantifiable. If we can't measure it, we can't fix it.
 
-I designed StreamLens Analytics because I noticed something troubling: everyone talks about representation in media, but few actually quantify it. This framework uses advanced mathematics and machine learning to reveal bias patterns that traditional analysis misses. In testing, it identified systematic disparities across all major streaming platforms that simple demographic counts completely overlooked. This project began September 2024, and is a work in progress. 
+I designed StreamLens Analytics because I noticed something troubling: everyone talks about representation in media, but few actually quantify it. This framework uses information theory, statistical testing, and network analysis to surface bias patterns that simple demographic counts miss. It currently runs on a clearly-labeled synthetic dataset (seeded and reproducible) so every metric, chart, and insight can be traced back to code you can read. This project began September 2024, and is a work in progress. 
 
 <div align="center">
   
@@ -49,9 +49,11 @@ I designed StreamLens Analytics because I noticed something troubling: everyone 
 
 ## What This Actually Does
 
-StreamLens analyzes representation across streaming media from 2015 to 2024, but not in the way you might expect. Instead of just counting demographics (which everyone does), I developed a mathematical framework that detects subtle patterns: dialogue distribution, character network clustering, role typecasting, and temporal evolution of bias. The result? A comprehensive picture of who gets to tell stories and how those stories are told.
+StreamLens models representation across streaming media from 2015 to 2026. Instead of just counting demographics (which everyone does), it computes a framework of measurable signals: dialogue distribution (chi-square), character network clustering (homophily/assortativity), role typecasting, screen-time and sentiment gaps, intersectional representation ratios, and temporal evolution of bias.
 
-The interactive dashboard lets you explore these patterns yourself. Every bubble, line, and network node represents real data about real disparities. You can filter by platform, genre, and year to see exactly where progress is happening (spoiler: it's slower than you think).
+**Honesty note:** the dataset is synthetic — generated with a fixed random seed (`np.random.seed(42)`) and shaped to mirror patterns reported in media-representation research. It is ideal for learning and demonstrating the methods; it is not a measurement of real shows. Every screen in the app discloses this.
+
+The interactive dashboard lets you explore these patterns yourself across five screens — Dashboard, Explore Data, Insights, a 57-entry Bias Library, and Learn — filtering by platform, genre, media type, and year.
 
 <div align="center">
   
@@ -70,9 +72,9 @@ The interactive dashboard lets you explore these patterns yourself. Every bubble
 <td><strong>Why I Chose It</strong></td>
 </tr>
 <tr>
-<td><strong>Bias Quantification</strong></td>
-<td>B(X,Y) = D_KL(P(X|Y) || P(X)) + λ·H(X,Y)</td>
-<td>Kullback-Leibler divergence captures how representation deviates from population baselines</td>
+<td><strong>Dialogue Bias</strong></td>
+<td>Chi-square test on word counts by group</td>
+<td>Tests whether dialogue is distributed evenly across demographics, with a p-value</td>
 </tr>
 <tr style="background-color:#F0F8FF;">
 <td><strong>Diversity Index</strong></td>
@@ -86,13 +88,13 @@ The interactive dashboard lets you explore these patterns yourself. Every bubble
 </tr>
 <tr style="background-color:#FFF0F5;">
 <td><strong>Intersectionality Score</strong></td>
-<td>Product of group ratios vs population</td>
+<td>Group share vs a uniform 1/45 baseline (3 genders × 5 races × 3 age bands)</td>
 <td>Captures compound effects when multiple identities intersect</td>
 </tr>
 <tr>
 <td><strong>Network Homophily</strong></td>
-<td>Assortativity coefficient for demographics</td>
-<td>Reveals if characters only interact with similar demographics (spoiler: they do)</td>
+<td>NetworkX attribute assortativity coefficient</td>
+<td>Reveals whether characters interact mostly with similar demographics</td>
 </tr>
 </table>
 
@@ -104,48 +106,50 @@ The interactive dashboard lets you explore these patterns yourself. Every bubble
 
 </div>
 
-## Machine Learning Pipeline
+## Analysis Pipeline (What Actually Runs)
 
 <details>
-<summary><strong>Six algorithms working together (because one wasn't enough):</strong></summary>
+<summary><strong>The methods implemented in <code>streamlens_processor.py</code>:</strong></summary>
 
 <table>
 <tr style="background-color:#E6E6FA;">
-<td><strong>Algorithm</strong></td>
-<td><strong>Why This One</strong></td>
-<td><strong>What It Found</strong></td>
+<td><strong>Method</strong></td>
+<td><strong>Where</strong></td>
+<td><strong>What It Computes</strong></td>
 </tr>
 <tr>
-<td><strong>Random Forest</strong></td>
-<td>Handles non-linear patterns without assumptions</td>
-<td>Genre is the strongest predictor of bias (OOB accuracy: 87.3%)</td>
+<td><strong>Shannon Entropy</strong></td>
+<td><code>calculate_diversity_index</code></td>
+<td>Normalized diversity index over demographic distributions</td>
 </tr>
 <tr style="background-color:#FFE4E1;">
-<td><strong>Gradient Boosting</strong></td>
-<td>Catches subtle interactions other methods miss</td>
-<td>Platform-genre combinations create compound bias effects</td>
+<td><strong>Chi-Square Test</strong></td>
+<td><code>detect_dialogue_bias</code></td>
+<td>Whether dialogue word counts deviate from an even split (gender and race)</td>
 </tr>
 <tr>
-<td><strong>Neural Networks</strong></td>
-<td>Models complex hierarchical relationships</td>
-<td>4-layer architecture revealed hidden demographic clusters</td>
+<td><strong>Intersectionality Ratios</strong></td>
+<td><code>calculate_intersectionality_score</code></td>
+<td>Each gender×race×age group's share vs a uniform baseline</td>
 </tr>
 <tr style="background-color:#F0F8FF;">
-<td><strong>Gaussian Processes</strong></td>
-<td>Provides uncertainty estimates with predictions</td>
-<td>High confidence in bias detection (95% CI coverage)</td>
+<td><strong>Network Analysis</strong></td>
+<td><code>build_character_network</code>, <code>detect_homophily</code></td>
+<td>Character interaction graph, centrality, assortativity by demographic</td>
 </tr>
 <tr>
-<td><strong>Decision Trees</strong></td>
-<td>Creates human-readable rules</td>
-<td>If action genre AND lead role, then 73% chance of male character</td>
+<td><strong>Role Stereotyping</strong></td>
+<td><code>detect_role_stereotyping</code></td>
+<td>Over/under-representation of demographics in lead vs supporting roles</td>
 </tr>
 <tr style="background-color:#FAFAD2;">
-<td><strong>Isolation Forest</strong></td>
-<td>Finds anomalies in representation patterns</td>
-<td>5% of productions are statistical outliers (in good and bad ways)</td>
+<td><strong>Bias Dimensions</strong></td>
+<td><code>process_data</code></td>
+<td>Age, sentiment, and screen-time bias as group deviations from overall means</td>
 </tr>
 </table>
+
+No machine-learning models are trained in this pipeline — every number is a transparent statistical computation you can step through in the source.
 
 </details>
 
@@ -213,45 +217,49 @@ Interactive API docs are available at `http://localhost:8000/docs`.
 
 </div>
 
-## What I Found (Spoiler: It's Not Great)
+## What the Pipeline Surfaces
+
+Findings are generated live from the current dataset by `/api/insights` — they are computed, not pre-written. On the default seeded dataset the pipeline surfaces patterns like:
 
 <table>
 <tr style="background-color:#FFE4E1;">
-<td><strong>Finding</strong></td>
-<td><strong>The Numbers</strong></td>
-<td><strong>What This Means</strong></td>
+<td><strong>Signal</strong></td>
+<td><strong>How It's Measured</strong></td>
+<td><strong>Where to See It</strong></td>
 </tr>
 <tr>
-<td><strong>Action Genre Bias</strong></td>
-<td>73% male leads</td>
-<td>Basically unchanged since 2015 despite industry promises</td>
+<td><strong>Gender lead gap</strong></td>
+<td>Lead-role share by gender, per genre and platform</td>
+<td>Dashboard bubble chart, Insights tab</td>
 </tr>
 <tr style="background-color:#F0F8FF;">
-<td><strong>Dialogue Gap</strong></td>
-<td>34% less for female characters</td>
-<td>Even when on screen, women speak less</td>
+<td><strong>Dialogue gap</strong></td>
+<td>Chi-square on dialogue word counts by gender and race</td>
+<td>Insights → Bias Breakdown</td>
 </tr>
 <tr>
-<td><strong>Age Discrimination</strong></td>
-<td>68% fewer roles for 50+</td>
-<td>Hollywood's age problem is mathematically provable</td>
+<td><strong>Age representation</strong></td>
+<td>Share of 50+ characters and their dialogue deviation</td>
+<td>Insights tab, time series</td>
 </tr>
 <tr style="background-color:#FFF0F5;">
-<td><strong>Intersectional Representation</strong></td>
-<td>12% women of color in leads</td>
-<td>Versus 20% of US population</td>
+<td><strong>Intersectional gaps</strong></td>
+<td>Gender×race×age group shares vs uniform baseline</td>
+<td>Insights → Intersectionality table</td>
 </tr>
 <tr>
-<td><strong>Progress Rate</strong></td>
-<td>3.2% improvement per year</td>
-<td>At this rate, parity arrives in 2034</td>
+<td><strong>Network homophily</strong></td>
+<td>Assortativity of the character interaction graph</td>
+<td>Dashboard network graph</td>
 </tr>
 <tr style="background-color:#FAFAD2;">
-<td><strong>Best Platform</strong></td>
-<td>Apple TV+ (7.8/10 diversity)</td>
-<td>Quality over quantity strategy shows in numbers</td>
+<td><strong>Temporal trends</strong></td>
+<td>Year-over-year diversity and parity, 2015–2026</td>
+<td>Year slider with era readouts, time series</td>
 </tr>
 </table>
+
+Because the data is synthetic, treat the exact values as demonstrations of the method — not real-world measurements.
 
 <div align="center">
   
@@ -264,7 +272,14 @@ Interactive API docs are available at `http://localhost:8000/docs`.
 ## The Interactive Dashboard
 
 <details>
-<summary><strong>Four visualizations that actually tell a story:</strong></summary>
+<summary><strong>Five screens with a story arc (Act I–V), plus the core visualizations:</strong></summary>
+
+### The Screens
+- **Dashboard (Act I)** — live stat cards, year slider with era readouts, bubble chart, 3D representation landscape, network graph, time series, radar chart
+- **Explore Data (Act II)** — the raw character-level records behind every metric, filterable by platform, genre, media type, and year; media-mix donut
+- **Insights (Act III)** — findings generated by the pipeline, plus the bias breakdown and intersectionality tables
+- **Bias Library (Act IV)** — 57 documented bias types across 8 categories, searchable, with the ones StreamLens quantifies marked
+- **Learn (Act V)** — plain-language explanations of every metric, with pointers into the source code
 
 ### Bubble Chart: The Big Picture
 Each bubble is a platform-genre combination with its own color. I spent way too long on the color system, but now you can instantly see patterns:
@@ -277,7 +292,7 @@ Each bubble is a platform-genre combination with its own color. I spent way too 
 This one surprised me. Characters cluster by demographics even within the same show. Drag the nodes around and watch how they're connected. The clustering is so strong it's actually depressing.
 
 ### Time Series: Are Things Getting Better?
-Four metrics tracked over 10 years. Short answer: yes, but slowly. Gender parity improves steadily, age representation is getting worse, LGBTQ+ visibility started from basically zero.
+Four metrics tracked across 2015–2026. In the synthetic dataset, gender parity and diversity improve gradually year over year — mirroring the slow-progress pattern reported in representation research.
 
 ### Radar Chart: Character Archetypes
 Shows which demographics get which roles. Men dominate protagonists and antagonists, women are overrepresented as romantic interests, non-binary characters barely register. The pattern is consistent across all platforms.
@@ -295,29 +310,26 @@ Shows which demographics get which roles. Men dominate protagonists and antagoni
 ## How to Use This for Your Own Analysis
 
 ```python
-from streamlens import StreamLens
+from streamlens_processor import DataProcessor
 
-# Initialize the analyzer
-analyzer = StreamLens()
+processor = DataProcessor()
 
-# Load your data (CSV, JSON, or pandas DataFrame)
-analyzer.load_data('your_media_data.csv')
+# Generate the seeded synthetic dataset (or substitute your own DataFrame
+# with the same columns: platform, genre, media_type, year, gender, race,
+# age_group, role_type, screen_time, dialogue_words, sentiment_score)
+df = processor.generate_synthetic_data(n_samples=5000)
 
 # Run the full analysis pipeline
-results = analyzer.analyze(
-    metrics=['representation', 'sentiment', 'networks'],
-    platforms=['netflix', 'hbo_max'],  # or 'all'
-    years=range(2020, 2025)
-)
+results = processor.process_data(df)
+print(results['overall_metrics'])          # diversity_index, gender_parity, …
+print(results['bias_detection'].keys())    # dialogue, age, sentiment, screen time …
 
-# Get human-readable insights
-insights = analyzer.generate_insights(results)
-print(f"Diversity Score: {insights.diversity_score:.2f}")
-print(f"Gender Parity: {insights.gender_parity:.2f}")
-print(f"Key Patterns: {insights.patterns}")
+# Human-readable findings
+for insight in processor.generate_insights(df, results):
+    print(insight['title'], '—', insight['detail'])
 
-# Export for further analysis
-results.to_csv('bias_analysis_results.csv')
+# Export everything as JSON (also what the API serves)
+processor.export_results(results, filename='analysis_results.json')
 ```
 
 <div align="center">
@@ -336,6 +348,7 @@ StreamLens-Analytics/
 ├── index.html                    # The interactive dashboard (start here)
 ├── app.py                        # FastAPI server (dashboard + REST API)
 ├── streamlens_processor.py       # Main processing pipeline
+├── bias_library.py               # 57 documented bias types served at /api/bias-library
 ├── StreamLen_processors.ipynb    # Jupyter notebook with full analysis
 ├── streaming-bias-index.html     # Legacy static dashboard
 ├── analysis_results.json         # Latest exported analysis results
@@ -357,39 +370,39 @@ StreamLens-Analytics/
 
 </div>
 
-## Data Sources and Methods
+## Data and Methods
 
 <table>
 <tr style="background-color:#E6E6FA;">
-<td><strong>Data Source</strong></td>
-<td><strong>What I Got</strong></td>
-<td><strong>How I Validated It</strong></td>
+<td><strong>Aspect</strong></td>
+<td><strong>What It Is</strong></td>
+<td><strong>Why</strong></td>
 </tr>
 <tr>
-<td><strong>TMDb API</strong></td>
-<td>Metadata for 200,000+ titles</td>
-<td>Cross-referenced with IMDb for accuracy</td>
+<td><strong>Dataset</strong></td>
+<td>Synthetic, generated in <code>generate_synthetic_data()</code> with <code>np.random.seed(42)</code></td>
+<td>Fully reproducible; every chart can be traced to the generating code</td>
 </tr>
 <tr style="background-color:#FFE4E1;">
-<td><strong>OpenSubtitles</strong></td>
-<td>2.3 million lines of dialogue</td>
-<td>Manual spot checks, automated language detection</td>
+<td><strong>Scope</strong></td>
+<td>5,000 characters by default · 6 platforms · 6 genres · 11 media types · 2015–2026</td>
+<td>Re-runnable at 1,000–25,000 samples from the dashboard or <code>POST /api/analyze</code></td>
 </tr>
 <tr>
-<td><strong>Wikidata</strong></td>
-<td>Verified demographic information</td>
-<td>Only used data with citations</td>
+<td><strong>Shape</strong></td>
+<td>Distributions mirror patterns reported in media-representation research, improving gradually by year</td>
+<td>Demonstrates the methods on realistic structure without claiming real measurements</td>
 </tr>
 <tr style="background-color:#F0F8FF;">
-<td><strong>Platform APIs</strong></td>
-<td>Viewing metrics where available</td>
-<td>Weighted by actual viewership when possible</td>
+<td><strong>Bias Library</strong></td>
+<td>57 named bias types with conceptual definitions and examples; no invented statistics</td>
+<td>Field knowledge stays truthful — definitions describe documented concepts only</td>
 </tr>
 </table>
 
 ### Statistical Rigor
 
-I use bootstrap confidence intervals (1000 iterations) for all metrics because normal assumptions don't hold for this data. Multiple comparison correction (Benjamini-Hochberg) prevents false discoveries. Difference-in-differences isolates causal effects of platform interventions. Cross-validation ensures the models generalize beyond the training data.
+The pipeline uses a chi-square goodness-of-fit test for dialogue distribution (with p-values), normalized Shannon entropy for diversity, attribute assortativity for network homophily, and deviation-from-mean comparisons for age, sentiment, and screen-time bias. There are no trained models, bootstraps, or causal estimators in the current codebase — and the README won't pretend otherwise.
 
 <div align="center">
   
@@ -401,11 +414,9 @@ I use bootstrap confidence intervals (1000 iterations) for all metrics because n
 
 ## Why This Matters
 
-Media shapes culture. When 73% of action heroes are male, when women of color get 12% of lead roles, when characters over 50 disappear from screens, it sends a message about whose stories matter. This isn't about quotas or political correctness. It's about accurately reflecting the world we live in.
+Media shapes culture. When most action heroes are male, when women of color rarely hold lead roles, when characters over 50 fade from screens, it sends a message about whose stories matter. This isn't about quotas or political correctness. It's about accurately reflecting the world we live in.
 
-The good news? Some platforms are improving. Apple TV+ and HBO Max show that quality content and diversity aren't mutually exclusive. The bad news? At current rates of change, my calculations show we won't reach parity until 2034.
-
-This project makes these patterns visible and measurable. Because the first step to fixing a problem is proving it exists.
+StreamLens exists to make those patterns measurable — and to teach the measuring. The Bias Library names 57 documented patterns so you can spot them; the Learn tab explains the math so you can verify it; the Explore tab hands you the raw rows so you never have to take a summary on faith. Because the first step to fixing a problem is proving it exists.
 
 <div align="center">
   
@@ -424,7 +435,7 @@ I'd love help making this better. Areas where I particularly need assistance:
 - **Visualization**: Making complex patterns more intuitive
 - **Documentation**: Explaining the math in simpler terms
 
-Check out [CONTRIBUTING.md](CONTRIBUTING.md) for guidelines. Fair warning: I'm particular about code quality, but I promise helpful code reviews.
+Check out [contributing.md](contributing.md) for guidelines. Fair warning: I'm particular about code quality, but I promise helpful code reviews.
 
 <div align="center">
   
@@ -444,28 +455,28 @@ Check out [CONTRIBUTING.md](CONTRIBUTING.md) for guidelines. Fair warning: I'm p
 </tr>
 <tr>
 <td><strong>Processing Speed</strong></td>
-<td>< 5 seconds for full dataset</td>
-<td>Optimized pandas operations, vectorized calculations</td>
+<td>A few seconds for the default 5,000-sample run</td>
+<td>Vectorized pandas operations</td>
 </tr>
 <tr style="background-color:#F0F8FF;">
-<td><strong>Model Accuracy</strong></td>
-<td>87.3% bias detection</td>
-<td>Ensemble averaging improves individual model performance</td>
+<td><strong>Test Coverage</strong></td>
+<td>35 pytest tests (pipeline + API)</td>
+<td>Run with <code>pytest tests -q</code>; CI on Python 3.11/3.12</td>
 </tr>
 <tr>
 <td><strong>Data Coverage</strong></td>
-<td>47,000+ productions analyzed</td>
-<td>Comprehensive coverage of major platforms</td>
+<td>5,000 synthetic characters by default (1,000–25,000 configurable)</td>
+<td>6 platforms × 6 genres × 11 media types</td>
 </tr>
 <tr style="background-color:#FFF0F5;">
 <td><strong>Temporal Range</strong></td>
-<td>10 years (2015-2024)</td>
-<td>Captures full streaming era evolution</td>
+<td>12 years (2015–2026)</td>
+<td>Captures the streaming era through the present</td>
 </tr>
 <tr>
-<td><strong>Interactive Response</strong></td>
-<td>< 100ms for chart updates</td>
-<td>Efficient D3.js and Plotly implementations</td>
+<td><strong>Visualization Stack</strong></td>
+<td>D3.js, Plotly (incl. 3D), Chart.js</td>
+<td>Single-file dashboard, no build step</td>
 </tr>
 </table>
 
