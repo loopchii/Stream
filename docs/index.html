@@ -1007,6 +1007,97 @@
         }
         .effect-v { font-size: 0.78rem; color: var(--primary-text-dim); margin-top: 0.2rem; }
     </style>
+
+    <script>
+    /* Static GitHub Pages shim: serve baked analysis JSON instead of a live API. */
+    (function () {
+        var BASE = 'data/';
+        var state = { n: '5000' };
+        var SIZES = ['1000', '5000', '10000', '25000'];
+        function J(obj, status) {
+            return new Response(JSON.stringify(obj), {
+                status: status || 200,
+                headers: { 'Content-Type': 'application/json' }
+            });
+        }
+        function load(path) { return fetch(BASE + path).then(function (r) { return r.json(); }); }
+        function grade(s) {
+            var b = [[0.95, 'A+'], [0.90, 'A'], [0.85, 'A-'], [0.80, 'B+'], [0.75, 'B'],
+                     [0.70, 'B-'], [0.65, 'C+'], [0.60, 'C'], [0.55, 'C-'], [0.50, 'D+'],
+                     [0.45, 'D'], [0.40, 'D-']];
+            s = Math.max(0, Math.min(1, s));
+            for (var i = 0; i < b.length; i++) { if (s >= b[i][0]) return b[i][1]; }
+            return 'F';
+        }
+        var orig = window.fetch.bind(window);
+        window.fetch = function (input, init) {
+            var url = (typeof input === 'string') ? input : (input && input.url) || '';
+            var at = url.indexOf('/api/');
+            if (at === -1) return orig(input, init);
+            var path = url.slice(at), qs = {}, qi = path.indexOf('?');
+            if (qi !== -1) {
+                new URLSearchParams(path.slice(qi + 1)).forEach(function (v, k) { qs[k] = v; });
+                path = path.slice(0, qi);
+            }
+            if (path === '/api/health')
+                return Promise.resolve(J({ status: 'ok', service: 'streamlens-analytics', version: 'static' }));
+            if (path === '/api/analyze') {
+                var n = qs.n_samples || '5000';
+                if (SIZES.indexOf(n) === -1) n = '5000';
+                state.n = n;
+                return load('n' + n + '/overview.json').then(function (o) {
+                    return J({ overall_metrics: o, n_samples: Number(n) });
+                });
+            }
+            if (path === '/api/metrics/overview') return load('n' + state.n + '/overview.json').then(J);
+            if (path === '/api/metrics/genres') return load('n' + state.n + '/genres.json').then(J);
+            if (path === '/api/metrics/media') return load('n' + state.n + '/media.json').then(J);
+            if (path === '/api/metrics/bias') return load('n' + state.n + '/bias.json').then(J);
+            if (path === '/api/insights') return load('n' + state.n + '/insights.json').then(J);
+            if (path === '/api/metrics/intersectionality') return load('n' + state.n + '/intersectionality.json').then(J);
+            if (path === '/api/metrics/advanced') return load('n' + state.n + '/advanced.json').then(J);
+            if (path === '/api/metrics/scorecard') return load('n' + state.n + '/advanced.json').then(function (a) { return J(a.scorecard); });
+            if (path === '/api/learn') return load('learn.json').then(J);
+            if (path === '/api/bias-library') {
+                return load('bias-library.json').then(function (d) {
+                    if (qs.category) {
+                        var items = d.items.filter(function (b) { return b.category === qs.category; });
+                        return J({ total: items.length, categories: d.categories, items: items });
+                    }
+                    return J(d);
+                });
+            }
+            if (path === '/api/characters') {
+                return load('n' + state.n + '/characters.json').then(function (rows) {
+                    var out = rows.filter(function (r) {
+                        if (qs.platform && r.platform !== qs.platform) return false;
+                        if (qs.genre && r.genre !== qs.genre) return false;
+                        if (qs.media_type && r.media_type !== qs.media_type) return false;
+                        if (qs.year && String(r.year) !== String(qs.year)) return false;
+                        return true;
+                    });
+                    return J(out.slice(0, parseInt(qs.limit || '100', 10)));
+                });
+            }
+            if (path === '/api/simulate/parity') {
+                var fr = parseFloat(qs.female_ratio || '0.5');
+                var parity = 1 - Math.abs(0.5 - fr) * 2, verdict;
+                if (parity >= 0.9) verdict = 'At or near a 50/50 cast \u2014 parity is effectively balanced.';
+                else if (parity >= 0.7) verdict = 'A visible but moderate skew toward one gender.';
+                else if (parity >= 0.4) verdict = 'A strong imbalance; one gender dominates the cast.';
+                else verdict = 'Near-total dominance by one gender.';
+                return Promise.resolve(J({
+                    female_ratio: Math.round(fr * 1e4) / 1e4,
+                    male_ratio: Math.round((1 - fr) * 1e4) / 1e4,
+                    parity: Math.round(parity * 1e4) / 1e4,
+                    grade: grade(parity), verdict: verdict
+                }));
+            }
+            if (path === '/api/results' || path === '/api/export') return load('n5000/results.json').then(J);
+            return Promise.resolve(J({ detail: 'Not found in static build' }, 404));
+        };
+    })();
+    </script>
 </head>
 <body>
     <div class="loading-indicator" id="loadingIndicator">Updating visualizations...</div>
@@ -1120,7 +1211,7 @@
                 </select>
             </div>
             <button class="action-btn" id="runAnalysisBtn" onclick="StreamLensApp.runAnalysis()">Run New Analysis</button>
-            <a class="action-btn" href="/api/export" download style="text-decoration:none; display:inline-block;">Export Results (JSON)</a>
+            <a class="action-btn" href="data/n5000/results.json" download style="text-decoration:none; display:inline-block;">Export Results (JSON)</a>
             <span class="status-text" id="analysisStatus"></span>
         </div>
     </div>
