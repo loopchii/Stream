@@ -15,6 +15,18 @@ import networkx as nx
 from sklearn.ensemble import RandomForestClassifier, GradientBoostingClassifier
 from sklearn.preprocessing import RobustScaler
 import warnings
+
+from advanced_metrics import (
+    bootstrap_ci,
+    cramers_v_goodness_of_fit,
+    gini,
+    letter_grade,
+    linear_trend,
+    lorenz_points,
+    simpson_index,
+    theil_index,
+)
+
 warnings.filterwarnings('ignore', category=FutureWarning)
 
 # Note: Removed spaCy and transformers imports to avoid dependency conflicts
@@ -461,10 +473,133 @@ class DataProcessor:
             'density': nx.density(graph) if graph.number_of_nodes() > 1 else 0,
         }
 
+        # Advanced quantitative layer (inequality, effect sizes, trends, scorecard)
+        results['advanced_metrics'] = self.compute_advanced_metrics(df, results)
+
         # Generated narrative insights
         results['insights'] = self.generate_insights(df, results)
 
         return results
+
+    def compute_advanced_metrics(self, df: pd.DataFrame, results: Dict) -> Dict:
+        """Premium analytics: inequality curves, effect sizes, trend regression,
+        bootstrap confidence intervals, and a platform letter-grade scorecard.
+
+        Every value here is computed live from ``df`` so the dashboard's
+        "Verdict" screen is reproducible and never hard-coded.
+        """
+        advanced: Dict = {}
+
+        # --- Inequality: how concentrated are screen time and dialogue? ---
+        screen = df['screen_time'].tolist()
+        dialogue = df['dialogue_words'].tolist()
+        advanced['inequality'] = {
+            'screen_time': {
+                'gini': gini(screen),
+                'theil': theil_index(screen),
+                'lorenz': lorenz_points(screen),
+            },
+            'dialogue': {
+                'gini': gini(dialogue),
+                'theil': theil_index(dialogue),
+                'lorenz': lorenz_points(dialogue),
+            },
+        }
+
+        # --- Diversity, beyond Shannon: Simpson on each demographic axis ---
+        advanced['diversity_detail'] = {
+            'race_shannon': results['overall_metrics']['diversity_index'],
+            'race_simpson': simpson_index(df['race'].tolist()),
+            'gender_simpson': simpson_index(df['gender'].tolist()),
+            'age_simpson': simpson_index(df['age_group'].tolist()),
+        }
+
+        # --- Effect sizes: how big is each dialogue skew (not just "significant")? ---
+        advanced['effect_sizes'] = {
+            'gender_dialogue': cramers_v_goodness_of_fit(
+                df.groupby('gender')['dialogue_words'].sum().tolist()),
+            'age_dialogue': cramers_v_goodness_of_fit(
+                df.groupby('age_group')['dialogue_words'].sum().tolist()),
+            'racial_dialogue': cramers_v_goodness_of_fit(
+                df.groupby('race')['dialogue_words'].sum().tolist()),
+        }
+
+        # --- Trend regression over the full year range (slope + R^2) ---
+        temporal = results['temporal_analysis']
+        years = [row['year'] for row in temporal]
+        advanced['trend'] = {
+            'gender_parity': linear_trend(years, [row['gender_parity'] for row in temporal]),
+            'diversity': linear_trend(years, [row['diversity'] for row in temporal]),
+            'series': temporal,
+        }
+
+        # --- Bootstrap 95% CIs for the headline metrics (honest uncertainty) ---
+        is_female = (df['gender'] == 'female').astype(int).to_numpy()
+        race_codes = df['race'].astype('category').cat.codes.to_numpy()
+
+        def _parity_stat(arr):
+            ratio = float(arr.mean()) if arr.size else 0.0
+            return 1.0 - abs(0.5 - ratio) * 2.0
+
+        def _shannon_stat(arr):
+            counts = np.bincount(arr.astype(int))
+            counts = counts[counts > 0]
+            total = counts.sum()
+            if total == 0 or len(counts) <= 1:
+                return 0.0
+            p = counts / total
+            return float(-(p * np.log(p)).sum() / np.log(len(counts)))
+
+        advanced['confidence'] = {
+            'gender_parity': bootstrap_ci(is_female, _parity_stat, n_boot=500),
+            'diversity': bootstrap_ci(race_codes, _shannon_stat, n_boot=500),
+        }
+
+        # --- Platform report card: grade every platform across four dimensions ---
+        advanced['scorecard'] = self._build_scorecard(df)
+
+        return advanced
+
+    def _build_scorecard(self, df: pd.DataFrame) -> Dict:
+        """Grade each platform A-F across diversity, parity, dialogue and
+        screen-time equity, plus an industry-wide aggregate row."""
+        dimensions = ['diversity', 'parity', 'dialogue_equity', 'screen_equity']
+
+        def score_subset(subset: pd.DataFrame) -> Dict:
+            diversity = self.analyzer.calculate_diversity_index(subset['race'].tolist())
+            parity = self.analyzer.calculate_gender_parity(
+                subset['gender'].value_counts().to_dict())
+            dialogue_by_gender = subset.groupby('gender')['dialogue_words'].mean()
+            male_d = float(dialogue_by_gender.get('male', 0.0))
+            female_d = float(dialogue_by_gender.get('female', 0.0))
+            if male_d > 0 and female_d > 0:
+                dialogue_equity = min(female_d, male_d) / max(female_d, male_d)
+            else:
+                dialogue_equity = 0.0
+            screen_equity = 1.0 - gini(subset['screen_time'].tolist())
+            scores = {
+                'diversity': round(float(diversity), 3),
+                'parity': round(float(parity), 3),
+                'dialogue_equity': round(float(dialogue_equity), 3),
+                'screen_equity': round(float(screen_equity), 3),
+            }
+            overall = sum(scores[d] for d in dimensions) / len(dimensions)
+            scores['overall'] = round(float(overall), 3)
+            scores['grade'] = letter_grade(overall)
+            scores['grades'] = {d: letter_grade(scores[d]) for d in dimensions}
+            scores['sample_size'] = int(len(subset))
+            return scores
+
+        platforms = []
+        for platform in sorted(df['platform'].unique()):
+            row = score_subset(df[df['platform'] == platform])
+            row['platform'] = platform
+            platforms.append(row)
+        platforms.sort(key=lambda r: r['overall'], reverse=True)
+
+        industry = score_subset(df)
+        industry['platform'] = 'industry'
+        return {'dimensions': dimensions, 'platforms': platforms, 'industry': industry}
 
     def generate_insights(self, df: pd.DataFrame, results: Dict) -> List[Dict]:
         """Generate human-readable findings from computed metrics"""

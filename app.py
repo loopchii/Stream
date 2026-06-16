@@ -15,6 +15,7 @@ from fastapi import FastAPI, HTTPException, Query
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import FileResponse, JSONResponse
 
+from advanced_metrics import letter_grade as grade_for
 from bias_library import BIAS_LIBRARY, CATEGORIES
 from streamlens_processor import DataProcessor
 
@@ -152,6 +153,44 @@ def intersectionality(limit: int = Query(default=10, ge=1, le=50)):
     return {
         "most_underrepresented": fmt[:limit],
         "most_overrepresented": fmt[-limit:][::-1],
+    }
+
+
+@app.get("/api/metrics/advanced")
+def advanced_metrics():
+    """Premium analytics: inequality (Gini/Lorenz/Theil), Simpson diversity,
+    chi-square effect sizes, trend regression and bootstrap confidence bands."""
+    return cache.results()["advanced_metrics"]
+
+
+@app.get("/api/metrics/scorecard")
+def scorecard():
+    """Per-platform A-F report card across four representation dimensions"""
+    return cache.results()["advanced_metrics"]["scorecard"]
+
+
+@app.get("/api/simulate/parity")
+def simulate_parity(female_ratio: float = Query(default=0.5, ge=0.0, le=1.0)):
+    """What-if: gender parity index and grade for a hypothetical female lead share.
+
+    parity = 1 - |0.5 - female_ratio| * 2. Pure formula, exposed so the
+    interactive simulator round-trips through the backend like every other control.
+    """
+    parity = 1.0 - abs(0.5 - female_ratio) * 2.0
+    if parity >= 0.9:
+        verdict = "At or near a 50/50 cast — parity is effectively balanced."
+    elif parity >= 0.7:
+        verdict = "A visible but moderate skew toward one gender."
+    elif parity >= 0.4:
+        verdict = "A strong imbalance; one gender dominates the cast."
+    else:
+        verdict = "Near-total dominance by one gender."
+    return {
+        "female_ratio": round(female_ratio, 4),
+        "male_ratio": round(1.0 - female_ratio, 4),
+        "parity": round(parity, 4),
+        "grade": grade_for(parity),
+        "verdict": verdict,
     }
 
 

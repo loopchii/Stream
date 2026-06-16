@@ -144,3 +144,44 @@ def test_export_has_download_header(client):
     res = client.get('/api/export')
     assert res.status_code == 200
     assert 'attachment' in res.headers['content-disposition']
+
+
+def test_advanced_metrics(client):
+    res = client.get('/api/metrics/advanced')
+    assert res.status_code == 200
+    body = res.json()
+    assert {'inequality', 'diversity_detail', 'effect_sizes',
+            'trend', 'confidence', 'scorecard'} <= set(body)
+    assert 0 <= body['inequality']['screen_time']['gini'] <= 1
+    assert body['inequality']['screen_time']['lorenz'][0] == {'p': 0.0, 'l': 0.0}
+
+
+def test_scorecard(client):
+    res = client.get('/api/metrics/scorecard')
+    assert res.status_code == 200
+    body = res.json()
+    assert len(body['platforms']) > 0
+    for row in body['platforms']:
+        assert 0 <= row['overall'] <= 1
+        assert row['grade']
+    overalls = [p['overall'] for p in body['platforms']]
+    assert overalls == sorted(overalls, reverse=True)
+
+
+def test_simulate_parity_balanced(client):
+    res = client.get('/api/simulate/parity', params={'female_ratio': 0.5})
+    assert res.status_code == 200
+    body = res.json()
+    assert body['parity'] == pytest.approx(1.0)
+    assert body['grade'] == 'A+'
+
+
+def test_simulate_parity_extreme(client):
+    res = client.get('/api/simulate/parity', params={'female_ratio': 0.0})
+    assert res.status_code == 200
+    assert res.json()['parity'] == pytest.approx(0.0)
+
+
+def test_simulate_parity_validates_range(client):
+    res = client.get('/api/simulate/parity', params={'female_ratio': 1.5})
+    assert res.status_code == 422
