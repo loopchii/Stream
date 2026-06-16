@@ -403,6 +403,72 @@
             border-radius: 2px;
         }
 
+        /* Info chip + hover tooltip: explains, in plain language, what a chart or
+           control shows and how it is computed. Injected onto headers/controls. */
+        .sl-info {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 1.05em;
+            height: 1.05em;
+            min-width: 1.05em;
+            font-size: 0.62em;
+            font-style: normal;
+            font-weight: 700;
+            line-height: 1;
+            color: var(--primary-bg);
+            background: var(--primary-accent);
+            border-radius: 50%;
+            cursor: help;
+            position: relative;
+            vertical-align: middle;
+            opacity: 0.78;
+            transition: opacity 0.2s ease, transform 0.2s ease;
+            user-select: none;
+        }
+        .sl-info:hover, .sl-info:focus { opacity: 1; transform: scale(1.12); outline: none; }
+        .sl-info .sl-tip {
+            visibility: hidden;
+            opacity: 0;
+            position: absolute;
+            bottom: 150%;
+            left: 50%;
+            transform: translateX(-50%) translateY(4px);
+            width: max-content;
+            max-width: 320px;
+            background: var(--primary-card, #1b1b2b);
+            color: var(--primary-text, #f4f4ff);
+            border: 1px solid var(--primary-accent);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.35);
+            padding: 0.6rem 0.75rem;
+            border-radius: 10px;
+            font-size: 1.18rem;
+            font-weight: 400;
+            font-style: normal;
+            line-height: 1.4;
+            text-align: left;
+            white-space: normal;
+            z-index: 50;
+            transition: opacity 0.18s ease, transform 0.18s ease, visibility 0.18s;
+            pointer-events: none;
+        }
+        .sl-info:hover .sl-tip, .sl-info:focus .sl-tip {
+            visibility: visible;
+            opacity: 1;
+            transform: translateX(-50%) translateY(0);
+        }
+        .sl-info .sl-tip::after {
+            content: '';
+            position: absolute;
+            top: 100%;
+            left: 50%;
+            transform: translateX(-50%);
+            border: 6px solid transparent;
+            border-top-color: var(--primary-accent);
+        }
+        .sl-info.sl-info-sm { font-size: 0.85rem; width: 1.3em; height: 1.3em; min-width: 1.3em; }
+        label .sl-info { margin-left: 0.4rem; }
+
         .viz-explanation {
             background: var(--primary-bg);
             padding: 1rem;
@@ -1007,6 +1073,114 @@
         }
         .effect-v { font-size: 0.78rem; color: var(--primary-text-dim); margin-top: 0.2rem; }
     </style>
+    <script>
+    /*
+     * Static-host shim. On a static host (GitHub Pages / file://) there is no
+     * Python backend, so the dashboard's fetch('/api/...') calls are served from
+     * pre-computed JSON in ./data/ (baked by build_static.py from the exact same
+     * pipeline the API uses - identical numbers, nothing hand-written). On
+     * localhost (python app.py) the shim stays inert and the real API is used.
+     * Force on/off for testing with ?static=1 / ?static=0.
+     */
+    (function () {
+        var q = new URLSearchParams(location.search), f = q.get('static');
+        var STATIC = f === '1' ? true
+            : f === '0' ? false
+            : (location.protocol === 'file:' || /\.github\.io$/.test(location.hostname));
+        window.STREAMLENS_STATIC = STATIC;
+        if (!STATIC) return;
+
+        var BASE = 'data/';
+        var state = { n: '5000' };
+        var SIZES = ['1000', '5000', '10000', '25000'];
+        function J(obj, status) {
+            return new Response(JSON.stringify(obj), {
+                status: status || 200,
+                headers: { 'Content-Type': 'application/json' }
+            });
+        }
+        function load(path) { return fetch(BASE + path).then(function (r) { return r.json(); }); }
+        function grade(s) {
+            var b = [[0.95, 'A+'], [0.90, 'A'], [0.85, 'A-'], [0.80, 'B+'], [0.75, 'B'],
+                     [0.70, 'B-'], [0.65, 'C+'], [0.60, 'C'], [0.55, 'C-'], [0.50, 'D+'],
+                     [0.45, 'D'], [0.40, 'D-']];
+            s = Math.max(0, Math.min(1, s));
+            for (var i = 0; i < b.length; i++) { if (s >= b[i][0]) return b[i][1]; }
+            return 'F';
+        }
+        var orig = window.fetch.bind(window);
+        window.fetch = function (input, init) {
+            var url = (typeof input === 'string') ? input : (input && input.url) || '';
+            var at = url.indexOf('/api/');
+            if (at === -1) return orig(input, init);
+            var path = url.slice(at), qs = {}, qi = path.indexOf('?');
+            if (qi !== -1) {
+                new URLSearchParams(path.slice(qi + 1)).forEach(function (v, k) { qs[k] = v; });
+                path = path.slice(0, qi);
+            }
+            if (path === '/api/health')
+                return Promise.resolve(J({ status: 'ok', service: 'streamlens-analytics', version: 'static' }));
+            if (path === '/api/analyze') {
+                var n = qs.n_samples || '5000';
+                if (SIZES.indexOf(n) === -1) n = '5000';
+                state.n = n;
+                return load('n' + n + '/overview.json').then(function (o) {
+                    return J({ overall_metrics: o, n_samples: Number(n) });
+                });
+            }
+            if (path === '/api/metrics/overview') return load('n' + state.n + '/overview.json').then(J);
+            if (path === '/api/metrics/genres') return load('n' + state.n + '/genres.json').then(J);
+            if (path === '/api/metrics/media') return load('n' + state.n + '/media.json').then(J);
+            if (path === '/api/metrics/bias') return load('n' + state.n + '/bias.json').then(J);
+            if (path === '/api/insights') return load('n' + state.n + '/insights.json').then(J);
+            if (path === '/api/metrics/intersectionality') return load('n' + state.n + '/intersectionality.json').then(J);
+            if (path === '/api/metrics/advanced') return load('n' + state.n + '/advanced.json').then(J);
+            if (path === '/api/metrics/scorecard') return load('n' + state.n + '/advanced.json').then(function (a) { return J(a.scorecard); });
+            if (path === '/api/learn') return load('learn.json').then(J);
+            if (path === '/api/bias-library') {
+                return load('bias-library.json').then(function (d) {
+                    if (qs.category) {
+                        var items = d.items.filter(function (b) { return b.category === qs.category; });
+                        return J({ total: items.length, categories: d.categories, items: items });
+                    }
+                    return J(d);
+                });
+            }
+            if (path === '/api/characters') {
+                return load('n' + state.n + '/characters.json').then(function (rows) {
+                    var out = rows.filter(function (r) {
+                        if (qs.platform && r.platform !== qs.platform) return false;
+                        if (qs.genre && r.genre !== qs.genre) return false;
+                        if (qs.media_type && r.media_type !== qs.media_type) return false;
+                        if (qs.year && String(r.year) !== String(qs.year)) return false;
+                        return true;
+                    });
+                    return J(out.slice(0, parseInt(qs.limit || '100', 10)));
+                });
+            }
+            if (path === '/api/simulate/parity') {
+                var fr = parseFloat(qs.female_ratio || '0.5');
+                var parity = 1 - Math.abs(0.5 - fr) * 2, verdict;
+                if (parity >= 0.9) verdict = 'At or near a 50/50 cast \u2014 parity is effectively balanced.';
+                else if (parity >= 0.7) verdict = 'A visible but moderate skew toward one gender.';
+                else if (parity >= 0.4) verdict = 'A strong imbalance; one gender dominates the cast.';
+                else verdict = 'Near-total dominance by one gender.';
+                return Promise.resolve(J({
+                    female_ratio: Math.round(fr * 1e4) / 1e4,
+                    male_ratio: Math.round((1 - fr) * 1e4) / 1e4,
+                    parity: Math.round(parity * 1e4) / 1e4,
+                    grade: grade(parity), verdict: verdict
+                }));
+            }
+            if (path === '/api/results' || path === '/api/export') return load('n5000/results.json').then(J);
+            return Promise.resolve(J({ detail: 'Not found in static build' }, 404));
+        };
+        document.addEventListener('DOMContentLoaded', function () {
+            var ex = document.querySelector('a[href="/api/export"]');
+            if (ex) ex.setAttribute('href', BASE + 'n5000/results.json');
+        });
+    })();
+    </script>
 </head>
 <body>
     <div class="loading-indicator" id="loadingIndicator">Updating visualizations...</div>
@@ -2836,9 +3010,63 @@
             }
         }
 
+        // ==================== INFO CHIPS (plain-language labels) ====================
+        // Attaches a hover/focus "i" tooltip to every chart header and key control,
+        // explaining what it shows and how it is computed. Purely additive.
+        function injectInfoChips() {
+            function makeChip(tip, small) {
+                const chip = document.createElement('span');
+                chip.className = 'sl-info' + (small ? ' sl-info-sm' : '');
+                chip.setAttribute('tabindex', '0');
+                chip.setAttribute('role', 'note');
+                chip.setAttribute('aria-label', tip);
+                chip.appendChild(document.createTextNode('i'));
+                const t = document.createElement('span');
+                t.className = 'sl-tip';
+                t.textContent = tip;
+                chip.appendChild(t);
+                return chip;
+            }
+            const VIZ_TIPS = {
+                'Multi-Dimensional Bias Analysis': 'Bubble chart. X-axis = share of female leads, Y-axis = diversity index, bubble size = overall equality score. One bubble per platform\u00d7genre, colored by platform. Use the filters above to isolate a service or genre.',
+                '3D Representation Landscape': 'A rotatable 3-D view of three dimensions at once \u2014 female-lead share, diversity, and equality \u2014 so clusters that overlap in 2-D separate in depth. Drag to rotate, scroll to zoom.',
+                'Character Interaction Networks': 'A force-directed graph: nodes are character groups, links are shared scenes. Tight clusters of one color signal homophily \u2014 like grouping with like.',
+                'Temporal Evolution Analysis': 'Line chart of how each metric moves year over year across 2015\u20132026, so you can tell a genuine trend from year-to-year noise.',
+                'Role Distribution Patterns': 'Radar chart comparing several representation dimensions at once for the current selection \u2014 the further the shape reaches on an axis, the stronger that dimension.',
+                'Character Data Explorer': 'The raw, character-level dataset behind every number in the app. Filter by platform, genre, media type, and year; each row is one synthetic character with its measured attributes.',
+                'Media Type Analysis': 'Breaks representation down by format (film, series, anime, stand-up, kids, sports docs and more) so you can see which media types skew most.',
+                'Genre Analysis': 'Per-genre representation metrics computed by the pipeline, ranked so the most and least balanced genres are obvious.',
+                'Generated Insights': 'Plain-language findings the pipeline derives from the current dataset at runtime \u2014 not written in advance \u2014 each tied to a specific measured gap.',
+                'Bias Breakdown': 'Chi-square tests for whether dialogue, screen time and roles differ by gender more than chance, paired with Cram\u00e9r\u2019s V to show how large each effect is.',
+                'Intersectional Representation': 'Representation at the intersection of identities (e.g. gender \u00d7 ethnicity), compared against a uniform baseline to reveal gaps that single-axis views hide.',
+                'The Bias Library': 'A reference of 57 documented bias patterns from media research, filterable by category \u2014 what each bias is, how it shows up on screen, and why it matters.',
+                'Learn the Methods': 'Every statistic in the app explained from scratch \u2014 Shannon entropy, chi-square, homophily, Gini, intersectional ratios \u2014 with pointers into the source code.',
+                'The Verdict': 'The decade of evidence collapsed into a letter grade per platform, an inequality (Lorenz) curve, effect sizes, a fitted trend, and a what-if cast simulator.'
+            };
+            document.querySelectorAll('.viz-title').forEach(h => {
+                if (h.querySelector('.sl-info')) return;
+                const tip = VIZ_TIPS[h.textContent.trim()];
+                if (tip) h.appendChild(makeChip(tip));
+            });
+            const LABEL_TIPS = {
+                'Analysis Year': 'Drag to any year from 2015 to 2026. The readout updates that year\u2019s gender parity and diversity, and the change since 2015.',
+                'Platform Filter': 'Restricts the dashboard charts to a single streaming service so you can compare one platform against the field.',
+                'Genre Filter': 'Restricts the dashboard charts to a single content genre \u2014 Action skews most male, Documentary least.',
+                'Analysis Focus': 'Chooses which dimension the charts emphasize: representation score, screen-time share, dialogue complexity, or character sentiment.',
+                'Sample Size': 'How many synthetic characters the pipeline analyzes. Larger samples give steadier numbers; click \u201cRun New Analysis\u201d to apply.'
+            };
+            document.querySelectorAll('label').forEach(l => {
+                const key = l.textContent.trim();
+                if (LABEL_TIPS[key] && !l.querySelector('.sl-info')) {
+                    l.appendChild(makeChip(LABEL_TIPS[key], true));
+                }
+            });
+        }
+
         // ==================== INITIALIZE ON LOAD ====================
         window.addEventListener('DOMContentLoaded', () => {
             StreamLensApp.init();
+            injectInfoChips();
         });
 
         // Handle window resize (debounced)
