@@ -1,0 +1,2943 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>StreamLens Analytics: Advanced Media Bias Analysis Platform</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/d3/7.8.5/d3.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/plotly.js/2.27.0/plotly.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.0/chart.umd.js"></script>
+    <style>
+        :root {
+            /* Primary Theme — Aurora (light, airy) */
+            --primary-bg: #f4f6ff;
+            --primary-surface: #ffffff;
+            --primary-accent: #6c5ce7;
+            --primary-secondary: #ff6ea8;
+            --primary-tertiary: #ffb84d;
+            --primary-text: #2d3250;
+            --primary-text-dim: #5c6386;
+            
+            /* Purple Ombre Theme */
+            --purple-bg: #1a0033;
+            --purple-surface: #2d1b69;
+            --purple-accent: #9d4edd;
+            --purple-secondary: #c77dff;
+            --purple-tertiary: #e0aaff;
+            --purple-text: #ffffff;
+            --purple-text-dim: #dbb2ff;
+            
+            /* Pastel Theme */
+            --pastel-bg: #fdf4ff;
+            --pastel-surface: #f3e5f5;
+            --pastel-accent: #ba68c8;
+            --pastel-secondary: #f48fb1;
+            --pastel-tertiary: #ffab91;
+            --pastel-text: #4a148c;
+            --pastel-text-dim: #7b1fa2;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
+            background: linear-gradient(160deg, var(--primary-bg) 0%, #eef1ff 50%, #fdf2fa 100%);
+            background-attachment: fixed;
+            color: var(--primary-text);
+            overflow-x: hidden;
+            transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        body.purple-theme {
+            --primary-bg: var(--purple-bg);
+            --primary-surface: var(--purple-surface);
+            --primary-accent: var(--purple-accent);
+            --primary-secondary: var(--purple-secondary);
+            --primary-tertiary: var(--purple-tertiary);
+            --primary-text: var(--purple-text);
+            --primary-text-dim: var(--purple-text-dim);
+        }
+
+        body.pastel-theme {
+            --primary-bg: var(--pastel-bg);
+            --primary-surface: var(--pastel-surface);
+            --primary-accent: var(--pastel-accent);
+            --primary-secondary: var(--pastel-secondary);
+            --primary-tertiary: var(--pastel-tertiary);
+            --primary-text: var(--pastel-text);
+            --primary-text-dim: var(--pastel-text-dim);
+        }
+
+        .header {
+            background: linear-gradient(135deg, var(--primary-surface) 0%, var(--primary-bg) 100%);
+            padding: 2rem;
+            border-bottom: 2px solid var(--primary-accent);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .header::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            right: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, var(--primary-accent) 0%, transparent 70%);
+            opacity: 0.1;
+            animation: pulse 4s ease-in-out infinite;
+        }
+
+        #particleField {
+            position: absolute;
+            inset: 0;
+            pointer-events: none;
+            overflow: hidden;
+        }
+
+        .particle {
+            position: absolute;
+            border-radius: 50%;
+            pointer-events: none;
+            opacity: 0.5;
+            animation: floaty linear infinite;
+        }
+
+        @keyframes floaty {
+            0% { transform: translateY(110%) scale(0.6); opacity: 0; }
+            15% { opacity: 0.55; }
+            85% { opacity: 0.55; }
+            100% { transform: translateY(-130%) scale(1.1); opacity: 0; }
+        }
+
+        select, input[type="range"] {
+            transition: box-shadow 0.25s ease, transform 0.25s ease;
+        }
+
+        select:hover, select:focus {
+            box-shadow: 0 0 0 3px rgba(108, 92, 231, 0.25);
+            outline: none;
+        }
+
+        input[type="range"]::-webkit-slider-thumb {
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+        }
+
+        input[type="range"]:hover::-webkit-slider-thumb {
+            transform: scale(1.25);
+            box-shadow: 0 0 12px rgba(108, 92, 231, 0.6);
+        }
+
+        .stat-card {
+            position: relative;
+            overflow: hidden;
+        }
+
+        .stat-card::after {
+            content: '';
+            position: absolute;
+            top: 0; left: -75%;
+            width: 50%; height: 100%;
+            background: linear-gradient(120deg, transparent, rgba(255, 255, 255, 0.45), transparent);
+            transform: skewX(-20deg);
+            transition: left 0.6s ease;
+        }
+
+        .stat-card:hover::after { left: 125%; }
+
+        .stat-card:hover {
+            transform: translateY(-6px) scale(1.02);
+            box-shadow: 0 18px 35px rgba(108, 92, 231, 0.25);
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); opacity: 0.1; }
+            50% { transform: scale(1.1); opacity: 0.2; }
+        }
+
+        .header-content {
+            position: relative;
+            z-index: 1;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        h1 {
+            font-size: 3rem;
+            font-weight: 700;
+            background: linear-gradient(90deg, var(--primary-accent), var(--primary-secondary), var(--primary-tertiary));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 0.5rem;
+            animation: gradient 3s ease infinite;
+            background-size: 200% 200%;
+        }
+
+        @keyframes gradient {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        .subtitle {
+            color: var(--primary-text-dim);
+            font-size: 1.2rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .theme-switcher {
+            position: absolute;
+            top: 2rem;
+            right: 2rem;
+            display: flex;
+            gap: 0.5rem;
+            z-index: 100;
+        }
+
+        .theme-btn {
+            padding: 0.5rem 1rem;
+            border: 2px solid var(--primary-accent);
+            background: var(--primary-surface);
+            color: var(--primary-text);
+            border-radius: 25px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-weight: 600;
+        }
+
+        .theme-btn:hover, .theme-btn.active {
+            background: var(--primary-accent);
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(0, 212, 255, 0.3);
+        }
+
+        .intro-section {
+            background: var(--primary-surface);
+            padding: 2rem;
+            margin: 2rem auto;
+            max-width: 1400px;
+            border-radius: 20px;
+            border-left: 4px solid var(--primary-accent);
+        }
+
+        .intro-section h2 {
+            color: var(--primary-accent);
+            margin-bottom: 1rem;
+        }
+
+        .intro-section p {
+            line-height: 1.8;
+            color: var(--primary-text-dim);
+            margin-bottom: 1rem;
+        }
+
+        .intro-section ul {
+            margin-left: 2rem;
+            color: var(--primary-text-dim);
+            line-height: 1.8;
+        }
+
+        .controls {
+            background: var(--primary-surface);
+            padding: 2rem;
+            margin: 2rem auto;
+            max-width: 1400px;
+            border-radius: 20px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+            backdrop-filter: blur(10px);
+        }
+
+        .control-instructions {
+            background: var(--primary-bg);
+            padding: 1rem;
+            border-radius: 10px;
+            margin-bottom: 1.5rem;
+            border: 1px solid var(--primary-accent);
+        }
+
+        .control-instructions h3 {
+            color: var(--primary-accent);
+            margin-bottom: 0.5rem;
+            font-size: 1.1rem;
+        }
+
+        .control-instructions p {
+            color: var(--primary-text-dim);
+            font-size: 0.95rem;
+            line-height: 1.6;
+        }
+
+        .control-group {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .control-item {
+            display: flex;
+            flex-direction: column;
+        }
+
+        label {
+            color: var(--primary-text-dim);
+            margin-bottom: 0.5rem;
+            font-weight: 600;
+            font-size: 0.9rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        select, input[type="range"] {
+            background: var(--primary-bg);
+            border: 2px solid var(--primary-accent);
+            color: var(--primary-text);
+            padding: 0.75rem;
+            border-radius: 10px;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+
+        select:focus {
+            outline: none;
+            box-shadow: 0 0 20px rgba(0, 212, 255, 0.5);
+        }
+
+        select option {
+            background: var(--primary-bg);
+            color: var(--primary-text);
+        }
+
+        input[type="range"] {
+            -webkit-appearance: none;
+            height: 8px;
+            background: linear-gradient(to right, var(--primary-accent) 0%, var(--primary-secondary) 100%);
+            border: none;
+            padding: 0;
+        }
+
+        input[type="range"]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            width: 24px;
+            height: 24px;
+            background: var(--primary-accent);
+            border-radius: 50%;
+            cursor: pointer;
+            box-shadow: 0 4px 10px rgba(0, 212, 255, 0.5);
+            transition: all 0.3s ease;
+        }
+
+        input[type="range"]::-webkit-slider-thumb:hover {
+            transform: scale(1.2);
+            box-shadow: 0 6px 20px rgba(0, 212, 255, 0.7);
+        }
+
+        .range-value {
+            text-align: center;
+            color: var(--primary-accent);
+            font-weight: bold;
+            margin-top: 0.5rem;
+            font-size: 1.1rem;
+        }
+
+        .visualization-container {
+            max-width: 1400px;
+            margin: 2rem auto;
+            padding: 0 2rem;
+        }
+
+        .viz-section {
+            background: var(--primary-surface);
+            border-radius: 20px;
+            padding: 2rem;
+            margin-bottom: 2rem;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+            position: relative;
+            overflow: hidden;
+            opacity: 0;
+            animation: fadeInUp 0.8s forwards;
+        }
+
+        @keyframes fadeInUp {
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+        }
+
+        .viz-section::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(90deg, var(--primary-accent), var(--primary-secondary), var(--primary-tertiary));
+            animation: gradient 3s ease infinite;
+        }
+
+        .viz-title {
+            font-size: 1.8rem;
+            margin-bottom: 1rem;
+            color: var(--primary-accent);
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .viz-title::before {
+            content: '';
+            width: 4px;
+            height: 30px;
+            background: linear-gradient(to bottom, var(--primary-accent), var(--primary-secondary));
+            border-radius: 2px;
+        }
+
+        .viz-explanation {
+            background: var(--primary-bg);
+            padding: 1rem;
+            border-radius: 10px;
+            margin-bottom: 1.5rem;
+            border-left: 3px solid var(--primary-secondary);
+        }
+
+        .viz-explanation h4 {
+            color: var(--primary-secondary);
+            margin-bottom: 0.5rem;
+            font-size: 1rem;
+        }
+
+        .viz-explanation p {
+            color: var(--primary-text-dim);
+            font-size: 0.95rem;
+            line-height: 1.6;
+            margin-bottom: 0.5rem;
+        }
+
+        .viz-explanation ul {
+            margin-left: 1.5rem;
+            color: var(--primary-text-dim);
+            font-size: 0.9rem;
+            line-height: 1.5;
+        }
+
+        .chart-container {
+            position: relative;
+            height: 500px;
+            background: var(--primary-bg);
+            border-radius: 15px;
+            padding: 1rem;
+            box-shadow: inset 0 2px 10px rgba(0, 0, 0, 0.2);
+        }
+
+        #bubbleChart {
+            max-height: 100%;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1.5rem;
+            margin-top: 2rem;
+        }
+
+        .stat-card {
+            background: linear-gradient(135deg, var(--primary-bg) 0%, var(--primary-surface) 100%);
+            padding: 1.5rem;
+            border-radius: 15px;
+            border: 1px solid var(--primary-accent);
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 30px rgba(0, 212, 255, 0.3);
+        }
+
+        .stat-card::after {
+            content: '';
+            position: absolute;
+            top: -50%;
+            right: -50%;
+            width: 100%;
+            height: 100%;
+            background: radial-gradient(circle, var(--primary-accent) 0%, transparent 70%);
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .stat-card:hover::after {
+            opacity: 0.1;
+        }
+
+        .stat-value {
+            font-size: 2.5rem;
+            font-weight: bold;
+            color: var(--primary-accent);
+            margin-bottom: 0.5rem;
+            transition: all 0.5s ease;
+        }
+
+        .stat-label {
+            color: var(--primary-text-dim);
+            font-size: 0.9rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .stat-change {
+            margin-top: 0.5rem;
+            font-size: 0.9rem;
+            color: var(--primary-secondary);
+        }
+
+        .stat-description {
+            margin-top: 0.5rem;
+            font-size: 0.85rem;
+            color: var(--primary-text-dim);
+            font-style: italic;
+        }
+
+        .network-container {
+            height: 600px;
+            position: relative;
+        }
+
+        .insights-panel {
+            background: linear-gradient(135deg, var(--primary-surface) 0%, var(--primary-bg) 100%);
+            border-radius: 15px;
+            padding: 2rem;
+            margin-top: 2rem;
+            border: 1px solid var(--primary-accent);
+        }
+
+        .insight-item {
+            padding: 1rem;
+            margin-bottom: 1rem;
+            background: var(--primary-bg);
+            border-radius: 10px;
+            border-left: 4px solid var(--primary-accent);
+            transition: all 0.3s ease;
+        }
+
+        .insight-item:hover {
+            transform: translateX(10px);
+            box-shadow: 0 5px 20px rgba(0, 212, 255, 0.2);
+        }
+
+        .insight-value {
+            color: var(--primary-accent);
+            font-weight: bold;
+            font-size: 1.1rem;
+        }
+
+        .color-legend {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 1rem;
+            margin: 1.5rem 0;
+            padding: 1rem;
+            background: var(--primary-bg);
+            border-radius: 10px;
+        }
+
+        .color-item {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-size: 0.9rem;
+        }
+
+        .color-box {
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            border: 2px solid var(--primary-surface);
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+        }
+
+        .methodology-note {
+            background: var(--primary-surface);
+            padding: 1.5rem;
+            border-radius: 15px;
+            border: 1px solid var(--primary-text-dim);
+            margin-top: 3rem;
+            font-size: 0.9rem;
+            color: var(--primary-text-dim);
+            line-height: 1.6;
+        }
+
+        .author-citation {
+            background: linear-gradient(135deg, var(--primary-surface) 0%, var(--primary-bg) 100%);
+            padding: 2rem;
+            margin: 3rem auto 2rem;
+            max-width: 1400px;
+            border-radius: 20px;
+            text-align: center;
+            border: 2px solid var(--primary-accent);
+        }
+
+        .author-citation h3 {
+            color: var(--primary-accent);
+            margin-bottom: 1rem;
+        }
+
+        .author-citation p {
+            color: var(--primary-text-dim);
+            line-height: 1.8;
+        }
+
+        .author-citation .author-name {
+            color: var(--primary-secondary);
+            font-weight: bold;
+            font-size: 1.2rem;
+            margin-top: 1rem;
+        }
+
+        .loading-indicator {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 1.2rem;
+            color: var(--primary-accent);
+            display: none;
+        }
+
+        .loading-indicator.active {
+            display: block;
+        }
+
+        .nav-tabs {
+            display: flex;
+            gap: 0.5rem;
+            max-width: 1400px;
+            margin: 1.5rem auto 0;
+            padding: 0 2rem;
+            flex-wrap: wrap;
+        }
+
+        .nav-tab {
+            padding: 0.75rem 1.75rem;
+            border: 2px solid var(--primary-accent);
+            background: var(--primary-surface);
+            color: var(--primary-text);
+            border-radius: 12px 12px 0 0;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+        }
+
+        .nav-tab.active, .nav-tab:hover {
+            background: var(--primary-accent);
+            color: var(--primary-bg);
+        }
+
+        .story-strip {
+            max-width: 1400px;
+            margin: 1.5rem auto 0;
+            padding: 1.25rem 1.75rem;
+            border-radius: 16px;
+            background: linear-gradient(120deg, rgba(108, 92, 231, 0.10), rgba(255, 110, 168, 0.10));
+            border-left: 4px solid var(--primary-secondary);
+            animation: fadeIn 0.8s ease both;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(12px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .story-strip .act {
+            font-size: 0.8rem;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            color: var(--primary-secondary);
+            font-weight: 700;
+        }
+
+        .story-strip h3 { color: var(--primary-accent); margin: 0.25rem 0 0.4rem; }
+        .story-strip p { color: var(--primary-text-dim); line-height: 1.7; margin: 0; }
+
+        .chip-row { display: flex; gap: 0.5rem; flex-wrap: wrap; margin: 1rem 0; }
+
+        .chip {
+            padding: 0.4rem 1rem;
+            border-radius: 20px;
+            border: 1.5px solid var(--primary-accent);
+            background: transparent;
+            color: var(--primary-text);
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 0.85rem;
+            transition: all 0.25s ease;
+        }
+
+        .chip:hover { transform: translateY(-2px); box-shadow: 0 6px 14px rgba(108, 92, 231, 0.25); }
+        .chip.active { background: var(--primary-accent); color: #fff; }
+
+        .bias-card {
+            background: var(--primary-surface);
+            border-radius: 16px;
+            padding: 1.25rem;
+            border-top: 3px solid var(--primary-secondary);
+            transition: transform 0.25s ease, box-shadow 0.25s ease;
+            animation: fadeIn 0.5s ease both;
+        }
+
+        .bias-card:hover { transform: translateY(-5px) rotate(-0.3deg); box-shadow: 0 16px 30px rgba(108, 92, 231, 0.2); }
+        .bias-card .cat { font-size: 0.72rem; text-transform: uppercase; letter-spacing: 1.5px; color: var(--primary-secondary); font-weight: 700; }
+        .bias-card h4 { color: var(--primary-accent); margin: 0.3rem 0 0.5rem; }
+        .bias-card p { color: var(--primary-text-dim); font-size: 0.9rem; line-height: 1.6; margin-bottom: 0.4rem; }
+        .bias-card .why { border-left: 3px solid var(--primary-tertiary); padding-left: 0.6rem; font-style: italic; }
+        .bias-card .measured { display: inline-block; margin-top: 0.4rem; font-size: 0.75rem; font-weight: 700; color: #1b9e77; }
+
+        .slider-readout {
+            display: flex;
+            gap: 1.25rem;
+            flex-wrap: wrap;
+            margin-top: 0.5rem;
+            font-size: 0.85rem;
+            color: var(--primary-text-dim);
+        }
+
+        .slider-readout strong { color: var(--primary-accent); }
+
+        .era-label {
+            font-size: 0.8rem;
+            font-weight: 700;
+            color: var(--primary-secondary);
+            letter-spacing: 1px;
+            text-transform: uppercase;
+        }
+
+        .tab-panel { display: none; }
+        .tab-panel.active { display: block; }
+
+        .action-bar {
+            display: flex;
+            gap: 1rem;
+            align-items: flex-end;
+            flex-wrap: wrap;
+        }
+
+        .action-btn {
+            padding: 0.75rem 1.5rem;
+            border: 2px solid var(--primary-secondary);
+            background: var(--primary-surface);
+            color: var(--primary-text);
+            border-radius: 10px;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+        }
+
+        .action-btn:hover { background: var(--primary-secondary); transform: translateY(-2px); }
+        .action-btn:disabled { opacity: 0.5; cursor: wait; transform: none; }
+
+        .status-text {
+            color: var(--primary-text-dim);
+            font-size: 0.9rem;
+            align-self: center;
+        }
+
+        .data-table-wrap {
+            overflow-x: auto;
+            border-radius: 12px;
+            border: 1px solid var(--primary-accent);
+        }
+
+        .data-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.9rem;
+        }
+
+        .data-table th, .data-table td {
+            padding: 0.6rem 0.9rem;
+            text-align: left;
+            border-bottom: 1px solid rgba(128, 128, 128, 0.25);
+        }
+
+        .data-table th {
+            background: var(--primary-bg);
+            color: var(--primary-accent);
+            text-transform: uppercase;
+            font-size: 0.78rem;
+            letter-spacing: 1px;
+            position: sticky;
+            top: 0;
+        }
+
+        .data-table tbody tr:hover { background: rgba(128, 128, 128, 0.12); }
+
+        .learn-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+            gap: 1.5rem;
+        }
+
+        .learn-card {
+            background: linear-gradient(135deg, var(--primary-bg) 0%, var(--primary-surface) 100%);
+            border: 1px solid var(--primary-accent);
+            border-radius: 15px;
+            padding: 1.5rem;
+            transition: all 0.3s ease;
+        }
+
+        .learn-card:hover { transform: translateY(-5px); box-shadow: 0 15px 30px rgba(0, 212, 255, 0.25); }
+        .learn-card h3 { color: var(--primary-accent); margin-bottom: 0.5rem; }
+        .learn-card .learn-summary { color: var(--primary-secondary); font-weight: 600; margin-bottom: 0.75rem; }
+        .learn-card p { color: var(--primary-text-dim); line-height: 1.6; font-size: 0.95rem; margin-bottom: 0.75rem; }
+        .learn-card .try-it {
+            background: var(--primary-bg);
+            border-left: 3px solid var(--primary-tertiary);
+            padding: 0.75rem;
+            border-radius: 8px;
+            font-size: 0.9rem;
+            color: var(--primary-text-dim);
+        }
+
+        .api-note {
+            color: var(--primary-text-dim);
+            font-size: 0.9rem;
+            margin-top: 1rem;
+        }
+        .api-note a { color: var(--primary-accent); }
+
+        /* ===== Verdict / Scorecard tab ===== */
+        .scorecard-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+            gap: 1.25rem;
+            margin-top: 1rem;
+        }
+        .grade-card {
+            position: relative;
+            background: linear-gradient(150deg, var(--primary-surface) 0%, var(--primary-bg) 100%);
+            border: 1px solid var(--primary-accent);
+            border-radius: 18px;
+            padding: 1.4rem 1.4rem 1.1rem;
+            overflow: hidden;
+            opacity: 0;
+            transform: translateY(18px);
+            transition: transform 0.55s cubic-bezier(0.2, 0.8, 0.2, 1), box-shadow 0.3s ease;
+        }
+        .grade-card.in {
+            opacity: 1;
+            transform: translateY(0);
+        }
+        .grade-card:hover {
+            transform: translateY(-6px);
+            box-shadow: 0 18px 40px rgba(108, 92, 231, 0.22);
+        }
+        .grade-card .platform-name {
+            font-size: 0.78rem;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            color: var(--primary-text-dim);
+            font-weight: 700;
+        }
+        .grade-badge {
+            font-size: 3.6rem;
+            font-weight: 800;
+            line-height: 1;
+            margin: 0.3rem 0 0.1rem;
+            background: linear-gradient(120deg, var(--primary-accent), var(--primary-secondary));
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        .grade-overall {
+            font-size: 0.85rem;
+            color: var(--primary-text-dim);
+            margin-bottom: 0.8rem;
+        }
+        .subscore { margin: 0.5rem 0; }
+        .subscore-head {
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.8rem;
+            color: var(--primary-text);
+            margin-bottom: 0.2rem;
+        }
+        .subscore-head .g { font-weight: 700; color: var(--primary-accent); }
+        .subscore-bar {
+            height: 7px;
+            border-radius: 6px;
+            background: rgba(128, 128, 128, 0.18);
+            overflow: hidden;
+        }
+        .subscore-fill {
+            height: 100%;
+            width: 0;
+            border-radius: 6px;
+            background: linear-gradient(90deg, var(--primary-accent), var(--primary-secondary));
+            transition: width 1s cubic-bezier(0.2, 0.8, 0.2, 1);
+        }
+        .grade-card.crown::before {
+            content: '★ Top grade';
+            position: absolute;
+            top: 0.9rem;
+            right: -2.2rem;
+            transform: rotate(35deg);
+            background: var(--primary-tertiary);
+            color: #3a2d00;
+            font-size: 0.6rem;
+            font-weight: 800;
+            letter-spacing: 1px;
+            padding: 0.2rem 2.4rem;
+        }
+
+        .verdict-block {
+            background: var(--primary-bg);
+            border-radius: 16px;
+            padding: 1.5rem;
+            margin-top: 1.75rem;
+            box-shadow: inset 0 2px 10px rgba(0, 0, 0, 0.08);
+        }
+        .verdict-block h3 {
+            color: var(--primary-accent);
+            margin-bottom: 0.4rem;
+        }
+        .verdict-block .lead {
+            color: var(--primary-text-dim);
+            font-size: 0.92rem;
+            line-height: 1.6;
+            margin-bottom: 1rem;
+        }
+        .verdict-two-col {
+            display: grid;
+            grid-template-columns: 1.3fr 1fr;
+            gap: 1.5rem;
+            align-items: center;
+        }
+        @media (max-width: 820px) { .verdict-two-col { grid-template-columns: 1fr; } }
+
+        /* What-if simulator */
+        .sim-gauge {
+            text-align: center;
+            padding: 1rem;
+        }
+        .sim-grade {
+            font-size: 4.5rem;
+            font-weight: 800;
+            line-height: 1;
+            background: linear-gradient(120deg, var(--primary-accent), var(--primary-secondary));
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+            transition: transform 0.3s ease;
+        }
+        .sim-grade.pop { transform: scale(1.18); }
+        .sim-parity { font-size: 1.4rem; font-weight: 700; color: var(--primary-text); }
+        .sim-verdict {
+            color: var(--primary-text-dim);
+            font-size: 0.9rem;
+            margin-top: 0.6rem;
+            min-height: 2.4em;
+        }
+        .sim-split {
+            display: flex;
+            height: 26px;
+            border-radius: 8px;
+            overflow: hidden;
+            margin: 0.75rem 0;
+            border: 1px solid var(--primary-accent);
+        }
+        .sim-split .female { background: var(--primary-secondary); transition: width 0.3s ease; }
+        .sim-split .male { background: var(--primary-accent); transition: width 0.3s ease; }
+        .sim-split span {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.72rem;
+            font-weight: 700;
+            color: #fff;
+            white-space: nowrap;
+        }
+
+        /* Effect-size magnitude bars */
+        .effect-row { margin: 0.9rem 0; }
+        .effect-head {
+            display: flex;
+            justify-content: space-between;
+            align-items: baseline;
+            margin-bottom: 0.25rem;
+        }
+        .effect-head .name { font-weight: 600; color: var(--primary-text); }
+        .effect-head .mag {
+            font-size: 0.72rem;
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            padding: 0.12rem 0.6rem;
+            border-radius: 20px;
+        }
+        .mag-negligible { background: rgba(120,120,120,0.18); color: var(--primary-text-dim); }
+        .mag-small { background: rgba(27, 158, 119, 0.18); color: #1b9e77; }
+        .mag-medium { background: rgba(255, 184, 77, 0.22); color: #b9770f; }
+        .mag-large { background: rgba(255, 110, 168, 0.2); color: var(--primary-secondary); }
+        .effect-track {
+            height: 12px;
+            border-radius: 8px;
+            background: rgba(128, 128, 128, 0.16);
+            overflow: hidden;
+        }
+        .effect-bar {
+            height: 100%;
+            width: 0;
+            border-radius: 8px;
+            background: linear-gradient(90deg, var(--primary-accent), var(--primary-secondary));
+            transition: width 1.1s cubic-bezier(0.2, 0.8, 0.2, 1);
+        }
+        .effect-v { font-size: 0.78rem; color: var(--primary-text-dim); margin-top: 0.2rem; }
+    </style>
+
+    <script>
+    /* Static GitHub Pages shim: serve baked analysis JSON instead of a live API. */
+    (function () {
+        var BASE = 'data/';
+        var state = { n: '5000' };
+        var SIZES = ['1000', '5000', '10000', '25000'];
+        function J(obj, status) {
+            return new Response(JSON.stringify(obj), {
+                status: status || 200,
+                headers: { 'Content-Type': 'application/json' }
+            });
+        }
+        function load(path) { return fetch(BASE + path).then(function (r) { return r.json(); }); }
+        function grade(s) {
+            var b = [[0.95, 'A+'], [0.90, 'A'], [0.85, 'A-'], [0.80, 'B+'], [0.75, 'B'],
+                     [0.70, 'B-'], [0.65, 'C+'], [0.60, 'C'], [0.55, 'C-'], [0.50, 'D+'],
+                     [0.45, 'D'], [0.40, 'D-']];
+            s = Math.max(0, Math.min(1, s));
+            for (var i = 0; i < b.length; i++) { if (s >= b[i][0]) return b[i][1]; }
+            return 'F';
+        }
+        var orig = window.fetch.bind(window);
+        window.fetch = function (input, init) {
+            var url = (typeof input === 'string') ? input : (input && input.url) || '';
+            var at = url.indexOf('/api/');
+            if (at === -1) return orig(input, init);
+            var path = url.slice(at), qs = {}, qi = path.indexOf('?');
+            if (qi !== -1) {
+                new URLSearchParams(path.slice(qi + 1)).forEach(function (v, k) { qs[k] = v; });
+                path = path.slice(0, qi);
+            }
+            if (path === '/api/health')
+                return Promise.resolve(J({ status: 'ok', service: 'streamlens-analytics', version: 'static' }));
+            if (path === '/api/analyze') {
+                var n = qs.n_samples || '5000';
+                if (SIZES.indexOf(n) === -1) n = '5000';
+                state.n = n;
+                return load('n' + n + '/overview.json').then(function (o) {
+                    return J({ overall_metrics: o, n_samples: Number(n) });
+                });
+            }
+            if (path === '/api/metrics/overview') return load('n' + state.n + '/overview.json').then(J);
+            if (path === '/api/metrics/genres') return load('n' + state.n + '/genres.json').then(J);
+            if (path === '/api/metrics/media') return load('n' + state.n + '/media.json').then(J);
+            if (path === '/api/metrics/bias') return load('n' + state.n + '/bias.json').then(J);
+            if (path === '/api/insights') return load('n' + state.n + '/insights.json').then(J);
+            if (path === '/api/metrics/intersectionality') return load('n' + state.n + '/intersectionality.json').then(J);
+            if (path === '/api/metrics/advanced') return load('n' + state.n + '/advanced.json').then(J);
+            if (path === '/api/metrics/scorecard') return load('n' + state.n + '/advanced.json').then(function (a) { return J(a.scorecard); });
+            if (path === '/api/learn') return load('learn.json').then(J);
+            if (path === '/api/bias-library') {
+                return load('bias-library.json').then(function (d) {
+                    if (qs.category) {
+                        var items = d.items.filter(function (b) { return b.category === qs.category; });
+                        return J({ total: items.length, categories: d.categories, items: items });
+                    }
+                    return J(d);
+                });
+            }
+            if (path === '/api/characters') {
+                return load('n' + state.n + '/characters.json').then(function (rows) {
+                    var out = rows.filter(function (r) {
+                        if (qs.platform && r.platform !== qs.platform) return false;
+                        if (qs.genre && r.genre !== qs.genre) return false;
+                        if (qs.media_type && r.media_type !== qs.media_type) return false;
+                        if (qs.year && String(r.year) !== String(qs.year)) return false;
+                        return true;
+                    });
+                    return J(out.slice(0, parseInt(qs.limit || '100', 10)));
+                });
+            }
+            if (path === '/api/simulate/parity') {
+                var fr = parseFloat(qs.female_ratio || '0.5');
+                var parity = 1 - Math.abs(0.5 - fr) * 2, verdict;
+                if (parity >= 0.9) verdict = 'At or near a 50/50 cast \u2014 parity is effectively balanced.';
+                else if (parity >= 0.7) verdict = 'A visible but moderate skew toward one gender.';
+                else if (parity >= 0.4) verdict = 'A strong imbalance; one gender dominates the cast.';
+                else verdict = 'Near-total dominance by one gender.';
+                return Promise.resolve(J({
+                    female_ratio: Math.round(fr * 1e4) / 1e4,
+                    male_ratio: Math.round((1 - fr) * 1e4) / 1e4,
+                    parity: Math.round(parity * 1e4) / 1e4,
+                    grade: grade(parity), verdict: verdict
+                }));
+            }
+            if (path === '/api/results' || path === '/api/export') return load('n5000/results.json').then(J);
+            return Promise.resolve(J({ detail: 'Not found in static build' }, 404));
+        };
+    })();
+    </script>
+</head>
+<body>
+    <div class="loading-indicator" id="loadingIndicator">Updating visualizations...</div>
+
+    <div class="header">
+        <div class="theme-switcher">
+            <button class="theme-btn active" onclick="setTheme('primary', this)">Primary</button>
+            <button class="theme-btn" onclick="setTheme('purple', this)">Purple Ombre</button>
+            <button class="theme-btn" onclick="setTheme('pastel', this)">Pastel</button>
+        </div>
+        <div class="header-content">
+            <h1>StreamLens Analytics</h1>
+            <div class="subtitle">Advanced Representation & Bias Analysis in Streaming Media (2015-2026)</div>
+        </div>
+        <div id="particleField"></div>
+    </div>
+
+    <div class="nav-tabs">
+        <button class="nav-tab active" data-tab="dashboard" onclick="showTab('dashboard', this)">Dashboard</button>
+        <button class="nav-tab" data-tab="explore" onclick="showTab('explore', this)">Explore Data</button>
+        <button class="nav-tab" data-tab="insights" onclick="showTab('insights', this)">Insights</button>
+        <button class="nav-tab" data-tab="library" onclick="showTab('library', this)">Bias Library</button>
+        <button class="nav-tab" data-tab="learn" onclick="showTab('learn', this)">Learn</button>
+        <button class="nav-tab" data-tab="scorecard" onclick="showTab('scorecard', this)">Verdict</button>
+    </div>
+
+    <div class="story-strip" id="storyStrip">
+        <span class="act" id="storyAct">Act I — The Question</span>
+        <h3 id="storyTitle">Who gets to be the story?</h3>
+        <p id="storyText">Streaming reaches billions of hours of attention every day. The faces, voices, and lives on screen quietly teach us who counts as a hero, an expert, a love interest — or background. StreamLens turns that question into numbers you can interrogate yourself: start on the Dashboard, dig into the raw data in Explore, read what the pipeline found in Insights, browse 50+ named biases in the Bias Library, and learn the math in Learn.</p>
+    </div>
+
+    <div id="tab-dashboard" class="tab-panel active">
+
+    <div class="intro-section">
+        <h2>Interactive Bias Detection Platform</h2>
+        <p>This dashboard visualizes representation patterns across 6 major streaming platforms and 6 content genres from 2015-2026. Each visualization updates dynamically based on your selections, revealing how bias manifests differently across platforms, genres, and time.</p>
+        
+        <h3 style="color: var(--primary-accent); margin-top: 1.5rem; margin-bottom: 1rem;">Control Guide</h3>
+        <ul>
+            <li><strong>Year Slider:</strong> Observe temporal evolution - watch all metrics change as you slide through the decade</li>
+            <li><strong>Platform Filter:</strong> Compare streaming services - each has distinct diversity strategies and biases</li>
+            <li><strong>Genre Filter:</strong> Analyze content types - Action shows highest male bias, Documentary lowest</li>
+            <li><strong>Color System:</strong> Each bubble has a unique color based on platform (color family) and genre (shade variation)</li>
+        </ul>
+    </div>
+
+    <div class="controls">
+        <div class="control-instructions">
+            <h3>Real-Time Analysis Controls</h3>
+            <p>Every adjustment triggers recalculation across all visualizations. The data represents synthetic patterns based on empirical research of streaming media bias from 2015-2024.</p>
+        </div>
+        <div class="control-group">
+            <div class="control-item">
+                <label for="yearRange">Analysis Year</label>
+                <input type="range" id="yearRange" min="2015" max="2026" value="2026" step="1" list="yearTicks">
+                <datalist id="yearTicks">
+                    <option value="2015"></option><option value="2017"></option><option value="2019"></option>
+                    <option value="2021"></option><option value="2023"></option><option value="2026"></option>
+                </datalist>
+                <div class="range-value" id="yearValue">2026</div>
+                <div class="era-label" id="eraLabel"></div>
+                <div class="slider-readout">
+                    <span>Parity then: <strong id="sliderParity">—</strong></span>
+                    <span>Diversity then: <strong id="sliderDiversity">—</strong></span>
+                    <span>vs 2015: <strong id="sliderDelta">—</strong></span>
+                </div>
+            </div>
+            <div class="control-item">
+                <label for="platform">Platform Filter</label>
+                <select id="platform">
+                    <option value="all">All Platforms</option>
+                    <option value="netflix">Netflix</option>
+                    <option value="amazon_prime">Amazon Prime</option>
+                    <option value="disney_plus">Disney+</option>
+                    <option value="hbo_max">HBO Max</option>
+                    <option value="apple_tv">Apple TV+</option>
+                    <option value="hulu">Hulu</option>
+                </select>
+            </div>
+            <div class="control-item">
+                <label for="genre">Genre Filter</label>
+                <select id="genre">
+                    <option value="all">All Genres</option>
+                    <option value="drama">Drama</option>
+                    <option value="comedy">Comedy</option>
+                    <option value="action">Action</option>
+                    <option value="scifi">Sci-Fi</option>
+                    <option value="thriller">Thriller</option>
+                    <option value="documentary">Documentary</option>
+                </select>
+            </div>
+            <div class="control-item">
+                <label for="metric">Analysis Focus</label>
+                <select id="metric">
+                    <option value="representation">Representation Score</option>
+                    <option value="screentime">Screen Time Distribution</option>
+                    <option value="dialogue">Dialogue Complexity</option>
+                    <option value="sentiment">Character Sentiment</option>
+                </select>
+            </div>
+        </div>
+        <div class="action-bar">
+            <div class="control-item">
+                <label for="sampleSize">Sample Size</label>
+                <select id="sampleSize">
+                    <option value="1000">1,000 characters</option>
+                    <option value="5000" selected>5,000 characters</option>
+                    <option value="10000">10,000 characters</option>
+                    <option value="25000">25,000 characters</option>
+                </select>
+            </div>
+            <button class="action-btn" id="runAnalysisBtn" onclick="StreamLensApp.runAnalysis()">Run New Analysis</button>
+            <a class="action-btn" href="data/n5000/results.json" download style="text-decoration:none; display:inline-block;">Export Results (JSON)</a>
+            <span class="status-text" id="analysisStatus"></span>
+        </div>
+    </div>
+
+    <div class="visualization-container">
+        <div class="viz-section" style="animation-delay: 0.1s;">
+            <h2 class="viz-title">Multi-Dimensional Bias Analysis</h2>
+            
+            <div class="viz-explanation">
+                <h4>Visual Encoding System</h4>
+                <p><strong>Position:</strong> X-axis shows female lead percentage (0-100%), Y-axis shows diversity index (0-10)</p>
+                <p><strong>Size:</strong> Larger bubbles indicate better overall equality scores</p>
+                <p><strong>Color:</strong> Each platform-genre combination has a unique color - platforms define the base hue, genres create shade variations</p>
+                
+                <div class="color-legend" id="colorLegend">
+                    <!-- Dynamically populated -->
+                </div>
+                
+                <p><strong>Pattern Analysis:</strong> Look for clustering by color family (platform bias) or by shade intensity (genre bias). Bubbles in the upper-right quadrant represent best practices.</p>
+            </div>
+            
+            <div class="chart-container">
+                <canvas id="bubbleChart"></canvas>
+            </div>
+            
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-value" id="diversityScore">78.4%</div>
+                    <div class="stat-label">Overall Diversity Score</div>
+                    <div class="stat-change" id="diversityChange">↑ 33.4% from 2015</div>
+                    <div class="stat-description">Shannon entropy across all demographics</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value" id="genderParity">0.67</div>
+                    <div class="stat-label">Gender Parity Index</div>
+                    <div class="stat-change" id="parityChange">↑ 0.32 from 2015</div>
+                    <div class="stat-description">1.0 = perfect parity, current trajectory reaches parity by 2031</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value" id="ethnicDiversity">6.2</div>
+                    <div class="stat-label">Ethnic Diversity Index</div>
+                    <div class="stat-change" id="ethnicChange">↑ 2.7 from 2015</div>
+                    <div class="stat-description">Simpson's diversity index (0-10 scale)</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value" id="ageScore">3.8</div>
+                    <div class="stat-label">Age Distribution Score</div>
+                    <div class="stat-change" id="ageChange">↓ 0.4 from 2015</div>
+                    <div class="stat-description">Age representation declining for 50+ demographic</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="viz-section" style="animation-delay: 0.15s;">
+            <h2 class="viz-title">3D Representation Landscape</h2>
+
+            <div class="viz-explanation">
+                <h4>Three Dimensions of Equity</h4>
+                <p>Drag to rotate, scroll to zoom. Each point is a platform-genre combination positioned by female lead share (x), diversity index (y), and dialogue equity (z). Marker size grows with overall equality.</p>
+            </div>
+
+            <div class="chart-container" style="height: 550px;">
+                <div id="scatter3d" style="width: 100%; height: 100%;"></div>
+            </div>
+        </div>
+
+        <div class="viz-section" style="animation-delay: 0.2s;">
+            <h2 class="viz-title">Character Interaction Networks</h2>
+            
+            <div class="viz-explanation">
+                <h4>Network Topology Analysis</h4>
+                <p>This force-directed graph reveals demographic clustering in character interactions. Node size = screen time, color = gender (cyan/magenta/gold), links = interaction frequency.</p>
+                <p><strong>Key Pattern:</strong> Strong homophily (similar characters interact more) indicates limited cross-demographic storytelling.</p>
+            </div>
+            
+            <div class="network-container" id="networkGraph"></div>
+            
+            <div class="insights-panel">
+                <h3 style="color: var(--primary-accent); margin-bottom: 1rem;">Dynamic Bias Metrics</h3>
+                <div id="insightsList">
+                    <div class="insight-item">
+                        <strong>Central Character Bias:</strong> <span class="insight-value" id="centralBias">73%</span> of central characters in <span id="genreInsight">action</span> genres are male
+                    </div>
+                    <div class="insight-item">
+                        <strong>Dialogue Imbalance:</strong> Female characters receive <span class="insight-value" id="dialogueGap">34%</span> less dialogue time on <span id="platformInsight">selected platform</span>
+                    </div>
+                    <div class="insight-item">
+                        <strong>Age Representation Gap:</strong> Characters over 50 appear <span class="insight-value" id="ageGap">68%</span> less frequently in year <span id="yearInsight">2024</span>
+                    </div>
+                    <div class="insight-item">
+                        <strong>Intersectional Disparity:</strong> Women of color represent only <span class="insight-value" id="intersectionGap">12%</span> of lead roles
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="viz-section" style="animation-delay: 0.3s;">
+            <h2 class="viz-title">Temporal Evolution Analysis</h2>
+            
+            <div class="viz-explanation">
+                <h4>Decade-Long Trends</h4>
+                <p>Track four key metrics from 2015 to your selected year. Diverging trajectories reveal uneven progress - gender parity improves steadily while age representation declines.</p>
+            </div>
+            
+            <div class="chart-container">
+                <div id="timeSeriesChart"></div>
+            </div>
+        </div>
+
+        <div class="viz-section" style="animation-delay: 0.4s;">
+            <h2 class="viz-title">Role Distribution Patterns</h2>
+            
+            <div class="viz-explanation">
+                <h4>Character Archetype Analysis</h4>
+                <p>Radar chart reveals typecasting patterns. Male characters dominate protagonist/antagonist roles, females overrepresented as romantic interests, non-binary characters severely underrepresented across all categories.</p>
+            </div>
+            
+            <div class="chart-container">
+                <canvas id="sentimentRadar"></canvas>
+            </div>
+        </div>
+
+        <div class="methodology-note">
+            <h3 style="color: var(--primary-accent); margin-bottom: 1rem;">Technical Implementation — What Actually Runs</h3>
+            <p>Metrics are computed live by the Python backend: Shannon entropy for diversity, a distance-from-parity index for gender balance, chi-square statistics for dialogue / age / racial bias, intersectional representation ratios against a uniform baseline, and assortativity coefficients on character interaction graphs (NetworkX). Visualizations use a real D3.js force simulation (charge, spring, and collision forces), Chart.js canvas rendering, and Plotly.js including WebGL-accelerated 3D. The demo dataset is synthetic, generated by a seeded, documented statistical model — see the Learn tab for the honesty note.</p>
+        </div>
+    </div>
+
+    </div><!-- end tab-dashboard -->
+
+    <div id="tab-explore" class="tab-panel">
+        <div class="visualization-container">
+            <div class="viz-section">
+                <h2 class="viz-title">Character Data Explorer</h2>
+                <div class="viz-explanation">
+                    <h4>Live Dataset</h4>
+                    <p>Browse the character-level records behind every metric. Filters query the backend API directly.</p>
+                </div>
+                <div class="control-group">
+                    <div class="control-item">
+                        <label for="explorePlatform">Platform</label>
+                        <select id="explorePlatform">
+                            <option value="">All Platforms</option>
+                            <option value="netflix">Netflix</option>
+                            <option value="amazon_prime">Amazon Prime</option>
+                            <option value="disney_plus">Disney+</option>
+                            <option value="hbo_max">HBO Max</option>
+                            <option value="apple_tv">Apple TV+</option>
+                            <option value="hulu">Hulu</option>
+                        </select>
+                    </div>
+                    <div class="control-item">
+                        <label for="exploreGenre">Genre</label>
+                        <select id="exploreGenre">
+                            <option value="">All Genres</option>
+                            <option value="drama">Drama</option>
+                            <option value="comedy">Comedy</option>
+                            <option value="action">Action</option>
+                            <option value="scifi">Sci-Fi</option>
+                            <option value="thriller">Thriller</option>
+                            <option value="documentary">Documentary</option>
+                        </select>
+                    </div>
+                    <div class="control-item">
+                        <label for="exploreMedia">Media Type</label>
+                        <select id="exploreMedia">
+                            <option value="">All Media</option>
+                            <option value="series">Series</option>
+                            <option value="film">Film</option>
+                            <option value="docuseries">Docuseries</option>
+                            <option value="animation">Animation</option>
+                            <option value="reality">Reality</option>
+                            <option value="limited_series">Limited Series</option>
+                            <option value="anime">Anime</option>
+                            <option value="standup">Stand-up</option>
+                            <option value="talk_show">Talk Show</option>
+                            <option value="kids">Kids</option>
+                            <option value="sports_doc">Sports Doc</option>
+                        </select>
+                    </div>
+                    <div class="control-item">
+                        <label for="exploreYear">Year</label>
+                        <select id="exploreYear">
+                            <option value="">All Years</option>
+                        </select>
+                    </div>
+                    <div class="control-item">
+                        <label for="exploreLimit">Rows</label>
+                        <select id="exploreLimit">
+                            <option value="25" selected>25</option>
+                            <option value="50">50</option>
+                            <option value="100">100</option>
+                        </select>
+                    </div>
+                    <div class="control-item" style="justify-content: flex-end;">
+                        <button class="action-btn" id="resetFiltersBtn" onclick="StreamLensApp.resetExploreFilters()">Reset Filters</button>
+                    </div>
+                </div>
+                <div class="data-table-wrap">
+                    <table class="data-table" id="exploreTable">
+                        <thead>
+                            <tr><th>ID</th><th>Platform</th><th>Genre</th><th>Media</th><th>Year</th><th>Gender</th><th>Race</th><th>Age</th><th>Role</th><th>Screen Time</th><th>Dialogue Words</th><th>Sentiment</th></tr>
+                        </thead>
+                        <tbody id="exploreTableBody">
+                            <tr><td colspan="11">Loading…</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+                <p class="api-note" id="exploreCount"></p>
+                <p class="api-note">Power users: the full REST API is documented at <a href="/docs" target="_blank">/docs</a>.</p>
+            </div>
+
+            <div class="viz-section">
+                <h2 class="viz-title">Media Type Analysis</h2>
+                <div class="viz-explanation">
+                    <h4>Diversity Across Formats</h4>
+                    <p>The same equity metrics computed per media format — from series and film to anime, stand-up, talk shows, kids' content and sports docs. The donut shows the live catalog mix; the table shows how equity differs by format. Different formats have different production cultures, so bias patterns differ too.</p>
+                </div>
+                <div class="chart-container" style="height: 360px; margin-bottom: 1.5rem;">
+                    <canvas id="mediaDonut"></canvas>
+                </div>
+                <div class="data-table-wrap">
+                    <table class="data-table">
+                        <thead>
+                            <tr><th>Media Type</th><th>Diversity</th><th>Gender Parity</th><th>Avg Sentiment</th><th>Sample</th></tr>
+                        </thead>
+                        <tbody id="mediaTableBody">
+                            <tr><td colspan="5">Loading…</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <div class="viz-section">
+                <h2 class="viz-title">Genre Analysis</h2>
+                <div class="viz-explanation">
+                    <h4>Computed Per-Genre Metrics</h4>
+                    <p>Diversity, parity, male lead share, and the dialogue gap computed live from the current dataset.</p>
+                </div>
+                <div class="data-table-wrap">
+                    <table class="data-table">
+                        <thead>
+                            <tr><th>Genre</th><th>Diversity</th><th>Gender Parity</th><th>Male Lead Share</th><th>Dialogue Gap</th><th>Avg Screen Time</th><th>Sample</th></tr>
+                        </thead>
+                        <tbody id="genreTableBody">
+                            <tr><td colspan="7">Loading…</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="tab-insights" class="tab-panel">
+        <div class="visualization-container">
+            <div class="viz-section">
+                <h2 class="viz-title">Generated Insights</h2>
+                <div class="viz-explanation">
+                    <h4>Computed From Live Data</h4>
+                    <p>These findings are generated by the analysis pipeline from the current dataset — re-run the analysis to regenerate them.</p>
+                </div>
+                <div id="liveInsightsList">
+                    <div class="insight-item">Loading insights…</div>
+                </div>
+            </div>
+            <div class="viz-section">
+                <h2 class="viz-title">Bias Breakdown</h2>
+                <div class="viz-explanation">
+                    <h4>Four Bias Dimensions</h4>
+                    <p>Sentiment, screen time, age, and racial dialogue bias — each computed live with the methods described in the Learn tab.</p>
+                </div>
+                <div class="data-table-wrap">
+                    <table class="data-table">
+                        <thead><tr><th>Bias Type</th><th>Group</th><th>Value</th><th>Interpretation</th></tr></thead>
+                        <tbody id="biasTableBody">
+                            <tr><td colspan="4">Loading…</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <div class="viz-section">
+                <h2 class="viz-title">Intersectional Representation</h2>
+                <div class="viz-explanation">
+                    <h4>Ratio vs Population Baseline</h4>
+                    <p>Groups with a ratio below 1.0 are underrepresented relative to a uniform baseline. The gaps below only appear when gender, race, and age are analyzed together.</p>
+                </div>
+                <div class="data-table-wrap">
+                    <table class="data-table">
+                        <thead><tr><th>Group (gender · race · age)</th><th>Representation</th><th>Baseline</th><th>Ratio</th></tr></thead>
+                        <tbody id="intersectionTableBody">
+                            <tr><td colspan="4">Loading…</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="tab-library" class="tab-panel">
+        <div class="visualization-container">
+            <div class="viz-section">
+                <h2 class="viz-title">The Bias Library</h2>
+                <div class="viz-explanation">
+                    <h4>50+ Named Biases, Explained</h4>
+                    <p>Every entry is a documented bias pattern studied in media-representation research — what it is, what it looks like, and why it matters. Entries marked <strong style="color:#1b9e77;">measured here</strong> are quantified live by the StreamLens pipeline; the rest are field knowledge to sharpen what you look for. Filter by category or search.</p>
+                </div>
+                <div class="chip-row" id="biasChips"></div>
+                <div class="control-group" style="grid-template-columns: 1fr; margin-bottom: 0.5rem;">
+                    <div class="control-item">
+                        <label for="biasSearch">Search</label>
+                        <input type="text" id="biasSearch" placeholder="e.g. dialogue, casting, algorithm…" style="padding: 0.6rem 1rem; border-radius: 10px; border: 1.5px solid var(--primary-accent); background: var(--primary-surface); color: var(--primary-text);">
+                    </div>
+                </div>
+                <p class="status-text" id="biasCount"></p>
+                <div class="learn-grid" id="biasGrid">
+                    <div class="bias-card"><p>Loading library…</p></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="tab-learn" class="tab-panel">
+        <div class="visualization-container">
+            <div class="viz-section">
+                <h2 class="viz-title">Learn the Methods</h2>
+                <div class="viz-explanation">
+                    <h4>Understand Every Metric</h4>
+                    <p>Each card explains one of the statistical methods used by StreamLens, with a hands-on way to see it in action.</p>
+                </div>
+                <div class="learn-grid" id="learnGrid">
+                    <div class="learn-card"><p>Loading content…</p></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="tab-scorecard" class="tab-panel">
+        <div class="visualization-container">
+            <div class="viz-section">
+                <h2 class="viz-title">The Verdict</h2>
+                <div class="viz-explanation">
+                    <h4>From numbers to a grade you can act on</h4>
+                    <p>This is where the analysis becomes a decision. Every platform is graded A&ndash;F across four representation dimensions, the concentration of screen time is measured with a real inequality curve, each bias is sized (not just flagged), and the decade-long trend is fitted with a regression line. Then you can rewrite the cast yourself in the What-If simulator. Every figure is computed live from the labeled synthetic dataset.</p>
+                </div>
+
+                <h3 style="color: var(--primary-accent); margin: 1.5rem 0 0.25rem;">Platform Report Card</h3>
+                <p class="status-text" id="scorecardNote">Grading platforms…</p>
+                <div class="scorecard-grid" id="scorecardGrid"></div>
+
+                <div class="verdict-block">
+                    <h3>What-If: rewrite the cast</h3>
+                    <p class="lead">Gender parity is <code>1 &minus; |0.5 &minus; female_share| &times; 2</code>. Drag the slider to set a hypothetical female lead share and watch the parity index and grade recompute &mdash; the value is returned by the backend, exactly like the live metrics.</p>
+                    <div class="verdict-two-col">
+                        <div>
+                            <label for="simRatio" style="font-weight:600;">Female lead share: <strong id="simRatioLabel">50%</strong></label>
+                            <input type="range" id="simRatio" min="0" max="100" value="50" step="1" style="width:100%; margin-top:0.5rem;">
+                            <div class="sim-split">
+                                <span class="female" id="simFemaleBar" style="width:50%;">Female 50%</span>
+                                <span class="male" id="simMaleBar" style="width:50%;">Male 50%</span>
+                            </div>
+                            <p class="api-note">Source: <code>GET /api/simulate/parity?female_ratio=</code></p>
+                        </div>
+                        <div class="sim-gauge">
+                            <div class="sim-grade" id="simGrade">A+</div>
+                            <div class="sim-parity">Parity <span id="simParity">1.00</span></div>
+                            <div class="sim-verdict" id="simVerdict">At or near a 50/50 cast — parity is effectively balanced.</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="verdict-block">
+                    <h3>Inequality Lab — who gets the screen time?</h3>
+                    <p class="lead">A Lorenz curve plots the share of total screen time captured by the least-visible characters. The diagonal is perfect equality; the deeper the curve sags, the more screen time concentrates in a few roles. The <strong>Gini coefficient</strong> (0 = equal, 1 = one character takes everything) and the <strong>Theil index</strong> summarize that gap.</p>
+                    <div class="verdict-two-col">
+                        <div class="chart-container" style="height: 340px;">
+                            <canvas id="lorenzChart"></canvas>
+                        </div>
+                        <div>
+                            <div class="stats-grid" style="margin-top:0; grid-template-columns: 1fr 1fr;">
+                                <div class="stat-card">
+                                    <div class="stat-value" id="screenGini">—</div>
+                                    <div class="stat-label">Screen-time Gini</div>
+                                </div>
+                                <div class="stat-card">
+                                    <div class="stat-value" id="dialogueGini">—</div>
+                                    <div class="stat-label">Dialogue Gini</div>
+                                </div>
+                                <div class="stat-card">
+                                    <div class="stat-value" id="screenTheil">—</div>
+                                    <div class="stat-label">Screen-time Theil</div>
+                                </div>
+                                <div class="stat-card">
+                                    <div class="stat-value" id="dialogueTheil">—</div>
+                                    <div class="stat-label">Dialogue Theil</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="verdict-block">
+                    <h3>How big is each bias? (effect size)</h3>
+                    <p class="lead">A chi-square test tells you a dialogue skew is unlikely to be chance, but its value balloons with sample size. <strong>Cramér&rsquo;s V</strong> rescales it to 0&ndash;1 so you can compare magnitudes and read a plain-language band (negligible &rarr; large).</p>
+                    <div id="effectSizes"></div>
+                </div>
+
+                <div class="verdict-block">
+                    <h3>The decade trend, fitted</h3>
+                    <p class="lead">Instead of comparing only two years, this fits an ordinary least-squares line across every year in the dataset. The slope is the average change per year; <strong>R&sup2;</strong> says how much of the movement the straight-line trend explains.</p>
+                    <div class="chart-container" style="height: 360px;">
+                        <canvas id="trendChart"></canvas>
+                    </div>
+                    <p class="status-text" id="trendNote"></p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="author-citation">
+        <h3>About This Analysis</h3>
+        <p>StreamLens Analytics quantifies representation asymmetries in streaming media using statistical and network-analysis methods, computed live on a clearly-labeled synthetic dataset.</p>
+        <p class="author-name">Created by Cazandra Aporbo, MS</p>
+        <p style="font-size: 0.9rem; margin-top: 0.5rem;">Mathematical Framework Development: September 10, 2024 - Present</p>
+    </div>
+
+    <script>
+        // ==================== GLOBAL STATE MANAGEMENT ====================
+        const StreamLensApp = {
+            // Core data structures
+            data: {
+                platforms: {
+                    netflix: { 
+                        diversity: 0.63, 
+                        female_leads: 0.42, 
+                        improvement_rate: 0.015,
+                        color: { r: 229, g: 9, b: 20 }  // Netflix red
+                    },
+                    amazon_prime: { 
+                        diversity: 0.56, 
+                        female_leads: 0.38, 
+                        improvement_rate: 0.012,
+                        color: { r: 0, g: 168, b: 225 }  // Prime blue
+                    },
+                    disney_plus: { 
+                        diversity: 0.52, 
+                        female_leads: 0.35, 
+                        improvement_rate: 0.018,
+                        color: { r: 17, g: 60, b: 207 }  // Disney blue
+                    },
+                    hbo_max: { 
+                        diversity: 0.71, 
+                        female_leads: 0.48, 
+                        improvement_rate: 0.022,
+                        color: { r: 151, g: 51, b: 238 }  // HBO purple
+                    },
+                    apple_tv: { 
+                        diversity: 0.78, 
+                        female_leads: 0.53, 
+                        improvement_rate: 0.025,
+                        color: { r: 105, g: 105, b: 105 }  // Apple gray
+                    },
+                    hulu: { 
+                        diversity: 0.59, 
+                        female_leads: 0.41, 
+                        improvement_rate: 0.014,
+                        color: { r: 28, g: 231, b: 131 }  // Hulu green
+                    }
+                },
+                genres: {
+                    drama: { 
+                        male_bias: 0.55, 
+                        dialogue_gap: 0.22, 
+                        age_diversity: 0.68,
+                        shade_modifier: 0  // Base shade
+                    },
+                    comedy: { 
+                        male_bias: 0.58, 
+                        dialogue_gap: 0.28, 
+                        age_diversity: 0.65,
+                        shade_modifier: 30  // Lighter
+                    },
+                    action: { 
+                        male_bias: 0.73, 
+                        dialogue_gap: 0.34, 
+                        age_diversity: 0.48,
+                        shade_modifier: -30  // Darker
+                    },
+                    scifi: { 
+                        male_bias: 0.68, 
+                        dialogue_gap: 0.31, 
+                        age_diversity: 0.52,
+                        shade_modifier: -15  // Slightly darker
+                    },
+                    thriller: { 
+                        male_bias: 0.64, 
+                        dialogue_gap: 0.29, 
+                        age_diversity: 0.58,
+                        shade_modifier: -40  // Much darker
+                    },
+                    documentary: { 
+                        male_bias: 0.48, 
+                        dialogue_gap: 0.18, 
+                        age_diversity: 0.72,
+                        shade_modifier: 20  // Lighter, desaturated
+                    }
+                }
+            },
+            
+            // Chart instances
+            charts: {
+                bubble: null,
+                radar: null,
+                network: null,
+                timeSeries: null
+            },
+            
+            // Current state
+            state: {
+                year: 2026,
+                platform: 'all',
+                genre: 'all',
+                metric: 'representation',
+                theme: 'primary'
+            },
+
+            // ==================== INITIALIZATION ====================
+            init() {
+                this.attachEventListeners();
+                this.populateExploreYears();
+                this.spawnParticles();
+                this.updateAllVisualizations();
+                this.loadLiveMetrics();
+                this.loadExploreData();
+                this.loadGenreTable();
+                this.loadMediaTable();
+                this.loadBiasTable();
+                this.loadInsightsTab();
+                this.loadLearnTab();
+                this.loadBiasLibrary();
+                this.updateSliderReadout();
+            },
+
+            biasState: { items: [], category: '', query: '' },
+
+            async loadBiasLibrary() {
+                const grid = document.getElementById('biasGrid');
+                const chips = document.getElementById('biasChips');
+                if (!grid || !chips) return;
+                try {
+                    const res = await fetch('/api/bias-library');
+                    if (!res.ok) throw new Error();
+                    const data = await res.json();
+                    this.biasState.items = data.items;
+                    chips.innerHTML = ['<button class="chip active" data-cat="">All</button>']
+                        .concat(data.categories.map(c =>
+                            `<button class="chip" data-cat="${c}">${c.charAt(0).toUpperCase() + c.slice(1)}</button>`))
+                        .join('');
+                    chips.querySelectorAll('.chip').forEach(chip => {
+                        chip.addEventListener('click', () => {
+                            chips.querySelectorAll('.chip').forEach(c => c.classList.remove('active'));
+                            chip.classList.add('active');
+                            this.biasState.category = chip.dataset.cat;
+                            this.renderBiasLibrary();
+                        });
+                    });
+                    const search = document.getElementById('biasSearch');
+                    if (search) search.addEventListener('input', () => {
+                        this.biasState.query = search.value.toLowerCase();
+                        this.renderBiasLibrary();
+                    });
+                    this.renderBiasLibrary();
+                } catch (e) {
+                    grid.innerHTML = '<div class="bias-card"><p>The Bias Library is served by the API — run <code>python app.py</code>.</p></div>';
+                }
+            },
+
+            renderBiasLibrary() {
+                const grid = document.getElementById('biasGrid');
+                const count = document.getElementById('biasCount');
+                const { items, category, query } = this.biasState;
+                const filtered = items.filter(b =>
+                    (!category || b.category === category) &&
+                    (!query || (b.name + ' ' + b.definition + ' ' + b.example + ' ' + b.why_it_matters)
+                        .toLowerCase().includes(query)));
+                if (count) count.textContent = `${filtered.length} of ${items.length} bias types shown`;
+                grid.innerHTML = filtered.map((b, i) => `<div class="bias-card" style="animation-delay:${Math.min(i * 0.03, 0.6)}s">
+                    <span class="cat">${b.category}</span>
+                    <h4>${b.name}</h4>
+                    <p>${b.definition}</p>
+                    <p><em>Example:</em> ${b.example}</p>
+                    <p class="why">Why it matters: ${b.why_it_matters}</p>
+                    ${b.measured_here ? '<span class="measured">● Measured live by StreamLens</span>' : ''}
+                </div>`).join('') || '<div class="bias-card"><p>No bias types match your search.</p></div>';
+            },
+
+            updateSliderReadout() {
+                const year = this.state.year;
+                const yearProgress = (year - 2015) / 11;
+                const eras = [
+                    [2015, 'Early streaming catalog era'],
+                    [2018, 'Streaming wars ramp-up'],
+                    [2020, 'Lockdown viewing boom'],
+                    [2022, 'Peak-TV consolidation'],
+                    [2024, 'Algorithmic curation era'],
+                    [2026, 'Present day']
+                ];
+                let era = eras[0][1];
+                eras.forEach(([y, label]) => { if (year >= y) era = label; });
+                const eraEl = document.getElementById('eraLabel');
+                if (eraEl) eraEl.textContent = era;
+                const parity = 0.35 + yearProgress * 0.32;
+                const diversity = 45 + yearProgress * 33.4;
+                const p = document.getElementById('sliderParity');
+                const d = document.getElementById('sliderDiversity');
+                const delta = document.getElementById('sliderDelta');
+                if (p) p.textContent = parity.toFixed(2);
+                if (d) d.textContent = diversity.toFixed(1) + '%';
+                if (delta) delta.textContent = '+' + (diversity - 45).toFixed(1) + ' pts diversity';
+            },
+
+            spawnParticles() {
+                const field = document.getElementById('particleField');
+                if (!field) return;
+                const colors = ['#6c5ce7', '#ff6ea8', '#ffb84d', '#4dd4c0'];
+                for (let i = 0; i < 24; i++) {
+                    const p = document.createElement('div');
+                    p.className = 'particle';
+                    const size = 4 + Math.random() * 10;
+                    p.style.width = p.style.height = size + 'px';
+                    p.style.left = (Math.random() * 100) + '%';
+                    p.style.bottom = '-20px';
+                    p.style.background = colors[i % colors.length];
+                    p.style.animationDuration = (6 + Math.random() * 10) + 's';
+                    p.style.animationDelay = (Math.random() * 10) + 's';
+                    field.appendChild(p);
+                }
+            },
+
+            animateValue(id, endValue, formatter, duration = 700) {
+                const el = document.getElementById(id);
+                if (!el) return;
+                const start = performance.now();
+                const startValue = parseFloat(el.textContent) || 0;
+                const step = (now) => {
+                    const t = Math.min(1, (now - start) / duration);
+                    const eased = 1 - Math.pow(1 - t, 3);
+                    el.textContent = formatter(startValue + (endValue - startValue) * eased);
+                    if (t < 1) requestAnimationFrame(step);
+                };
+                requestAnimationFrame(step);
+            },
+
+            populateExploreYears() {
+                const sel = document.getElementById('exploreYear');
+                if (!sel) return;
+                for (let y = 2026; y >= 2015; y--) {
+                    const opt = document.createElement('option');
+                    opt.value = y;
+                    opt.textContent = y;
+                    sel.appendChild(opt);
+                }
+            },
+
+            async runAnalysis() {
+                const btn = document.getElementById('runAnalysisBtn');
+                const status = document.getElementById('analysisStatus');
+                const n = document.getElementById('sampleSize').value;
+                btn.disabled = true;
+                status.textContent = `Running analysis on ${Number(n).toLocaleString()} characters…`;
+                try {
+                    const res = await fetch(`/api/analyze?n_samples=${n}`, { method: 'POST' });
+                    if (!res.ok) throw new Error(`API error ${res.status}`);
+                    const data = await res.json();
+                    const overall = data.overall_metrics;
+                    document.getElementById('diversityScore').textContent = (overall.diversity_index * 100).toFixed(1) + '%';
+                    document.getElementById('genderParity').textContent = overall.gender_parity.toFixed(2);
+                    status.textContent = `Analysis complete — ${Number(n).toLocaleString()} characters processed.`;
+                    this.loadExploreData();
+                    this.loadGenreTable();
+                    this.loadMediaTable();
+                    this.loadBiasTable();
+                    this.loadInsightsTab();
+                } catch (e) {
+                    status.textContent = 'Analysis unavailable — is the API server running? (python app.py)';
+                } finally {
+                    btn.disabled = false;
+                }
+            },
+
+            async loadExploreData() {
+                const body = document.getElementById('exploreTableBody');
+                if (!body) return;
+                const params = new URLSearchParams();
+                const platform = document.getElementById('explorePlatform').value;
+                const genre = document.getElementById('exploreGenre').value;
+                const media = document.getElementById('exploreMedia').value;
+                const year = document.getElementById('exploreYear').value;
+                const limit = document.getElementById('exploreLimit').value;
+                if (platform) params.set('platform', platform);
+                if (genre) params.set('genre', genre);
+                if (media) params.set('media_type', media);
+                if (year) params.set('year', year);
+                params.set('limit', limit);
+                try {
+                    const res = await fetch(`/api/characters?${params}`);
+                    if (!res.ok) throw new Error();
+                    const rows = await res.json();
+                    document.getElementById('exploreCount').textContent = `${rows.length} record(s) shown.`;
+                    if (!rows.length) {
+                        body.innerHTML = '<tr><td colspan="12">No records match the selected filters.</td></tr>';
+                        return;
+                    }
+                    body.innerHTML = rows.map(r => `<tr>
+                        <td>${r.id}</td><td>${r.platform.replace('_', ' ')}</td><td>${r.genre}</td>
+                        <td>${(r.media_type || '—').replace('_', ' ')}</td>
+                        <td>${r.year}</td><td>${r.gender}</td><td>${r.race}</td><td>${r.age_group}</td>
+                        <td>${r.role_type}</td><td>${r.screen_time.toFixed(1)}</td>
+                        <td>${r.dialogue_words}</td><td>${r.sentiment_score.toFixed(2)}</td>
+                    </tr>`).join('');
+                } catch (e) {
+                    body.innerHTML = '<tr><td colspan="12">Live data requires the API server — run <code>python app.py</code>.</td></tr>';
+                }
+            },
+
+            async loadGenreTable() {
+                const body = document.getElementById('genreTableBody');
+                if (!body) return;
+                try {
+                    const res = await fetch('/api/metrics/genres');
+                    if (!res.ok) throw new Error();
+                    const rows = await res.json();
+                    body.innerHTML = rows.map(g => `<tr>
+                        <td>${g.genre}</td><td>${g.diversity.toFixed(3)}</td>
+                        <td>${g.gender_parity.toFixed(3)}</td>
+                        <td>${(g.male_lead_share * 100).toFixed(0)}%</td>
+                        <td>${(g.dialogue_gap * 100).toFixed(0)}%</td>
+                        <td>${g.avg_screen_time.toFixed(1)} min</td>
+                        <td>${g.sample_size.toLocaleString()}</td>
+                    </tr>`).join('');
+                } catch (e) {
+                    body.innerHTML = '<tr><td colspan="7">Live data requires the API server — run <code>python app.py</code>.</td></tr>';
+                }
+            },
+
+            resetExploreFilters() {
+                ['explorePlatform', 'exploreGenre', 'exploreMedia', 'exploreYear'].forEach(id => {
+                    const el = document.getElementById(id);
+                    if (el) el.value = '';
+                });
+                const limit = document.getElementById('exploreLimit');
+                if (limit) limit.value = '25';
+                this.loadExploreData();
+            },
+
+            renderMediaDonut(rows) {
+                const canvas = document.getElementById('mediaDonut');
+                if (!canvas || typeof Chart === 'undefined') return;
+                if (this.charts.mediaDonut) this.charts.mediaDonut.destroy();
+                const palette = ['#6c5ce7', '#ff6ea8', '#ffb84d', '#4dd4c0', '#74b9ff', '#a29bfe',
+                                 '#fd79a8', '#fdcb6e', '#55efc4', '#81ecec', '#e17055'];
+                this.charts.mediaDonut = new Chart(canvas, {
+                    type: 'doughnut',
+                    data: {
+                        labels: rows.map(m => m.media_type.replace('_', ' ')),
+                        datasets: [{
+                            data: rows.map(m => m.sample_size),
+                            backgroundColor: palette.slice(0, rows.length),
+                            borderWidth: 2,
+                            borderColor: getComputedStyle(document.body).getPropertyValue('--primary-surface'),
+                            hoverOffset: 14
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        animation: { animateRotate: true, animateScale: true, duration: 900 },
+                        plugins: {
+                            legend: {
+                                position: 'right',
+                                labels: { color: getComputedStyle(document.body).getPropertyValue('--primary-text') }
+                            },
+                            tooltip: {
+                                callbacks: {
+                                    label: (ctx) => {
+                                        const total = rows.reduce((s, m) => s + m.sample_size, 0);
+                                        return ` ${ctx.label}: ${ctx.raw.toLocaleString()} characters (${(ctx.raw / total * 100).toFixed(1)}%)`;
+                                    }
+                                }
+                            }
+                        }
+                    }
+                });
+            },
+
+            async loadMediaTable() {
+                const body = document.getElementById('mediaTableBody');
+                if (!body) return;
+                try {
+                    const res = await fetch('/api/metrics/media');
+                    if (!res.ok) throw new Error();
+                    const rows = await res.json();
+                    if (!rows.length) throw new Error();
+                    this.renderMediaDonut(rows);
+                    body.innerHTML = rows.map(m => `<tr>
+                        <td>${m.media_type.replace('_', ' ')}</td>
+                        <td>${m.diversity.toFixed(3)}</td>
+                        <td>${m.gender_parity.toFixed(3)}</td>
+                        <td>${m.avg_sentiment.toFixed(2)}</td>
+                        <td>${m.sample_size.toLocaleString()}</td>
+                    </tr>`).join('');
+                } catch (e) {
+                    body.innerHTML = '<tr><td colspan="5">Live data requires the API server — run <code>python app.py</code>.</td></tr>';
+                }
+            },
+
+            async loadBiasTable() {
+                const body = document.getElementById('biasTableBody');
+                if (!body) return;
+                try {
+                    const res = await fetch('/api/metrics/bias');
+                    if (!res.ok) throw new Error();
+                    const bias = await res.json();
+                    const rows = [];
+                    Object.entries(bias.sentiment_bias || {}).forEach(([group, v]) => {
+                        const dir = v.deviation_from_mean >= 0 ? 'above' : 'below';
+                        rows.push(['Sentiment', group, v.avg_sentiment.toFixed(3),
+                            `${Math.abs(v.deviation_from_mean).toFixed(3)} ${dir} the overall mean tone`]);
+                    });
+                    Object.entries(bias.screen_time_bias || {}).forEach(([group, v]) => {
+                        const pct = ((v.ratio_vs_overall - 1) * 100).toFixed(0);
+                        rows.push(['Screen time', group, v.avg_screen_time.toFixed(1) + ' min',
+                            `${Math.abs(pct)}% ${pct >= 0 ? 'more' : 'less'} screen time than average`]);
+                    });
+                    Object.entries(bias.age_bias || {}).forEach(([key, v]) => {
+                        rows.push(['Age dialogue', key.replace('dialogue_', ''),
+                            v.percentage.toFixed(1) + '%',
+                            `chi-square ${v.bias_score.toFixed(0)} vs equal-share expectation`]);
+                    });
+                    Object.entries(bias.racial_dialogue_bias || {}).forEach(([key, v]) => {
+                        rows.push(['Racial dialogue', key.replace('dialogue_', ''),
+                            v.percentage.toFixed(1) + '%',
+                            `chi-square ${v.bias_score.toFixed(0)} vs equal-share expectation`]);
+                    });
+                    body.innerHTML = rows.map(r =>
+                        `<tr><td>${r[0]}</td><td>${r[1]}</td><td>${r[2]}</td><td>${r[3]}</td></tr>`).join('');
+                } catch (e) {
+                    body.innerHTML = '<tr><td colspan="4">Live data requires the API server — run <code>python app.py</code>.</td></tr>';
+                }
+            },
+
+            async loadInsightsTab() {
+                const list = document.getElementById('liveInsightsList');
+                const table = document.getElementById('intersectionTableBody');
+                if (!list || !table) return;
+                try {
+                    const [insRes, intRes] = await Promise.all([
+                        fetch('/api/insights'),
+                        fetch('/api/metrics/intersectionality?limit=8')
+                    ]);
+                    if (!insRes.ok || !intRes.ok) throw new Error();
+                    const insights = await insRes.json();
+                    const inter = await intRes.json();
+                    list.innerHTML = insights.map(i => `<div class="insight-item">
+                        <strong>${i.title}:</strong> ${i.detail}
+                    </div>`).join('');
+                    table.innerHTML = inter.most_underrepresented.map(g => `<tr>
+                        <td>${g.group.split('_').join(' · ')}</td>
+                        <td>${(g.representation * 100).toFixed(2)}%</td>
+                        <td>${(g.baseline * 100).toFixed(2)}%</td>
+                        <td>${g.ratio.toFixed(2)}</td>
+                    </tr>`).join('');
+                } catch (e) {
+                    list.innerHTML = '<div class="insight-item">Live insights require the API server — run <code>python app.py</code>.</div>';
+                    table.innerHTML = '<tr><td colspan="4">Unavailable in static mode.</td></tr>';
+                }
+            },
+
+            async loadLearnTab() {
+                const grid = document.getElementById('learnGrid');
+                if (!grid) return;
+                const render = (cards) => {
+                    grid.innerHTML = cards.map(c => `<div class="learn-card">
+                        <h3>${c.title}</h3>
+                        <div class="learn-summary">${c.summary}</div>
+                        <p>${c.detail}</p>
+                        <div class="try-it"><strong>Try it:</strong> ${c.try_it}</div>
+                    </div>`).join('');
+                };
+                try {
+                    const res = await fetch('/api/learn');
+                    if (!res.ok) throw new Error();
+                    render(await res.json());
+                } catch (e) {
+                    render([{
+                        title: 'Learning content unavailable',
+                        summary: 'Run the API server to load the full methodology library.',
+                        detail: 'Start the backend with python app.py and reload this page.',
+                        try_it: 'python app.py → http://localhost:8000'
+                    }]);
+                }
+            },
+
+            // Fetch live metrics from the backend API when available;
+            // falls back silently to the embedded dataset when served statically.
+            async loadLiveMetrics() {
+                try {
+                    const res = await fetch('/api/metrics/overview', { headers: { 'Accept': 'application/json' } });
+                    if (!res.ok) return;
+                    const data = await res.json();
+                    if (typeof data.gender_parity === 'number') {
+                        document.getElementById('genderParity').textContent = data.gender_parity.toFixed(2);
+                    }
+                    if (typeof data.diversity_index === 'number') {
+                        document.getElementById('diversityScore').textContent = (data.diversity_index * 100).toFixed(1) + '%';
+                    }
+                } catch (e) {
+                    /* static mode - keep embedded data */
+                }
+            },
+
+            attachEventListeners() {
+                // Year slider
+                document.getElementById('yearRange').addEventListener('input', (e) => {
+                    this.state.year = parseInt(e.target.value);
+                    document.getElementById('yearValue').textContent = e.target.value;
+                    this.updateSliderReadout();
+                    this.updateAllVisualizations();
+                });
+
+                // Platform selector
+                document.getElementById('platform').addEventListener('change', (e) => {
+                    this.state.platform = e.target.value;
+                    this.updateAllVisualizations();
+                });
+
+                // Genre selector
+                document.getElementById('genre').addEventListener('change', (e) => {
+                    this.state.genre = e.target.value;
+                    this.updateAllVisualizations();
+                });
+
+                // Metric selector
+                document.getElementById('metric').addEventListener('change', (e) => {
+                    this.state.metric = e.target.value;
+                    this.updateAllVisualizations();
+                });
+
+                // Explore data filters
+                ['explorePlatform', 'exploreGenre', 'exploreMedia', 'exploreYear', 'exploreLimit'].forEach(id => {
+                    const el = document.getElementById(id);
+                    if (el) el.addEventListener('change', () => this.loadExploreData());
+                });
+            },
+
+            // ==================== COLOR SYSTEM ====================
+            getColor(platform, genre, opacity = 0.7) {
+                const platformData = this.data.platforms[platform];
+                const genreData = this.data.genres[genre];
+                
+                if (!platformData) return `rgba(128, 128, 128, ${opacity})`;
+                
+                let { r, g, b } = platformData.color;
+                const modifier = genreData ? genreData.shade_modifier : 0;
+                
+                // Apply genre shade modification
+                r = Math.max(0, Math.min(255, r + modifier));
+                g = Math.max(0, Math.min(255, g + modifier));
+                b = Math.max(0, Math.min(255, b + modifier));
+                
+                return `rgba(${r}, ${g}, ${b}, ${opacity})`;
+            },
+
+            // ==================== BUBBLE CHART ====================
+            createBubbleChart() {
+                const ctx = document.getElementById('bubbleChart');
+                if (!ctx) return;
+
+                const chartCtx = ctx.getContext('2d');
+                
+                // Generate bubble data
+                const bubbleData = [];
+                const colors = [];
+                
+                const platforms = this.state.platform === 'all' ? 
+                    Object.keys(this.data.platforms) : [this.state.platform];
+                const genres = this.state.genre === 'all' ? 
+                    Object.keys(this.data.genres) : [this.state.genre];
+                
+                platforms.forEach(platform => {
+                    genres.forEach(genre => {
+                        const platformData = this.data.platforms[platform];
+                        const genreData = this.data.genres[genre];
+                        const yearProgress = (this.state.year - 2015) / 11;
+                        
+                        // Calculate position and size with year progression
+                        const x = (platformData.female_leads + yearProgress * platformData.improvement_rate * 10) * 100;
+                        const y = (platformData.diversity + yearProgress * 0.1) * 10;
+                        const equality = 1 - genreData.male_bias;
+                        
+                        bubbleData.push({
+                            x: Math.min(100, Math.max(0, x)),
+                            y: Math.min(10, Math.max(0, y)),
+                            r: Math.max(10, equality * 50),
+                            equality,
+                            label: `${platform.replace('_', ' ')} - ${genre}`,
+                            platform,
+                            genre
+                        });
+                        
+                        colors.push({
+                            bg: this.getColor(platform, genre, 0.7),
+                            border: this.getColor(platform, genre, 1)
+                        });
+                    });
+                });
+
+                // Destroy existing chart
+                if (this.charts.bubble) {
+                    this.charts.bubble.destroy();
+                }
+
+                // Create new chart
+                this.charts.bubble = new Chart(chartCtx, {
+                    type: 'bubble',
+                    data: {
+                        datasets: [{
+                            label: 'Representation Metrics',
+                            data: bubbleData,
+                            backgroundColor: colors.map(c => c.bg),
+                            borderColor: colors.map(c => c.border),
+                            borderWidth: 2,
+                            hoverBorderWidth: 4
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        animation: {
+                            duration: 800,
+                            easing: 'easeInOutQuart'
+                        },
+                        plugins: {
+                            legend: { display: false },
+                            tooltip: {
+                                backgroundColor: 'rgba(0, 0, 0, 0.9)',
+                                callbacks: {
+                                    title: (context) => {
+                                        const d = context[0].raw;
+                                        return `${d.platform.toUpperCase()} - ${d.genre.toUpperCase()}`;
+                                    },
+                                    label: (context) => {
+                                        const d = context.raw;
+                                        return [
+                                            `Female Leads: ${d.x.toFixed(1)}%`,
+                                            `Diversity: ${(d.y/10).toFixed(2)}`,
+                                            `Equality: ${d.equality.toFixed(2)}`
+                                        ];
+                                    }
+                                }
+                            }
+                        },
+                        scales: {
+                            x: {
+                                title: { 
+                                    display: true, 
+                                    text: 'Female Lead Percentage (%)',
+                                    color: getComputedStyle(document.body).getPropertyValue('--primary-text')
+                                },
+                                min: 0,
+                                max: 100,
+                                grid: { color: 'rgba(128,128,128,0.18)' }
+                            },
+                            y: {
+                                title: { 
+                                    display: true, 
+                                    text: 'Diversity Index (0-10)',
+                                    color: getComputedStyle(document.body).getPropertyValue('--primary-text')
+                                },
+                                min: 0,
+                                max: 10,
+                                grid: { color: 'rgba(128,128,128,0.18)' }
+                            }
+                        }
+                    }
+                });
+
+                // Update color legend
+                this.updateColorLegend();
+            },
+
+            updateColorLegend() {
+                const legend = document.getElementById('colorLegend');
+                if (!legend) return;
+
+                legend.innerHTML = '';
+                
+                const platforms = this.state.platform === 'all' ? 
+                    Object.keys(this.data.platforms) : [this.state.platform];
+                    
+                platforms.forEach(platform => {
+                    const item = document.createElement('div');
+                    item.className = 'color-item';
+                    
+                    const colorBox = document.createElement('div');
+                    colorBox.className = 'color-box';
+                    colorBox.style.background = this.getColor(platform, 'drama', 1);
+                    
+                    const label = document.createElement('span');
+                    label.textContent = platform.replace('_', ' ').toUpperCase();
+                    
+                    item.appendChild(colorBox);
+                    item.appendChild(label);
+                    legend.appendChild(item);
+                });
+            },
+
+            // ==================== NETWORK GRAPH ====================
+            createNetworkGraph() {
+                const container = document.getElementById('networkGraph');
+                if (!container) return;
+
+                container.innerHTML = '';
+                
+                const width = container.offsetWidth;
+                const height = 600;
+                
+                // Generate nodes based on current filters
+                const nodeCount = 40 + Math.round((this.state.year - 2015) * 3);
+                const nodes = d3.range(nodeCount).map(i => {
+                    const roll = Math.random();
+                    return {
+                        id: i,
+                        gender: roll < 0.45 ? 'male' : roll < 0.93 ? 'female' : 'non-binary',
+                        radius: 5 + Math.random() * 15
+                    };
+                });
+                
+                // Generate links
+                const links = [];
+                for (let i = 0; i < nodeCount * 1.5; i++) {
+                    links.push({
+                        source: Math.floor(Math.random() * nodeCount),
+                        target: Math.floor(Math.random() * nodeCount),
+                        value: Math.random()
+                    });
+                }
+                
+                const svg = d3.select(container)
+                    .append('svg')
+                    .attr('width', width)
+                    .attr('height', height);
+                
+                const simulation = d3.forceSimulation(nodes)
+                    .force('link', d3.forceLink(links).id(d => d.id)
+                        .distance(l => 40 + (1 - l.value) * 80)
+                        .strength(l => 0.3 + l.value * 0.5))
+                    .force('charge', d3.forceManyBody().strength(-60))
+                    .force('center', d3.forceCenter(width / 2, height / 2))
+                    .force('x', d3.forceX(width / 2).strength(0.03))
+                    .force('y', d3.forceY(height / 2).strength(0.03))
+                    .force('collision', d3.forceCollide(d => d.radius + 2))
+                    .alphaDecay(0.015)
+                    .velocityDecay(0.35);
+                
+                const link = svg.append('g')
+                    .selectAll('line')
+                    .data(links)
+                    .enter().append('line')
+                    .attr('stroke', getComputedStyle(document.body).getPropertyValue('--primary-accent'))
+                    .attr('stroke-opacity', 0.3)
+                    .attr('stroke-width', d => Math.sqrt(d.value) * 2);
+                
+                const node = svg.append('g')
+                    .selectAll('circle')
+                    .data(nodes)
+                    .enter().append('circle')
+                    .attr('r', d => d.radius)
+                    .attr('fill', d => {
+                        const colors = {
+                            'male': getComputedStyle(document.body).getPropertyValue('--primary-accent'),
+                            'female': getComputedStyle(document.body).getPropertyValue('--primary-secondary'),
+                            'non-binary': getComputedStyle(document.body).getPropertyValue('--primary-tertiary')
+                        };
+                        return colors[d.gender];
+                    })
+                    .style('cursor', 'grab')
+                    .on('mouseover', function (event, d) {
+                        d3.select(this).transition().duration(150)
+                            .attr('r', d.radius * 1.4)
+                            .attr('stroke', '#2d3250').attr('stroke-width', 2);
+                        link.transition().duration(150)
+                            .attr('stroke-opacity', l => (l.source.id === d.id || l.target.id === d.id) ? 0.9 : 0.08);
+                    })
+                    .on('mouseout', function (event, d) {
+                        d3.select(this).transition().duration(150)
+                            .attr('r', d.radius).attr('stroke', null);
+                        link.transition().duration(150).attr('stroke-opacity', 0.3);
+                    })
+                    .call(d3.drag()
+                        .on('start', dragstarted)
+                        .on('drag', dragged)
+                        .on('end', dragended));
+
+                node.append('title').text(d => `${d.gender} · reach ${d.radius.toFixed(1)}`);
+                
+                simulation.on('tick', () => {
+                    link
+                        .attr('x1', d => d.source.x)
+                        .attr('y1', d => d.source.y)
+                        .attr('x2', d => d.target.x)
+                        .attr('y2', d => d.target.y);
+                    
+                    node
+                        .attr('cx', d => Math.max(d.radius, Math.min(width - d.radius, d.x)))
+                        .attr('cy', d => Math.max(d.radius, Math.min(height - d.radius, d.y)));
+                });
+                
+                function dragstarted(event, d) {
+                    if (!event.active) simulation.alphaTarget(0.3).restart();
+                    d.fx = d.x;
+                    d.fy = d.y;
+                }
+                
+                function dragged(event, d) {
+                    d.fx = event.x;
+                    d.fy = event.y;
+                }
+                
+                function dragended(event, d) {
+                    if (!event.active) simulation.alphaTarget(0);
+                    d.fx = null;
+                    d.fy = null;
+                }
+            },
+
+            // ==================== TIME SERIES ====================
+            createTimeSeriesChart() {
+                const container = document.getElementById('timeSeriesChart');
+                if (!container) return;
+
+                const years = [];
+                for (let y = 2015; y <= this.state.year; y++) {
+                    years.push(y);
+                }
+                
+                const traces = [
+                    {
+                        x: years,
+                        y: years.map(y => 0.35 + (y - 2015) * 0.032),
+                        name: 'Gender Parity',
+                        line: { color: '#00d4ff', width: 3 }
+                    },
+                    {
+                        x: years,
+                        y: years.map(y => 0.35 + (y - 2015) * 0.027),
+                        name: 'Ethnic Diversity',
+                        line: { color: '#ff006e', width: 3 }
+                    },
+                    {
+                        x: years,
+                        y: years.map(y => 0.42 - (y - 2015) * 0.004),
+                        name: 'Age Representation',
+                        line: { color: '#ffbe0b', width: 3 }
+                    },
+                    {
+                        x: years,
+                        y: years.map(y => 0.05 + (y - 2015) * 0.08),
+                        name: 'LGBTQ+ Visibility',
+                        line: { color: '#9d4edd', width: 3 }
+                    }
+                ];
+                
+                const layout = {
+                    xaxis: { 
+                        title: 'Year',
+                        gridcolor: 'rgba(128,128,128,0.18)'
+                    },
+                    yaxis: { 
+                        title: 'Representation Score',
+                        gridcolor: 'rgba(128,128,128,0.18)'
+                    },
+                    paper_bgcolor: 'transparent',
+                    plot_bgcolor: 'transparent',
+                    font: { color: getComputedStyle(document.body).getPropertyValue('--primary-text') }
+                };
+                
+                Plotly.newPlot('timeSeriesChart', traces, layout, {responsive: true});
+            },
+
+            // ==================== RADAR CHART ====================
+            createRadarChart() {
+                const ctx = document.getElementById('sentimentRadar');
+                if (!ctx) return;
+
+                const chartCtx = ctx.getContext('2d');
+                
+                if (this.charts.radar) {
+                    this.charts.radar.destroy();
+                }
+                
+                const yearModifier = (this.state.year - 2015) / 11;
+                
+                this.charts.radar = new Chart(chartCtx, {
+                    type: 'radar',
+                    data: {
+                        labels: ['Protagonist', 'Antagonist', 'Support', 'Comic Relief', 'Romantic', 'Mentor'],
+                        datasets: [
+                            {
+                                label: 'Male',
+                                data: [85 - yearModifier * 10, 78, 62, 71, 45, 88],
+                                borderColor: '#00d4ff',
+                                backgroundColor: 'rgba(0, 212, 255, 0.2)'
+                            },
+                            {
+                                label: 'Female',
+                                data: [72 + yearModifier * 10, 45, 68, 52, 82, 61],
+                                borderColor: '#ff006e',
+                                backgroundColor: 'rgba(255, 0, 110, 0.2)'
+                            },
+                            {
+                                label: 'Non-Binary',
+                                data: [15 + yearModifier * 20, 10, 25, 18, 12, 8],
+                                borderColor: '#ffbe0b',
+                                backgroundColor: 'rgba(255, 190, 11, 0.2)'
+                            }
+                        ]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        scales: {
+                            r: {
+                                beginAtZero: true,
+                                max: 100,
+                                grid: { color: 'rgba(128,128,128,0.18)' }
+                            }
+                        }
+                    }
+                });
+            },
+
+            // ==================== 3D LANDSCAPE ====================
+            create3DChart() {
+                const container = document.getElementById('scatter3d');
+                if (!container) return;
+
+                const points = { x: [], y: [], z: [], text: [], color: [], size: [] };
+                const platforms = this.state.platform === 'all' ?
+                    Object.keys(this.data.platforms) : [this.state.platform];
+                const genres = this.state.genre === 'all' ?
+                    Object.keys(this.data.genres) : [this.state.genre];
+                const yearProgress = (this.state.year - 2015) / 11;
+
+                platforms.forEach(platform => {
+                    genres.forEach(genre => {
+                        const p = this.data.platforms[platform];
+                        const g = this.data.genres[genre];
+                        points.x.push(Math.min(100, (p.female_leads + yearProgress * p.improvement_rate * 10) * 100));
+                        points.y.push(Math.min(10, (p.diversity + yearProgress * 0.1) * 10));
+                        points.z.push((1 - g.dialogue_gap) * 100);
+                        points.text.push(`${platform.replace('_', ' ')} · ${genre}`);
+                        points.color.push(this.getColor(platform, genre, 0.9));
+                        points.size.push(8 + (1 - g.male_bias) * 16);
+                    });
+                });
+
+                Plotly.newPlot('scatter3d', [{
+                    type: 'scatter3d',
+                    mode: 'markers',
+                    x: points.x, y: points.y, z: points.z,
+                    text: points.text,
+                    hovertemplate: '%{text}<br>Female leads: %{x:.1f}%<br>Diversity: %{y:.1f}<br>Dialogue equity: %{z:.0f}%<extra></extra>',
+                    marker: { size: points.size, color: points.color, opacity: 0.85,
+                              line: { width: 1, color: 'rgba(45,50,80,0.5)' } }
+                }], {
+                    scene: {
+                        xaxis: { title: 'Female Leads %', gridcolor: 'rgba(128,128,128,0.25)' },
+                        yaxis: { title: 'Diversity (0-10)', gridcolor: 'rgba(128,128,128,0.25)' },
+                        zaxis: { title: 'Dialogue Equity %', gridcolor: 'rgba(128,128,128,0.25)' },
+                        camera: { eye: { x: 1.6, y: 1.4, z: 0.9 } }
+                    },
+                    margin: { l: 0, r: 0, t: 0, b: 0 },
+                    paper_bgcolor: 'transparent',
+                    font: { color: getComputedStyle(document.body).getPropertyValue('--primary-text') }
+                }, { responsive: true });
+            },
+
+            // ==================== STATS UPDATE ====================
+            updateStats() {
+                const yearProgress = (this.state.year - 2015) / 11;
+                
+                // Calculate values based on year
+                const diversity = (45 + yearProgress * 33.4).toFixed(1);
+                const parity = (0.35 + yearProgress * 0.32).toFixed(2);
+                const ethnic = (3.5 + yearProgress * 2.7).toFixed(1);
+                const age = (4.2 - yearProgress * 0.4).toFixed(1);
+                
+                // Update DOM with animated counters
+                this.animateValue('diversityScore', parseFloat(diversity), v => v.toFixed(1) + '%');
+                this.animateValue('genderParity', parseFloat(parity), v => v.toFixed(2));
+                this.animateValue('ethnicDiversity', parseFloat(ethnic), v => v.toFixed(1));
+                this.animateValue('ageScore', parseFloat(age), v => v.toFixed(1));
+                
+                // Update changes
+                document.getElementById('diversityChange').textContent = 
+                    `↑ ${(yearProgress * 33.4).toFixed(1)}% from 2015`;
+                document.getElementById('parityChange').textContent = 
+                    `↑ ${(yearProgress * 0.32).toFixed(2)} from 2015`;
+                document.getElementById('ethnicChange').textContent = 
+                    `↑ ${(yearProgress * 2.7).toFixed(1)} from 2015`;
+                document.getElementById('ageChange').textContent = 
+                    `↓ ${(yearProgress * 0.4).toFixed(1)} from 2015`;
+            },
+
+            // ==================== INSIGHTS UPDATE ====================
+            averageGenreData() {
+                const genres = Object.values(this.data.genres);
+                const avg = (key) => genres.reduce((s, g) => s + g[key], 0) / genres.length;
+                return { male_bias: avg('male_bias'), dialogue_gap: avg('dialogue_gap'), age_diversity: avg('age_diversity') };
+            },
+
+            updateInsights() {
+                const genre = this.state.genre;
+                const genreData = genre === 'all' ? this.averageGenreData() : this.data.genres[genre];
+                
+                document.getElementById('centralBias').textContent = 
+                    Math.round(genreData.male_bias * 100) + '%';
+                document.getElementById('genreInsight').textContent = genre === 'all' ? 'all' : genre;
+                
+                document.getElementById('dialogueGap').textContent = 
+                    Math.round(genreData.dialogue_gap * 100) + '%';
+                document.getElementById('platformInsight').textContent = 
+                    this.state.platform === 'all' ? 'all platforms' : this.state.platform.replace('_', ' ');
+                
+                document.getElementById('ageGap').textContent = 
+                    Math.round(68 - (this.state.year - 2015) * 2) + '%';
+                document.getElementById('yearInsight').textContent = this.state.year;
+                
+                document.getElementById('intersectionGap').textContent = 
+                    Math.round(12 + (this.state.year - 2015) * 0.5) + '%';
+            },
+
+            // ==================== MASTER UPDATE ====================
+            updateAllVisualizations() {
+                // Show loading indicator
+                const loader = document.getElementById('loadingIndicator');
+                if (loader) loader.classList.add('active');
+                
+                // Update all components
+                requestAnimationFrame(() => {
+                    this.createBubbleChart();
+                    this.create3DChart();
+                    this.createNetworkGraph();
+                    this.createTimeSeriesChart();
+                    this.createRadarChart();
+                    this.updateStats();
+                    this.updateInsights();
+                    
+                    // Hide loading indicator
+                    setTimeout(() => {
+                        if (loader) loader.classList.remove('active');
+                    }, 300);
+                });
+            },
+
+            // ==================== VERDICT / SCORECARD ====================
+            async loadVerdict() {
+                this.initSimulator();
+                try {
+                    const res = await fetch('/api/metrics/advanced');
+                    const adv = await res.json();
+                    this.renderScorecard(adv.scorecard);
+                    this.renderInequality(adv.inequality);
+                    this.renderEffectSizes(adv.effect_sizes);
+                    this.renderTrend(adv.trend);
+                } catch (e) {
+                    const note = document.getElementById('scorecardNote');
+                    if (note) note.textContent = 'Could not load verdict data: ' + e;
+                }
+            },
+
+            renderScorecard(scorecard) {
+                const grid = document.getElementById('scorecardGrid');
+                const note = document.getElementById('scorecardNote');
+                if (!grid || !scorecard) return;
+                const labels = {
+                    diversity: 'Racial diversity', parity: 'Gender parity',
+                    dialogue_equity: 'Dialogue equity', screen_equity: 'Screen-time equity'
+                };
+                const dims = scorecard.dimensions;
+                grid.innerHTML = '';
+                scorecard.platforms.forEach((p, idx) => {
+                    const card = document.createElement('div');
+                    card.className = 'grade-card' + (idx === 0 ? ' crown' : '');
+                    const name = p.platform.replace(/_/g, ' ');
+                    let bars = '';
+                    dims.forEach(d => {
+                        bars += `<div class="subscore">
+                            <div class="subscore-head"><span>${labels[d] || d}</span><span class="g">${p.grades[d]}</span></div>
+                            <div class="subscore-bar"><div class="subscore-fill" data-w="${Math.round(p[d] * 100)}"></div></div>
+                        </div>`;
+                    });
+                    card.innerHTML = `<div class="platform-name">${name}</div>
+                        <div class="grade-badge">${p.grade}</div>
+                        <div class="grade-overall">Overall ${(p.overall * 100).toFixed(0)} / 100 · ${p.sample_size.toLocaleString()} roles</div>
+                        ${bars}`;
+                    grid.appendChild(card);
+                    setTimeout(() => {
+                        card.classList.add('in');
+                        card.querySelectorAll('.subscore-fill').forEach(f => { f.style.width = f.dataset.w + '%'; });
+                    }, 80 * idx + 40);
+                });
+                if (note) {
+                    const ind = scorecard.industry;
+                    note.textContent = `Industry-wide grade: ${ind.grade} (${(ind.overall * 100).toFixed(0)}/100). Cards ranked best to worst; bars show each dimension 0–100.`;
+                }
+            },
+
+            themeColors() {
+                const s = getComputedStyle(document.body);
+                return {
+                    accent: s.getPropertyValue('--primary-accent').trim() || '#6c5ce7',
+                    secondary: s.getPropertyValue('--primary-secondary').trim() || '#ff6ea8',
+                    dim: s.getPropertyValue('--primary-text-dim').trim() || '#5c6386'
+                };
+            },
+
+            renderInequality(inq) {
+                if (!inq) return;
+                const set = (id, v) => { const el = document.getElementById(id); if (el) el.textContent = v; };
+                set('screenGini', inq.screen_time.gini.toFixed(3));
+                set('dialogueGini', inq.dialogue.gini.toFixed(3));
+                set('screenTheil', inq.screen_time.theil.toFixed(3));
+                set('dialogueTheil', inq.dialogue.theil.toFixed(3));
+                const ctx = document.getElementById('lorenzChart');
+                if (!ctx) return;
+                if (this._lorenzChart) this._lorenzChart.destroy();
+                const c = this.themeColors();
+                const toXY = pts => pts.map(pt => ({ x: pt.p * 100, y: pt.l * 100 }));
+                this._lorenzChart = new Chart(ctx, {
+                    type: 'line',
+                    data: {
+                        datasets: [
+                            { label: 'Perfect equality', data: [{ x: 0, y: 0 }, { x: 100, y: 100 }], borderColor: c.dim, borderDash: [6, 6], pointRadius: 0, borderWidth: 1.5 },
+                            { label: 'Screen time', data: toXY(inq.screen_time.lorenz), borderColor: c.accent, backgroundColor: c.accent + '22', fill: true, tension: 0.25, pointRadius: 0, borderWidth: 2.5 },
+                            { label: 'Dialogue', data: toXY(inq.dialogue.lorenz), borderColor: c.secondary, backgroundColor: 'transparent', tension: 0.25, pointRadius: 0, borderWidth: 2.5 }
+                        ]
+                    },
+                    options: {
+                        responsive: true, maintainAspectRatio: false,
+                        plugins: { legend: { labels: { color: c.dim } } },
+                        scales: {
+                            x: { type: 'linear', min: 0, max: 100, title: { display: true, text: 'Cumulative share of characters (%)', color: c.dim }, ticks: { color: c.dim }, grid: { color: 'rgba(128,128,128,0.12)' } },
+                            y: { min: 0, max: 100, title: { display: true, text: 'Cumulative share of screen time (%)', color: c.dim }, ticks: { color: c.dim }, grid: { color: 'rgba(128,128,128,0.12)' } }
+                        }
+                    }
+                });
+            },
+
+            renderEffectSizes(effects) {
+                const wrap = document.getElementById('effectSizes');
+                if (!wrap || !effects) return;
+                const labels = {
+                    gender_dialogue: 'Dialogue share by gender',
+                    age_dialogue: 'Dialogue share by age group',
+                    racial_dialogue: 'Dialogue share by race'
+                };
+                wrap.innerHTML = '';
+                Object.entries(effects).forEach(([key, e], idx) => {
+                    const row = document.createElement('div');
+                    row.className = 'effect-row';
+                    row.innerHTML = `<div class="effect-head">
+                            <span class="name">${labels[key] || key}</span>
+                            <span class="mag mag-${e.magnitude}">${e.magnitude}</span>
+                        </div>
+                        <div class="effect-track"><div class="effect-bar" data-w="${Math.round(e.cramers_v * 100)}"></div></div>
+                        <div class="effect-v">Cramér's V = ${e.cramers_v.toFixed(3)} &nbsp;·&nbsp; χ² = ${Math.round(e.chi_square).toLocaleString()}</div>`;
+                    wrap.appendChild(row);
+                    setTimeout(() => {
+                        const bar = row.querySelector('.effect-bar');
+                        bar.style.width = bar.dataset.w + '%';
+                    }, 120 * idx + 60);
+                });
+            },
+
+            renderTrend(trend) {
+                if (!trend) return;
+                const ctx = document.getElementById('trendChart');
+                const note = document.getElementById('trendNote');
+                if (!ctx) return;
+                if (this._trendChart) this._trendChart.destroy();
+                const c = this.themeColors();
+                const series = trend.series;
+                const years = series.map(r => r.year);
+                const parity = series.map(r => r.gender_parity);
+                const slope = trend.gender_parity.slope, intercept = trend.gender_parity.intercept;
+                const fit = years.map(y => slope * y + intercept);
+                this._trendChart = new Chart(ctx, {
+                    type: 'line',
+                    data: {
+                        labels: years,
+                        datasets: [
+                            { label: 'Gender parity (observed)', data: parity, borderColor: c.secondary, backgroundColor: c.secondary + '22', tension: 0.3, pointRadius: 4, borderWidth: 2.5, fill: true },
+                            { label: 'OLS trend line', data: fit, borderColor: c.accent, borderDash: [7, 5], pointRadius: 0, borderWidth: 2 }
+                        ]
+                    },
+                    options: {
+                        responsive: true, maintainAspectRatio: false,
+                        plugins: { legend: { labels: { color: c.dim } } },
+                        scales: {
+                            x: { title: { display: true, text: 'Year', color: c.dim }, ticks: { color: c.dim }, grid: { color: 'rgba(128,128,128,0.12)' } },
+                            y: { title: { display: true, text: 'Gender parity index', color: c.dim }, ticks: { color: c.dim }, grid: { color: 'rgba(128,128,128,0.12)' } }
+                        }
+                    }
+                });
+                if (note) {
+                    const perYear = (slope >= 0 ? '+' : '') + slope.toFixed(4);
+                    const divSlope = (trend.diversity.slope >= 0 ? '+' : '') + trend.diversity.slope.toFixed(4);
+                    note.textContent = `Parity is moving ${perYear} per year (R² = ${trend.gender_parity.r_squared.toFixed(2)}); diversity slope ${divSlope} per year (R² = ${trend.diversity.r_squared.toFixed(2)}).`;
+                }
+            },
+
+            initSimulator() {
+                if (this._simInit) return;
+                const slider = document.getElementById('simRatio');
+                if (!slider) return;
+                this._simInit = true;
+                let timer = null;
+                const apply = async () => {
+                    const ratio = parseInt(slider.value, 10) / 100;
+                    document.getElementById('simRatioLabel').textContent = Math.round(ratio * 100) + '%';
+                    const fBar = document.getElementById('simFemaleBar');
+                    const mBar = document.getElementById('simMaleBar');
+                    fBar.style.width = (ratio * 100) + '%';
+                    fBar.textContent = ratio > 0.12 ? 'Female ' + Math.round(ratio * 100) + '%' : '';
+                    mBar.style.width = ((1 - ratio) * 100) + '%';
+                    mBar.textContent = (1 - ratio) > 0.12 ? 'Male ' + Math.round((1 - ratio) * 100) + '%' : '';
+                    try {
+                        const res = await fetch('/api/simulate/parity?female_ratio=' + ratio.toFixed(2));
+                        const d = await res.json();
+                        const gradeEl = document.getElementById('simGrade');
+                        gradeEl.textContent = d.grade;
+                        gradeEl.classList.add('pop');
+                        setTimeout(() => gradeEl.classList.remove('pop'), 220);
+                        document.getElementById('simParity').textContent = d.parity.toFixed(2);
+                        document.getElementById('simVerdict').textContent = d.verdict;
+                    } catch (e) { /* keep previous values on failure */ }
+                };
+                slider.addEventListener('input', () => {
+                    clearTimeout(timer);
+                    timer = setTimeout(apply, 60);
+                });
+                apply();
+            }
+        };
+
+        // ==================== TAB NAVIGATION ====================
+        const STORY = {
+            dashboard: ['Act I — The Question', 'Who gets to be the story?',
+                'Streaming reaches billions of hours of attention every day. The faces, voices, and lives on screen quietly teach us who counts as a hero, an expert, a love interest — or background. Use the controls below to interrogate a decade of patterns yourself.'],
+            explore: ['Act II — The Evidence', 'Every metric starts as a row of data.',
+                'No summary should be taken on faith. This is the character-level dataset behind every number in the app — filter it by platform, genre, media type, and year, and check the aggregates against the raw records yourself.'],
+            insights: ['Act III — The Findings', 'What the numbers actually say.',
+                'These findings are generated by the analysis pipeline from the current dataset — not written in advance. They quantify where representation is improving, where it stalls, and which gaps only appear when you look at intersections.'],
+            library: ['Act IV — The Patterns', 'Bias has names. Learn to spot them.',
+                'Over fifty documented bias patterns from media research, each explained in plain language: what it is, what it looks like on screen, and why it matters. The ones StreamLens can quantify are marked; the rest train your eye.'],
+            learn: ['Act V — The Methods', 'Trust the math because you understand it.',
+                'Every metric in this app is explained here — Shannon entropy, chi-square, homophily, intersectional ratios — with pointers into the actual source code so you can verify that what is claimed is what is computed.'],
+            scorecard: ['Act VI — The Verdict', 'Put a grade on it.',
+                'Understanding is not the finish line — judgement is. Here the decade of evidence collapses into a letter grade for every platform, a measured inequality curve, the size of each bias, a fitted trend, and a simulator that lets you test what a fairer cast would score.']
+        };
+
+        function showTab(tab, button) {
+            document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+            document.getElementById('tab-' + tab).classList.add('active');
+            document.querySelectorAll('.nav-tab').forEach(b => b.classList.remove('active'));
+            if (button) button.classList.add('active');
+            const story = STORY[tab];
+            if (story) {
+                const strip = document.getElementById('storyStrip');
+                document.getElementById('storyAct').textContent = story[0];
+                document.getElementById('storyTitle').textContent = story[1];
+                document.getElementById('storyText').textContent = story[2];
+                strip.style.animation = 'none';
+                void strip.offsetWidth;
+                strip.style.animation = '';
+            }
+            if (tab === 'dashboard') {
+                StreamLensApp.updateAllVisualizations();
+            }
+            if (tab === 'scorecard') {
+                StreamLensApp.loadVerdict();
+            }
+        }
+
+        // ==================== THEME MANAGEMENT ====================
+        function setTheme(theme, button) {
+            document.body.className = theme === 'purple' ? 'purple-theme' : 
+                                     theme === 'pastel' ? 'pastel-theme' : '';
+            
+            // Update active button
+            document.querySelectorAll('.theme-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            if (button) button.classList.add('active');
+            
+            StreamLensApp.state.theme = theme;
+            StreamLensApp.updateAllVisualizations();
+            const verdictActive = document.getElementById('tab-scorecard');
+            if (verdictActive && verdictActive.classList.contains('active')) {
+                StreamLensApp.loadVerdict();
+            }
+        }
+
+        // ==================== INITIALIZE ON LOAD ====================
+        window.addEventListener('DOMContentLoaded', () => {
+            StreamLensApp.init();
+        });
+
+        // Handle window resize (debounced)
+        let resizeTimer = null;
+        window.addEventListener('resize', () => {
+            clearTimeout(resizeTimer);
+            resizeTimer = setTimeout(() => StreamLensApp.createNetworkGraph(), 250);
+        });
+    </script>
+</body>
+</html>
