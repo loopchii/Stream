@@ -9,6 +9,16 @@
 </div>
 
 <div align="center">
+
+### [▶ Launch the Live Dashboard](https://cazzy-aporbo.github.io/StreamLens-Analytics/)
+
+[![Open Live App](https://img.shields.io/badge/Live%20Demo-Open%20StreamLens%20in%20your%20browser-FFB6C1?style=for-the-badge)](https://cazzy-aporbo.github.io/StreamLens-Analytics/)
+
+<sub>The full dashboard — all six screens, charts, the Verdict scorecard, and the What‑If simulator — runs entirely in your browser. No install, no server. Every number is pre‑computed by the same Python pipeline in this repo (run `python build_static.py` to regenerate), so the live figures match the API exactly.</sub>
+
+</div>
+
+<div align="center">
   
 <div align="center">
   
