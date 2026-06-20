@@ -4,9 +4,13 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>StreamLens Analytics: Advanced Media Bias Analysis Platform</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600&family=Inter:wght@400;500;600;700&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/d3/7.8.5/d3.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/plotly.js/2.27.0/plotly.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.0/chart.umd.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/echarts/5.4.3/echarts.min.js"></script>
     <style>
         :root {
             /* Primary Theme — Aurora (light, airy) */
@@ -1173,6 +1177,54 @@
                 }));
             }
             if (path === '/api/results' || path === '/api/export') return load('n5000/results.json').then(J);
+            // ---- Music Virality (real data) ----
+            if (path === '/api/music/overview') return load('music/overview.json').then(J);
+            if (path === '/api/music/powerlaw') return load('music/powerlaw.json').then(J);
+            if (path === '/api/music/inequality') return load('music/inequality.json').then(J);
+            if (path === '/api/music/correlations') return load('music/correlations.json').then(J);
+            if (path === '/api/music/archetypes') return load('music/archetypes.json').then(J);
+            if (path === '/api/music/network') return load('music/network.json').then(J);
+            if (path === '/api/music/predictability') return load('music/predictability.json').then(J);
+            if (path === '/api/music/status') return load('music/status.json').then(J);
+            if (path === '/api/music/songs') {
+                return load('music/songs.json').then(function (rows) {
+                    var key = qs.sort_by || 'view_count';
+                    var out = rows.slice().sort(function (a, b) { return (b[key] || 0) - (a[key] || 0); });
+                    return J(out.slice(0, parseInt(qs.limit || '100', 10)));
+                });
+            }
+            if (path === '/api/music/refresh')
+                return Promise.resolve(J({ detail: 'Live refresh needs the Python API + a YouTube key.' }, 503));
+            if (path === '/api/music/simulate') {
+                var d = parseFloat(qs.duration_min || '3.2');
+                var fo = parseFloat(qs.channel_follower_count || '5000000');
+                var tg = parseFloat(qs.tag_count || '20');
+                var of = parseFloat(qs.is_official || '1');
+                return load('music/simulate.json').then(function (sim) {
+                    // Snap to the nearest grid point of the real RandomForest model.
+                    var ax = sim.axes, best = null, bestD = Infinity;
+                    function nrm(v, arr) {
+                        var lo = arr[0], hi = arr[arr.length - 1];
+                        return hi > lo ? (v - lo) / (hi - lo) : 0;
+                    }
+                    var qd = nrm(d, ax.duration_min);
+                    var qf = nrm(Math.log10(Math.max(1, fo)), ax.channel_follower_count.map(function (x) { return Math.log10(Math.max(1, x)); }));
+                    var qt = nrm(tg, ax.tag_count);
+                    for (var i = 0; i < sim.grid.length; i++) {
+                        var g = sim.grid[i];
+                        var gd = nrm(g.duration_min, ax.duration_min);
+                        var gf = nrm(Math.log10(Math.max(1, g.channel_follower_count)), ax.channel_follower_count.map(function (x) { return Math.log10(Math.max(1, x)); }));
+                        var gt = nrm(g.tag_count, ax.tag_count);
+                        var dist = Math.pow(gd - qd, 2) + Math.pow(gf - qf, 2) + Math.pow(gt - qt, 2) + Math.pow((g.is_official - of) * 0.5, 2);
+                        if (dist < bestD) { bestD = dist; best = g; }
+                    }
+                    return J({
+                        inputs: { duration_min: d, channel_follower_count: fo, tag_count: tg, is_official: of },
+                        predicted_views: best.predicted_views, percentile: best.percentile,
+                        grade: best.grade, verdict: best.verdict
+                    });
+                });
+            }
             return Promise.resolve(J({ detail: 'Not found in static build' }, 404));
         };
         document.addEventListener('DOMContentLoaded', function () {
@@ -1181,6 +1233,139 @@
         });
     })();
     </script>
+    <style>
+        /* ===================================================================
+           Music Virality (Real Data) — a distinct, editorial "long-read"
+           aesthetic: calm aurora palette, generous whitespace, serif display
+           type, and movement-by-movement organisation rather than a grid of
+           identical SaaS cards. Fully responsive (single column on phones).
+           =================================================================== */
+        .nav-tab-music { position: relative; }
+        .nav-real {
+            display: inline-block; margin-left: 0.5rem; font-size: 0.55rem;
+            letter-spacing: 0.12em; font-weight: 700; color: #fff;
+            background: linear-gradient(120deg, #16b8a6, #3b82f6);
+            padding: 0.12rem 0.4rem; border-radius: 999px; vertical-align: middle;
+            box-shadow: 0 2px 8px rgba(59,130,246,0.35);
+        }
+        #tab-music {
+            --ink: #1d2233; --ink-dim: #5a6178; --paper: #ffffff;
+            --teal: #0fb6a8; --indigo: #5566f6; --rose: #f0779f; --amber: #f4a259;
+            --line: rgba(40,46,86,0.10);
+            --halo: radial-gradient(1200px 600px at 12% -8%, rgba(85,102,246,0.10), transparent 60%),
+                    radial-gradient(900px 520px at 92% 8%, rgba(15,182,168,0.10), transparent 55%);
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            color: var(--ink);
+        }
+        body.purple-theme #tab-music { --ink: #f3ecff; --ink-dim: #cdb6ef; --paper: rgba(45,27,105,0.55); --line: rgba(224,170,255,0.18); }
+        body.pastel-theme #tab-music { --ink: #4a148c; --ink-dim: #7b4fb0; --paper: rgba(255,255,255,0.7); --line: rgba(123,31,162,0.14); }
+
+        .mv-wrap { max-width: 1180px; margin: 0 auto; padding: 1.2rem 1.4rem 4rem; background: var(--halo); }
+
+        /* Hero / overture */
+        .mv-hero {
+            position: relative; padding: 3rem 2.4rem; border-radius: 28px; overflow: hidden;
+            background: linear-gradient(135deg, rgba(85,102,246,0.96), rgba(15,182,168,0.92));
+            color: #fff; box-shadow: 0 30px 70px -30px rgba(45,52,120,0.6);
+        }
+        .mv-hero::after {
+            content: ''; position: absolute; inset: 0;
+            background: radial-gradient(600px 300px at 85% -10%, rgba(255,255,255,0.25), transparent 60%);
+            pointer-events: none;
+        }
+        .mv-eyebrow { display: inline-flex; align-items: center; gap: 0.5rem; font-size: 0.72rem; letter-spacing: 0.22em; text-transform: uppercase; font-weight: 600; opacity: 0.92; }
+        .mv-eyebrow .dot { width: 8px; height: 8px; border-radius: 50%; background: #fff; box-shadow: 0 0 0 4px rgba(255,255,255,0.25); animation: mvPulse 2.4s ease-in-out infinite; }
+        @keyframes mvPulse { 0%,100% { opacity: 1; } 50% { opacity: 0.4; } }
+        .mv-hero h2 { font-family: 'Fraunces', Georgia, serif; font-weight: 600; font-size: clamp(2rem, 4.6vw, 3.4rem); line-height: 1.04; margin: 1rem 0 0.6rem; letter-spacing: -0.02em; }
+        .mv-hero p.lede { font-size: clamp(0.98rem, 1.6vw, 1.15rem); max-width: 60ch; opacity: 0.95; line-height: 1.6; }
+        .mv-statline { display: grid; grid-template-columns: repeat(4, 1fr); gap: 1px; margin-top: 2rem; background: rgba(255,255,255,0.22); border-radius: 18px; overflow: hidden; }
+        .mv-statline .cell { background: rgba(255,255,255,0.10); padding: 1.1rem 1.2rem; backdrop-filter: blur(2px); }
+        .mv-statline .num { font-family: 'Space Grotesk', monospace; font-size: clamp(1.3rem, 2.6vw, 2rem); font-weight: 600; letter-spacing: -0.01em; }
+        .mv-statline .cap { font-size: 0.72rem; letter-spacing: 0.08em; text-transform: uppercase; opacity: 0.85; margin-top: 0.25rem; }
+        .mv-source { display: inline-flex; align-items: center; gap: 0.5rem; margin-top: 1.6rem; font-size: 0.8rem; background: rgba(0,0,0,0.18); padding: 0.4rem 0.85rem; border-radius: 999px; }
+        .mv-source b { font-weight: 700; }
+
+        /* Movement (section) */
+        .mv-movement { margin-top: 3.4rem; }
+        .mv-mhead { display: flex; align-items: baseline; gap: 0.9rem; flex-wrap: wrap; border-bottom: 1px solid var(--line); padding-bottom: 0.8rem; }
+        .mv-mnum { font-family: 'Space Grotesk', monospace; font-size: 0.8rem; font-weight: 600; color: var(--teal); letter-spacing: 0.16em; }
+        .mv-mhead h3 { font-family: 'Fraunces', Georgia, serif; font-weight: 600; font-size: clamp(1.4rem, 2.8vw, 2rem); color: var(--ink); letter-spacing: -0.01em; }
+        .mv-lead { color: var(--ink-dim); max-width: 70ch; line-height: 1.65; margin: 0.9rem 0 1.4rem; font-size: 1rem; }
+        .mv-takeaway { display: flex; gap: 0.7rem; align-items: flex-start; margin-top: 1.1rem; padding: 0.9rem 1.1rem; border-left: 3px solid var(--teal); background: linear-gradient(90deg, rgba(15,182,168,0.08), transparent); border-radius: 0 12px 12px 0; color: var(--ink); font-size: 0.95rem; line-height: 1.55; }
+        .mv-takeaway b { color: var(--teal); }
+
+        .mv-panel { background: var(--paper); border: 1px solid var(--line); border-radius: 20px; padding: 1.4rem; box-shadow: 0 18px 40px -28px rgba(40,46,86,0.45); }
+        .mv-grid-2 { display: grid; grid-template-columns: 1.5fr 1fr; gap: 1.4rem; align-items: stretch; }
+        .mv-grid-net { display: grid; grid-template-columns: 1.6fr 1fr; gap: 1.4rem; align-items: stretch; }
+        .mv-chart { width: 100%; min-height: 340px; }
+        .mv-chart.tall { min-height: 420px; }
+
+        .mv-figures { display: grid; grid-template-columns: 1fr 1fr; gap: 0.9rem; }
+        .mv-figure { background: var(--paper); border: 1px solid var(--line); border-radius: 16px; padding: 1.1rem 1.2rem; }
+        .mv-figure .k { font-family: 'Space Grotesk', monospace; font-size: 1.8rem; font-weight: 600; color: var(--indigo); letter-spacing: -0.02em; }
+        .mv-figure .l { font-size: 0.78rem; letter-spacing: 0.04em; color: var(--ink-dim); margin-top: 0.2rem; }
+        .mv-figure .ci { font-size: 0.72rem; color: var(--ink-dim); margin-top: 0.35rem; font-family: 'Space Grotesk', monospace; }
+
+        /* Archetype legend chips */
+        .mv-archlegend { display: flex; flex-wrap: wrap; gap: 0.6rem; margin-bottom: 1rem; }
+        .mv-chip { display: inline-flex; align-items: center; gap: 0.5rem; padding: 0.45rem 0.8rem; border-radius: 999px; font-size: 0.82rem; font-weight: 500; background: var(--paper); border: 1px solid var(--line); cursor: default; transition: transform 0.15s ease, box-shadow 0.15s ease; }
+        .mv-chip:hover { transform: translateY(-2px); box-shadow: 0 8px 20px -10px rgba(40,46,86,0.5); }
+        .mv-chip .sw { width: 11px; height: 11px; border-radius: 50%; }
+        .mv-chip small { color: var(--ink-dim); font-weight: 400; }
+
+        /* Correlation rows */
+        .mv-corr { display: flex; flex-direction: column; gap: 0.55rem; }
+        .mv-corr-row { display: grid; grid-template-columns: 13rem 1fr 3.5rem; gap: 0.8rem; align-items: center; }
+        .mv-corr-row .name { font-size: 0.86rem; color: var(--ink); }
+        .mv-bar { position: relative; height: 12px; border-radius: 999px; background: rgba(40,46,86,0.08); overflow: hidden; }
+        .mv-bar > span { position: absolute; top: 0; bottom: 0; border-radius: 999px; background: linear-gradient(90deg, var(--indigo), var(--teal)); transition: width 0.8s cubic-bezier(0.2,0.8,0.2,1); }
+        .mv-bar.neg > span { background: linear-gradient(90deg, var(--rose), var(--amber)); }
+        .mv-corr-row .val { font-family: 'Space Grotesk', monospace; font-size: 0.84rem; text-align: right; color: var(--ink-dim); }
+        .mv-toggle { display: inline-flex; gap: 0.3rem; background: rgba(40,46,86,0.06); border-radius: 999px; padding: 0.25rem; margin-bottom: 1rem; }
+        .mv-toggle button { border: none; background: transparent; padding: 0.4rem 0.9rem; border-radius: 999px; font-size: 0.82rem; cursor: pointer; color: var(--ink-dim); font-weight: 500; transition: all 0.2s ease; }
+        .mv-toggle button.active { background: var(--paper); color: var(--ink); box-shadow: 0 4px 12px -6px rgba(40,46,86,0.5); }
+
+        /* What-if predictor */
+        .mv-whatif { display: grid; grid-template-columns: 1.1fr 0.9fr; gap: 1.6rem; align-items: center; }
+        .mv-controls .field { margin-bottom: 1.3rem; }
+        .mv-controls label { display: flex; justify-content: space-between; align-items: baseline; font-size: 0.86rem; font-weight: 600; color: var(--ink); margin-bottom: 0.45rem; }
+        .mv-controls label .rv { font-family: 'Space Grotesk', monospace; color: var(--indigo); font-weight: 600; }
+        .mv-controls input[type=range] { width: 100%; accent-color: var(--indigo); }
+        .mv-seg { display: inline-flex; gap: 0.3rem; background: rgba(40,46,86,0.06); border-radius: 12px; padding: 0.25rem; }
+        .mv-seg button { border: none; background: transparent; padding: 0.4rem 0.95rem; border-radius: 9px; font-size: 0.82rem; cursor: pointer; color: var(--ink-dim); font-weight: 600; }
+        .mv-seg button.active { background: var(--paper); color: var(--ink); box-shadow: 0 3px 10px -6px rgba(40,46,86,0.6); }
+        .mv-gauge { text-align: center; padding: 1.8rem 1.4rem; border-radius: 22px; background: linear-gradient(160deg, rgba(85,102,246,0.10), rgba(15,182,168,0.08)); border: 1px solid var(--line); }
+        .mv-gauge .grade { font-family: 'Fraunces', Georgia, serif; font-size: clamp(3rem, 9vw, 4.6rem); font-weight: 600; line-height: 1; background: linear-gradient(120deg, var(--indigo), var(--teal)); -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent; }
+        .mv-gauge .pct { font-family: 'Space Grotesk', monospace; font-size: 1.05rem; color: var(--ink); margin-top: 0.6rem; }
+        .mv-gauge .views { font-size: 0.9rem; color: var(--ink-dim); margin-top: 0.3rem; }
+        .mv-gauge .verdict { font-size: 0.86rem; color: var(--ink-dim); margin-top: 0.9rem; line-height: 1.5; min-height: 2.6em; }
+        .mv-meter { height: 10px; border-radius: 999px; background: rgba(40,46,86,0.10); overflow: hidden; margin-top: 1rem; }
+        .mv-meter > span { display: block; height: 100%; border-radius: 999px; background: linear-gradient(90deg, var(--indigo), var(--teal)); transition: width 0.7s cubic-bezier(0.2,0.8,0.2,1); }
+
+        /* Songs explorer */
+        .mv-tablewrap { overflow-x: auto; border: 1px solid var(--line); border-radius: 16px; }
+        table.mv-table { width: 100%; border-collapse: collapse; font-size: 0.86rem; }
+        table.mv-table th { text-align: left; padding: 0.8rem 1rem; background: rgba(85,102,246,0.06); color: var(--ink); font-weight: 600; cursor: pointer; white-space: nowrap; position: sticky; top: 0; }
+        table.mv-table th:hover { background: rgba(85,102,246,0.12); }
+        table.mv-table th .ar { opacity: 0.5; font-size: 0.72rem; }
+        table.mv-table td { padding: 0.7rem 1rem; border-top: 1px solid var(--line); color: var(--ink); white-space: nowrap; }
+        table.mv-table td.t { white-space: normal; min-width: 16rem; color: var(--ink); font-weight: 500; }
+        table.mv-table tr:hover td { background: rgba(15,182,168,0.05); }
+        .mv-num { font-family: 'Space Grotesk', monospace; }
+        .mv-tag { display: inline-block; font-size: 0.68rem; padding: 0.1rem 0.45rem; border-radius: 6px; background: rgba(85,102,246,0.12); color: var(--indigo); font-weight: 600; }
+        .mv-search { width: 100%; max-width: 22rem; padding: 0.6rem 0.9rem; border: 1px solid var(--line); border-radius: 12px; font-size: 0.9rem; margin-bottom: 1rem; background: var(--paper); color: var(--ink); }
+        .mv-refresh { display: flex; align-items: center; gap: 0.8rem; flex-wrap: wrap; margin-top: 1rem; font-size: 0.85rem; color: var(--ink-dim); }
+        .mv-refresh button { border: 1px solid var(--line); background: var(--paper); color: var(--ink); padding: 0.5rem 1rem; border-radius: 10px; font-weight: 600; cursor: pointer; font-size: 0.85rem; }
+        .mv-refresh button:hover { border-color: var(--indigo); color: var(--indigo); }
+
+        @media (max-width: 880px) {
+            .mv-grid-2, .mv-grid-net, .mv-whatif { grid-template-columns: 1fr; }
+            .mv-statline { grid-template-columns: 1fr 1fr; }
+            .mv-corr-row { grid-template-columns: 9rem 1fr 3rem; }
+            .mv-hero { padding: 2.2rem 1.5rem; }
+            .mv-wrap { padding: 1rem 0.9rem 3rem; }
+        }
+    </style>
 </head>
 <body>
     <div class="loading-indicator" id="loadingIndicator">Updating visualizations...</div>
@@ -1205,6 +1390,7 @@
         <button class="nav-tab" data-tab="library" onclick="showTab('library', this)">Bias Library</button>
         <button class="nav-tab" data-tab="learn" onclick="showTab('learn', this)">Learn</button>
         <button class="nav-tab" data-tab="scorecard" onclick="showTab('scorecard', this)">Verdict</button>
+        <button class="nav-tab nav-tab-music" data-tab="music" onclick="showTab('music', this)">Music Virality<span class="nav-real">REAL DATA</span></button>
     </div>
 
     <div class="story-strip" id="storyStrip">
@@ -1714,9 +1900,185 @@
         </div>
     </div>
 
+    <!-- ================================================================= -->
+    <!--  MUSIC VIRALITY — REAL YouTube DATA                               -->
+    <!-- ================================================================= -->
+    <div id="tab-music" class="tab-panel">
+        <div class="mv-wrap">
+            <!-- Hero -->
+            <div class="mv-hero">
+                <div class="mv-eyebrow"><span class="dot"></span> Real YouTube Data</div>
+                <h2>Music Virality</h2>
+                <p class="lede">A deep statistical read of the 100 most-watched music videos on YouTube in 2025 &mdash; real view counts, real channels, real durations. Every number below is computed from the actual dataset, not synthesised.</p>
+                <div class="mv-statline">
+                    <div class="cell"><div class="num" id="mvSongs">--</div><div class="cap">Songs</div></div>
+                    <div class="cell"><div class="num" id="mvViews">--</div><div class="cap">Total Views</div></div>
+                    <div class="cell"><div class="num" id="mvChannels">--</div><div class="cap">Channels</div></div>
+                    <div class="cell"><div class="num" id="mvTopSong">--</div><div class="cap">Top Song</div></div>
+                </div>
+                <div class="mv-source" id="mvSource"><b>Source:</b> <span>Loading&hellip;</span></div>
+            </div>
+
+            <!-- I. Power Law -->
+            <div class="mv-movement" id="mvPowerLaw">
+                <div class="mv-mhead"><span class="mv-mnum">01</span><h3>The Power Law of Attention</h3></div>
+                <p class="mv-lead">View counts are not normally distributed &mdash; they follow a power law where a tiny elite captures most of the attention. The complementary cumulative distribution (CCDF) on log-log axes reveals the heavy tail: a straight line means pure power-law behaviour.</p>
+                <div class="mv-grid-2">
+                    <div class="mv-panel"><div class="mv-chart" id="mvPowerChart"></div></div>
+                    <div>
+                        <div class="mv-figures">
+                            <div class="mv-figure"><div class="k" id="mvAlpha">&mdash;</div><div class="l">Power-law exponent (&alpha;)</div><div class="ci" id="mvAlphaCI">95% CI: &mdash;</div></div>
+                            <div class="mv-figure"><div class="k" id="mvKS">&mdash;</div><div class="l">Kolmogorov-Smirnov fit</div><div class="ci">Lower = closer fit</div></div>
+                            <div class="mv-figure"><div class="k" id="mvN">&mdash;</div><div class="l">Videos in tail</div></div>
+                            <div class="mv-figure"><div class="k" id="mvXmin">&mdash;</div><div class="l">Tail threshold (x<sub>min</sub>)</div></div>
+                        </div>
+                        <div class="mv-takeaway" id="mvPowerTakeaway"></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- II. Inequality -->
+            <div class="mv-movement" id="mvInequality">
+                <div class="mv-mhead"><span class="mv-mnum">02</span><h3>The Inequality of Attention</h3></div>
+                <p class="mv-lead">A Lorenz curve shows how unevenly views are distributed across channels. The diagonal is perfect equality; the deeper the bow, the more a few mega-channels dominate. Gini (0 = equal, 1 = one takes all) and the Theil index quantify the gap.</p>
+                <div class="mv-grid-2">
+                    <div class="mv-panel"><div class="mv-chart" id="mvLorenzChart"></div></div>
+                    <div>
+                        <div class="mv-figures">
+                            <div class="mv-figure"><div class="k" id="mvGini">&mdash;</div><div class="l">Gini coefficient</div></div>
+                            <div class="mv-figure"><div class="k" id="mvTheil">&mdash;</div><div class="l">Theil entropy index</div></div>
+                            <div class="mv-figure"><div class="k" id="mvTop3">&mdash;</div><div class="l">Top 3 channel share</div></div>
+                            <div class="mv-figure"><div class="k" id="mvTop10">&mdash;</div><div class="l">Top 10 channel share</div></div>
+                        </div>
+                        <div class="mv-takeaway" id="mvIneqTakeaway"></div>
+                    </div>
+                </div>
+                <div class="mv-panel" style="margin-top:1.2rem;"><div class="mv-chart" id="mvTopChannelsChart" style="min-height:280px;"></div></div>
+            </div>
+
+            <!-- III. Correlation Architecture -->
+            <div class="mv-movement" id="mvCorrelation">
+                <div class="mv-mhead"><span class="mv-mnum">03</span><h3>Correlation Architecture</h3></div>
+                <p class="mv-lead">What actually correlates with more views? Spearman rank correlations show raw associations; partial correlations strip out the effect of channel size so you can see what matters <em>independently</em> of how big the channel already is.</p>
+                <div class="mv-toggle" id="mvCorrToggle">
+                    <button class="active" onclick="MusicViz.toggleCorr('raw',this)">Raw Spearman</button>
+                    <button onclick="MusicViz.toggleCorr('partial',this)">Partial (|channel size)</button>
+                </div>
+                <div class="mv-grid-2">
+                    <div class="mv-panel"><div class="mv-chart" id="mvHeatmapChart"></div></div>
+                    <div class="mv-panel"><div class="mv-corr" id="mvCorrBars"></div></div>
+                </div>
+            </div>
+
+            <!-- IV. Archetypes -->
+            <div class="mv-movement" id="mvArchetypes">
+                <div class="mv-mhead"><span class="mv-mnum">04</span><h3>Viral Archetypes</h3></div>
+                <p class="mv-lead">K-means clustering on views, virality (views-per-subscriber), channel size and duration groups the 100 songs into five distinct strategies for capturing attention.</p>
+                <div class="mv-archlegend" id="mvArchLegend"></div>
+                <div class="mv-panel"><div class="mv-chart tall" id="mvArchChart"></div></div>
+            </div>
+
+            <!-- V. Tag Network -->
+            <div class="mv-movement" id="mvNetwork">
+                <div class="mv-mhead"><span class="mv-mnum">05</span><h3>The Tag Universe</h3></div>
+                <p class="mv-lead">When two tags appear on the same video they share an edge. The resulting co-occurrence graph reveals genre neighbourhoods, cross-over bridges, and the tags that sit at the centre of the music ecosystem.</p>
+                <div class="mv-grid-net">
+                    <div class="mv-panel"><div class="mv-chart tall" id="mvNetworkChart"></div></div>
+                    <div>
+                        <div class="mv-figures">
+                            <div class="mv-figure"><div class="k" id="mvNetNodes">&mdash;</div><div class="l">Tags (nodes)</div></div>
+                            <div class="mv-figure"><div class="k" id="mvNetEdges">&mdash;</div><div class="l">Co-occurrences (edges)</div></div>
+                            <div class="mv-figure"><div class="k" id="mvNetDensity">&mdash;</div><div class="l">Graph density</div></div>
+                            <div class="mv-figure"><div class="k" id="mvNetComm">&mdash;</div><div class="l">Communities</div></div>
+                        </div>
+                        <div class="mv-takeaway" id="mvNetTakeaway"></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- VI. Predictability -->
+            <div class="mv-movement" id="mvPredictability">
+                <div class="mv-mhead"><span class="mv-mnum">06</span><h3>How Predictable Is Virality?</h3></div>
+                <p class="mv-lead">An ensemble of RandomForest and GradientBoosting regressors, cross-validated on real data, tries to predict (log) view counts from pre-publication features alone. The honest R&sup2; shows how much is skill versus timing and luck.</p>
+                <div class="mv-grid-2">
+                    <div class="mv-panel"><div class="mv-chart" id="mvPredChart"></div></div>
+                    <div>
+                        <div class="mv-figures">
+                            <div class="mv-figure" style="grid-column:1/-1"><div class="k" id="mvR2">&mdash;</div><div class="l">Cross-validated ensemble R&sup2;</div></div>
+                        </div>
+                        <div class="mv-takeaway" id="mvPredTakeaway"></div>
+                        <div class="mv-panel" style="margin-top:1rem;"><div class="mv-chart" id="mvImpChart" style="min-height:240px;"></div></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- VII. What-If Predictor -->
+            <div class="mv-movement" id="mvWhatIf">
+                <div class="mv-mhead"><span class="mv-mnum">07</span><h3>What-If Virality Predictor</h3></div>
+                <p class="mv-lead">Set the parameters of a hypothetical music upload and the trained model predicts where it would rank among the real top 100. All predictions use the same RandomForest model trained on actual YouTube data.</p>
+                <div class="mv-panel">
+                    <div class="mv-whatif">
+                        <div class="mv-controls">
+                            <div class="field">
+                                <label>Duration <span class="rv" id="mvWiDurVal">3.2 min</span></label>
+                                <input type="range" id="mvWiDur" min="1" max="10" step="0.1" value="3.2">
+                            </div>
+                            <div class="field">
+                                <label>Channel Subscribers <span class="rv" id="mvWiFolVal">5M</span></label>
+                                <input type="range" id="mvWiFol" min="4" max="8.5" step="0.05" value="6.7">
+                            </div>
+                            <div class="field">
+                                <label>Tag Count <span class="rv" id="mvWiTagVal">20</span></label>
+                                <input type="range" id="mvWiTag" min="0" max="60" step="1" value="20">
+                            </div>
+                            <div class="field">
+                                <label>Official Video</label>
+                                <div class="mv-seg" id="mvWiOfficial">
+                                    <button class="active" onclick="MusicViz.setOfficial(1,this)">Yes</button>
+                                    <button onclick="MusicViz.setOfficial(0,this)">No</button>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="mv-gauge" id="mvGauge">
+                            <div class="grade" id="mvWiGrade">&mdash;</div>
+                            <div class="pct">Percentile: <span id="mvWiPct">&mdash;</span></div>
+                            <div class="views">Predicted views: <span id="mvWiViews">&mdash;</span></div>
+                            <div class="mv-meter"><span id="mvWiMeter" style="width:0%"></span></div>
+                            <div class="verdict" id="mvWiVerdict">Adjust the sliders to simulate a hypothetical upload.</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- VIII. Songs Explorer -->
+            <div class="mv-movement" id="mvSongsExplorer">
+                <div class="mv-mhead"><span class="mv-mnum">08</span><h3>Real Songs Explorer</h3></div>
+                <p class="mv-lead">The raw dataset behind every chart above. Search, sort by any column, and verify the numbers for yourself.</p>
+                <input type="text" class="mv-search" id="mvSongSearch" placeholder="Search songs or channels&hellip;">
+                <div class="mv-tablewrap" style="max-height:520px; overflow-y:auto;">
+                    <table class="mv-table" id="mvSongTable">
+                        <thead><tr>
+                            <th onclick="MusicViz.sortSongs('title')">Title <span class="ar" id="mvSortTitle"></span></th>
+                            <th onclick="MusicViz.sortSongs('channel')">Channel <span class="ar" id="mvSortChannel"></span></th>
+                            <th onclick="MusicViz.sortSongs('view_count')">Views <span class="ar" id="mvSortView_count">&darr;</span></th>
+                            <th onclick="MusicViz.sortSongs('duration_min')">Duration <span class="ar" id="mvSortDuration_min"></span></th>
+                            <th onclick="MusicViz.sortSongs('virality_coefficient')">Virality <span class="ar" id="mvSortVirality_coefficient"></span></th>
+                            <th onclick="MusicViz.sortSongs('tag_count')">Tags <span class="ar" id="mvSortTag_count"></span></th>
+                        </tr></thead>
+                        <tbody id="mvSongBody"></tbody>
+                    </table>
+                </div>
+                <div class="mv-refresh" id="mvRefresh">
+                    <span id="mvLiveStatus"></span>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
     <div class="author-citation">
         <h3>About This Analysis</h3>
-        <p>StreamLens Analytics quantifies representation asymmetries in streaming media using statistical and network-analysis methods, computed live on a clearly-labeled synthetic dataset.</p>
+        <p>StreamLens Analytics quantifies representation asymmetries in streaming media using statistical and network-analysis methods, computed live on a clearly-labeled synthetic dataset. The Music Virality module analyses 100 real YouTube music videos (10.59 billion views) from an actual 2025 dataset.</p>
         <p class="author-name">Created by Cazandra Aporbo, MS</p>
         <p style="font-size: 0.9rem; margin-top: 0.5rem;">Mathematical Framework Development: September 10, 2024 - Present</p>
     </div>
@@ -2965,7 +3327,9 @@
             learn: ['Act V — The Methods', 'Trust the math because you understand it.',
                 'Every metric in this app is explained here — Shannon entropy, chi-square, homophily, intersectional ratios — with pointers into the actual source code so you can verify that what is claimed is what is computed.'],
             scorecard: ['Act VI — The Verdict', 'Put a grade on it.',
-                'Understanding is not the finish line — judgement is. Here the decade of evidence collapses into a letter grade for every platform, a measured inequality curve, the size of each bias, a fitted trend, and a simulator that lets you test what a fairer cast would score.']
+                'Understanding is not the finish line — judgement is. Here the decade of evidence collapses into a letter grade for every platform, a measured inequality curve, the size of each bias, a fitted trend, and a simulator that lets you test what a fairer cast would score.'],
+            music: ['Real Data — Music Virality', '10.59 billion views, one dataset, zero fabrication.',
+                'This module analyses the 100 most-watched YouTube music videos of 2025 using real view counts, real channel sizes, and real metadata. Power-law fits, inequality curves, partial correlations, archetype clustering, tag networks, and a trained virality predictor — all from the actual numbers.']
         };
 
         function showTab(tab, button) {
@@ -2988,6 +3352,9 @@
             }
             if (tab === 'scorecard') {
                 StreamLensApp.loadVerdict();
+            }
+            if (tab === 'music') {
+                MusicViz.load();
             }
         }
 
@@ -3041,9 +3408,22 @@
                 'Intersectional Representation': 'Representation at the intersection of identities (e.g. gender \u00d7 ethnicity), compared against a uniform baseline to reveal gaps that single-axis views hide.',
                 'The Bias Library': 'A reference of 57 documented bias patterns from media research, filterable by category \u2014 what each bias is, how it shows up on screen, and why it matters.',
                 'Learn the Methods': 'Every statistic in the app explained from scratch \u2014 Shannon entropy, chi-square, homophily, Gini, intersectional ratios \u2014 with pointers into the source code.',
-                'The Verdict': 'The decade of evidence collapsed into a letter grade per platform, an inequality (Lorenz) curve, effect sizes, a fitted trend, and a what-if cast simulator.'
+                'The Verdict': 'The decade of evidence collapsed into a letter grade per platform, an inequality (Lorenz) curve, effect sizes, a fitted trend, and a what-if cast simulator.',
+                'The Power Law of Attention': 'Complementary CDF (CCDF) of view counts on log-log axes. A straight line means pure power-law behaviour; the fitted exponent \u03b1 and Kolmogorov-Smirnov distance tell you how heavy the tail is. Computed by maximum-likelihood estimation (Clauset method) with a bootstrap 95% CI.',
+                'The Inequality of Attention': 'Lorenz curve + Gini + Theil index measuring how unevenly views concentrate across channels. A Gini near 1 means one channel takes everything; the top-k shares show the concrete concentration.',
+                'Correlation Architecture': 'Spearman rank correlations (non-parametric) of each feature with view count, plus partial correlations that strip out channel size. Toggle between raw and partial to see what matters independently of reach.',
+                'Viral Archetypes': 'K-means clustering (k=5) on log-views, log-virality, log-followers and duration. Points are real songs, colours are cluster assignments. Hover for titles and channels.',
+                'The Tag Universe': 'A force-directed co-occurrence graph where nodes are tags and edges form when two tags appear on the same video. Node size = degree (how connected); colour = community (greedy modularity). Drag nodes to explore.',
+                'How Predictable Is Virality?': 'Cross-validated ensemble of RandomForest + GradientBoosting predicting log(views) from pre-publication features only (no target leakage). The R\u00b2 is the honest out-of-fold score; the importance bars are from the fitted RandomForest.',
+                'What-If Virality Predictor': 'Set hypothetical upload parameters and the trained RandomForest model predicts where the video would rank among the real top 100. On the static site this snaps to a precomputed grid; on the live API it is continuous.',
+                'Real Songs Explorer': 'The raw dataset behind every chart \u2014 100 real YouTube music videos with actual view counts, durations, and virality coefficients. Click any column header to sort; type in the search box to filter.'
             };
             document.querySelectorAll('.viz-title').forEach(h => {
+                if (h.querySelector('.sl-info')) return;
+                const tip = VIZ_TIPS[h.textContent.trim()];
+                if (tip) h.appendChild(makeChip(tip));
+            });
+            document.querySelectorAll('.mv-mhead h3').forEach(h => {
                 if (h.querySelector('.sl-info')) return;
                 const tip = VIZ_TIPS[h.textContent.trim()];
                 if (tip) h.appendChild(makeChip(tip));
@@ -3075,6 +3455,386 @@
             clearTimeout(resizeTimer);
             resizeTimer = setTimeout(() => StreamLensApp.createNetworkGraph(), 250);
         });
+
+        // ==================== MUSIC VIRALITY (REAL DATA) ====================
+        const MusicViz = {
+            _loaded: false,
+            _data: {},
+            _corrMode: 'raw',
+            _sortCol: 'view_count',
+            _sortAsc: false,
+            _official: 1,
+            _wiDebounce: null,
+            _echartsInstances: [],
+            _ARCH_COLORS: ['#5566f6','#0fb6a8','#f4a259','#f0779f','#7c3aed'],
+            _COMM_COLORS: ['#5566f6','#0fb6a8','#f4a259','#f0779f','#7c3aed','#16a34a','#ef4444','#eab308'],
+
+            fmt(n) {
+                if (n >= 1e9) return (n/1e9).toFixed(2) + 'B';
+                if (n >= 1e6) return (n/1e6).toFixed(1) + 'M';
+                if (n >= 1e3) return (n/1e3).toFixed(0) + 'K';
+                return String(Math.round(n));
+            },
+
+            load() {
+                if (this._loaded) return;
+                this._loaded = true;
+                const ep = ['overview','powerlaw','inequality','correlations','archetypes','network','predictability','songs','status'];
+                Promise.all(ep.map(e => fetch('/api/music/' + e).then(r => r.json())))
+                    .then(results => {
+                        const keys = ep;
+                        keys.forEach((k,i) => this._data[k] = results[i]);
+                        this.render();
+                        this.bindSliders();
+                        this.triggerSimulate();
+                    })
+                    .catch(err => console.error('MusicViz load error:', err));
+            },
+
+            render() {
+                this.renderHero();
+                this.renderPowerLaw();
+                this.renderInequality();
+                this.renderCorrelations();
+                this.renderArchetypes();
+                this.renderNetwork();
+                this.renderPredictability();
+                this.renderSongs();
+            },
+
+            renderHero() {
+                const o = this._data.overview, s = this._data.status;
+                document.getElementById('mvSongs').textContent = o.n_songs;
+                document.getElementById('mvViews').textContent = this.fmt(o.total_views);
+                document.getElementById('mvChannels').textContent = o.n_channels;
+                const top = o.top_song || '';
+                document.getElementById('mvTopSong').textContent = top.length > 32 ? top.slice(0,30) + '\u2026' : top;
+                const src = document.querySelector('#mvSource span');
+                src.textContent = s.note || o.data_source;
+            },
+
+            renderPowerLaw() {
+                const d = this._data.powerlaw;
+                document.getElementById('mvAlpha').textContent = d.alpha;
+                document.getElementById('mvAlphaCI').textContent = '95% CI: [' + d.alpha_ci.low + ', ' + d.alpha_ci.high + ']';
+                document.getElementById('mvKS').textContent = d.ks_distance;
+                document.getElementById('mvN').textContent = d.n;
+                document.getElementById('mvXmin').textContent = this.fmt(d.xmin);
+                document.getElementById('mvPowerTakeaway').innerHTML = '<b>Takeaway:</b> ' + d.interpretation;
+                const pts = d.ccdf || [];
+                Plotly.newPlot('mvPowerChart', [{
+                    x: pts.map(p => p.views), y: pts.map(p => p.p_at_least),
+                    mode: 'markers', type: 'scattergl',
+                    marker: { size: 5, color: '#5566f6', opacity: 0.75 },
+                    name: 'Empirical CCDF'
+                }], {
+                    xaxis: { type: 'log', title: { text: 'Views', font: { size: 12 } }, gridcolor: 'rgba(40,46,86,0.08)' },
+                    yaxis: { type: 'log', title: { text: 'P(X \u2265 x)', font: { size: 12 } }, gridcolor: 'rgba(40,46,86,0.08)' },
+                    margin: { l: 55, r: 20, t: 10, b: 45 },
+                    paper_bgcolor: 'rgba(0,0,0,0)', plot_bgcolor: 'rgba(0,0,0,0)',
+                    font: { family: 'Inter, sans-serif', color: '#5a6178' },
+                    hovermode: 'closest'
+                }, { responsive: true, displayModeBar: false });
+            },
+
+            renderInequality() {
+                const d = this._data.inequality;
+                document.getElementById('mvGini').textContent = d.gini;
+                document.getElementById('mvTheil').textContent = d.theil;
+                document.getElementById('mvTop3').textContent = Math.round(d.top3_channel_share * 100) + '%';
+                document.getElementById('mvTop10').textContent = Math.round(d.top10_channel_share * 100) + '%';
+                document.getElementById('mvIneqTakeaway').innerHTML = '<b>Takeaway:</b> ' + d.interpretation;
+                // Lorenz (ECharts)
+                const el = document.getElementById('mvLorenzChart');
+                const ec = echarts.init(el);
+                this._echartsInstances.push(ec);
+                const lorenz = d.lorenz || [];
+                ec.setOption({
+                    grid: { left: 55, right: 20, top: 20, bottom: 45 },
+                    xAxis: { name: '% of songs (ranked)', nameLocation: 'middle', nameGap: 28, min: 0, max: 1,
+                        splitLine: { lineStyle: { color: 'rgba(40,46,86,0.08)' } }, axisLabel: { formatter: v => Math.round(v*100)+'%' } },
+                    yAxis: { name: '% of views', nameLocation: 'middle', nameGap: 35, min: 0, max: 1,
+                        splitLine: { lineStyle: { color: 'rgba(40,46,86,0.08)' } }, axisLabel: { formatter: v => Math.round(v*100)+'%' } },
+                    series: [
+                        { type: 'line', data: [[0,0],[1,1]], lineStyle: { type: 'dashed', color: '#ccc', width: 1.5 }, symbol: 'none', name: 'Perfect equality', silent: true },
+                        { type: 'line', data: lorenz.map(p => [p.p, p.l]), lineStyle: { color: '#5566f6', width: 2.5 }, areaStyle: { color: 'rgba(85,102,246,0.12)' }, symbol: 'none', name: 'Lorenz curve', smooth: true }
+                    ],
+                    tooltip: { trigger: 'axis', formatter: p => { const v = p[1] || p[0]; return Math.round(v.data[0]*100) + '% of songs hold ' + Math.round(v.data[1]*100) + '% of views'; } },
+                    animation: true, animationDuration: 900, animationEasing: 'cubicOut'
+                });
+                // Top channels bar
+                const channels = d.top_channels || [];
+                Plotly.newPlot('mvTopChannelsChart', [{
+                    x: channels.map(c => c.channel), y: channels.map(c => c.views),
+                    type: 'bar', marker: { color: channels.map((_,i) => 'rgba(85,102,246,' + (1 - i * 0.07) + ')'), line: { width: 0 } },
+                    hovertemplate: '%{x}<br>%{y:,.0f} views<extra></extra>'
+                }], {
+                    xaxis: { tickangle: -35, tickfont: { size: 11 } },
+                    yaxis: { title: { text: 'Views', font: { size: 11 } }, gridcolor: 'rgba(40,46,86,0.08)' },
+                    margin: { l: 65, r: 15, t: 10, b: 85 },
+                    paper_bgcolor: 'rgba(0,0,0,0)', plot_bgcolor: 'rgba(0,0,0,0)',
+                    font: { family: 'Inter, sans-serif', color: '#5a6178' },
+                    barcornerradius: 4
+                }, { responsive: true, displayModeBar: false });
+            },
+
+            renderCorrelations() {
+                const d = this._data.correlations;
+                // Heatmap (ECharts)
+                const hm = d.heatmap;
+                const el = document.getElementById('mvHeatmapChart');
+                const ec = echarts.init(el);
+                this._echartsInstances.push(ec);
+                const labels = hm.labels;
+                const data = [];
+                for (let i = 0; i < labels.length; i++) {
+                    for (let j = 0; j < labels.length; j++) {
+                        data.push([j, i, hm.matrix[i][j]]);
+                    }
+                }
+                ec.setOption({
+                    grid: { left: 110, right: 40, top: 10, bottom: 90 },
+                    xAxis: { type: 'category', data: labels, axisLabel: { rotate: 40, fontSize: 10, interval: 0 }, splitArea: { show: true } },
+                    yAxis: { type: 'category', data: labels, axisLabel: { fontSize: 10, interval: 0 }, splitArea: { show: true } },
+                    visualMap: { min: -1, max: 1, calculable: true, orient: 'horizontal', left: 'center', bottom: 0,
+                        inRange: { color: ['#f0779f','#fefefe','#5566f6'] },
+                        textStyle: { fontSize: 10 } },
+                    series: [{ type: 'heatmap', data: data, label: { show: true, fontSize: 9, formatter: p => p.data[2].toFixed(2) },
+                        emphasis: { itemStyle: { shadowBlur: 8, shadowColor: 'rgba(0,0,0,0.3)' } } }],
+                    tooltip: { formatter: p => labels[p.data[1]] + ' vs ' + labels[p.data[0]] + ': ' + p.data[2].toFixed(3) },
+                    animation: true
+                });
+                // Bar rows
+                this.renderCorrBars();
+            },
+
+            renderCorrBars() {
+                const rows = this._data.correlations.rows;
+                const mode = this._corrMode;
+                const container = document.getElementById('mvCorrBars');
+                container.innerHTML = '';
+                rows.forEach(r => {
+                    const v = mode === 'partial' ? r.partial_spearman : r.spearman;
+                    const pct = Math.abs(v) * 100;
+                    const neg = v < 0;
+                    const row = document.createElement('div');
+                    row.className = 'mv-corr-row';
+                    row.innerHTML = '<div class="name">' + r.label + '</div>'
+                        + '<div class="mv-bar' + (neg ? ' neg' : '') + '"><span style="width:0%;left:' + (neg ? (50 - pct/2) : 50) + '%"></span></div>'
+                        + '<div class="val">' + (v >= 0 ? '+' : '') + v.toFixed(2) + '</div>';
+                    container.appendChild(row);
+                    requestAnimationFrame(() => { row.querySelector('.mv-bar span').style.width = pct/2 + '%'; });
+                });
+            },
+
+            toggleCorr(mode, btn) {
+                this._corrMode = mode;
+                document.querySelectorAll('#mvCorrToggle button').forEach(b => b.classList.remove('active'));
+                btn.classList.add('active');
+                this.renderCorrBars();
+            },
+
+            renderArchetypes() {
+                const d = this._data.archetypes;
+                const legend = document.getElementById('mvArchLegend');
+                legend.innerHTML = '';
+                d.clusters.forEach((c, i) => {
+                    const chip = document.createElement('span');
+                    chip.className = 'mv-chip';
+                    chip.innerHTML = '<span class="sw" style="background:' + this._ARCH_COLORS[i % this._ARCH_COLORS.length] + '"></span>'
+                        + c.name + ' <small>(' + c.count + ')</small>';
+                    chip.title = c.blurb;
+                    legend.appendChild(chip);
+                });
+                // Scatter: views vs virality, colored by archetype
+                const clusterNames = d.clusters.map(c => c.name);
+                const traces = clusterNames.map((name, i) => {
+                    const pts = d.points.filter(p => p.archetype === name);
+                    return {
+                        x: pts.map(p => p.views), y: pts.map(p => p.virality),
+                        text: pts.map(p => p.title + '\n' + p.channel),
+                        mode: 'markers', type: 'scattergl', name: name,
+                        marker: { size: 9, color: this._ARCH_COLORS[i % this._ARCH_COLORS.length], opacity: 0.8, line: { width: 1, color: '#fff' } },
+                        hovertemplate: '%{text}<br>Views: %{x:,.0f}<br>Virality: %{y:.1f}<extra>' + name + '</extra>'
+                    };
+                });
+                Plotly.newPlot('mvArchChart', traces, {
+                    xaxis: { type: 'log', title: { text: 'Views', font: { size: 12 } }, gridcolor: 'rgba(40,46,86,0.08)' },
+                    yaxis: { type: 'log', title: { text: 'Virality (views / subscribers)', font: { size: 12 } }, gridcolor: 'rgba(40,46,86,0.08)' },
+                    margin: { l: 60, r: 20, t: 10, b: 50 },
+                    paper_bgcolor: 'rgba(0,0,0,0)', plot_bgcolor: 'rgba(0,0,0,0)',
+                    font: { family: 'Inter, sans-serif', color: '#5a6178' },
+                    legend: { orientation: 'h', y: -0.18, font: { size: 11 } },
+                    hovermode: 'closest'
+                }, { responsive: true, displayModeBar: false });
+            },
+
+            renderNetwork() {
+                const d = this._data.network;
+                document.getElementById('mvNetNodes').textContent = d.n_nodes;
+                document.getElementById('mvNetEdges').textContent = d.n_edges;
+                document.getElementById('mvNetDensity').textContent = d.density;
+                document.getElementById('mvNetComm').textContent = d.n_communities;
+                document.getElementById('mvNetTakeaway').innerHTML = '<b>Takeaway:</b> ' + (d.interpretation || '');
+                // D3 force graph
+                const container = document.getElementById('mvNetworkChart');
+                container.innerHTML = '';
+                const width = container.clientWidth || 500;
+                const height = container.clientHeight || 420;
+                const nodes = d.nodes.map(n => ({ id: n.id, freq: n.freq, degree: n.degree, community: n.community }));
+                const links = d.edges.map(e => ({ source: e.source, target: e.target, weight: e.weight }));
+                const svg = d3.select(container).append('svg').attr('width', width).attr('height', height)
+                    .attr('viewBox', '0 0 ' + width + ' ' + height).style('width', '100%').style('height', '100%');
+                const maxDeg = Math.max(1, ...nodes.map(n => n.degree));
+                const sim = d3.forceSimulation(nodes)
+                    .force('link', d3.forceLink(links).id(n => n.id).distance(70).strength(0.4))
+                    .force('charge', d3.forceManyBody().strength(-90))
+                    .force('center', d3.forceCenter(width/2, height/2))
+                    .force('collision', d3.forceCollide(n => 6 + (n.degree / maxDeg) * 14));
+                const link = svg.append('g').selectAll('line').data(links).join('line')
+                    .attr('stroke', '#cbd5e1').attr('stroke-opacity', 0.5)
+                    .attr('stroke-width', l => Math.min(4, 0.8 + l.weight * 0.4));
+                const node = svg.append('g').selectAll('circle').data(nodes).join('circle')
+                    .attr('r', n => 5 + (n.degree / maxDeg) * 12)
+                    .attr('fill', n => this._COMM_COLORS[n.community % this._COMM_COLORS.length])
+                    .attr('stroke', '#fff').attr('stroke-width', 1.5)
+                    .style('cursor', 'pointer')
+                    .call(d3.drag().on('start', (e,d) => { if (!e.active) sim.alphaTarget(0.3).restart(); d.fx = d.x; d.fy = d.y; })
+                        .on('drag', (e,d) => { d.fx = e.x; d.fy = e.y; })
+                        .on('end', (e,d) => { if (!e.active) sim.alphaTarget(0); d.fx = null; d.fy = null; }));
+                node.append('title').text(n => n.id + ' (degree ' + n.degree + ', freq ' + n.freq + ')');
+                const label = svg.append('g').selectAll('text').data(nodes.filter(n => n.degree > maxDeg * 0.35)).join('text')
+                    .text(n => n.id).attr('font-size', '10px').attr('fill', '#3c4462').attr('text-anchor', 'middle').attr('dy', -12)
+                    .style('pointer-events', 'none').style('font-family', 'Inter, sans-serif');
+                sim.on('tick', () => {
+                    link.attr('x1', l => l.source.x).attr('y1', l => l.source.y).attr('x2', l => l.target.x).attr('y2', l => l.target.y);
+                    node.attr('cx', n => n.x).attr('cy', n => n.y);
+                    label.attr('x', n => n.x).attr('y', n => n.y);
+                });
+            },
+
+            renderPredictability() {
+                const d = this._data.predictability;
+                document.getElementById('mvR2').textContent = (d.ensemble_r2 * 100).toFixed(0) + '% predictable';
+                document.getElementById('mvPredTakeaway').innerHTML = '<b>Takeaway:</b> ' + d.interpretation;
+                // Luck vs Skill gauge (ECharts)
+                const el = document.getElementById('mvPredChart');
+                const ec = echarts.init(el);
+                this._echartsInstances.push(ec);
+                ec.setOption({
+                    series: [{
+                        type: 'pie', radius: ['50%', '78%'], center: ['50%', '50%'],
+                        avoidLabelOverlap: false, startAngle: 90,
+                        label: { show: true, position: 'center', fontSize: 22, fontWeight: 600, fontFamily: 'Space Grotesk',
+                            formatter: d.predictable_pct + '%\nskill', color: '#5566f6' },
+                        data: [
+                            { value: d.predictable_pct, name: 'Predictable', itemStyle: { color: '#5566f6' } },
+                            { value: d.luck_pct, name: 'Timing & luck', itemStyle: { color: 'rgba(40,46,86,0.10)' } }
+                        ],
+                        emphasis: { scale: false }
+                    }],
+                    tooltip: { formatter: '{b}: {c}%' },
+                    animation: true, animationDuration: 1000
+                });
+                // Feature importances bar
+                const feats = d.features || [];
+                const el2 = document.getElementById('mvImpChart');
+                const ec2 = echarts.init(el2);
+                this._echartsInstances.push(ec2);
+                ec2.setOption({
+                    grid: { left: 140, right: 30, top: 8, bottom: 20 },
+                    xAxis: { type: 'value', max: 1, axisLabel: { formatter: v => (v*100).toFixed(0) + '%' }, splitLine: { lineStyle: { color: 'rgba(40,46,86,0.06)' } } },
+                    yAxis: { type: 'category', data: feats.map(f => f.label).reverse(), axisLabel: { fontSize: 11, color: '#5a6178' } },
+                    series: [{ type: 'bar', data: feats.map(f => f.importance).reverse(),
+                        itemStyle: { color: new echarts.graphic.LinearGradient(0,0,1,0, [{offset:0,color:'#5566f6'},{offset:1,color:'#0fb6a8'}]), borderRadius: [0,4,4,0] },
+                        barWidth: 14 }],
+                    tooltip: { formatter: p => p.name + ': ' + (p.value*100).toFixed(1) + '%' },
+                    animation: true
+                });
+            },
+
+            renderSongs() {
+                this._allSongs = this._data.songs || [];
+                this._filteredSongs = this._allSongs.slice();
+                this.drawSongTable();
+                document.getElementById('mvSongSearch').addEventListener('input', e => {
+                    const q = e.target.value.toLowerCase();
+                    this._filteredSongs = this._allSongs.filter(s => s.title.toLowerCase().includes(q) || s.channel.toLowerCase().includes(q));
+                    this.drawSongTable();
+                });
+                const s = this._data.status;
+                document.getElementById('mvLiveStatus').textContent = s.note || '';
+            },
+
+            drawSongTable() {
+                const body = document.getElementById('mvSongBody');
+                body.innerHTML = '';
+                const songs = this._filteredSongs.slice();
+                songs.sort((a,b) => {
+                    const va = a[this._sortCol], vb = b[this._sortCol];
+                    if (typeof va === 'string') return this._sortAsc ? va.localeCompare(vb) : vb.localeCompare(va);
+                    return this._sortAsc ? va - vb : vb - va;
+                });
+                songs.forEach(s => {
+                    const tr = document.createElement('tr');
+                    tr.innerHTML = '<td class="t">' + s.title + '</td>'
+                        + '<td>' + s.channel + '</td>'
+                        + '<td class="mv-num">' + this.fmt(s.view_count) + '</td>'
+                        + '<td class="mv-num">' + s.duration_min.toFixed(1) + 'm</td>'
+                        + '<td class="mv-num">' + s.virality_coefficient.toFixed(1) + '</td>'
+                        + '<td class="mv-num">' + s.tag_count + '</td>';
+                    body.appendChild(tr);
+                });
+            },
+
+            sortSongs(col) {
+                if (this._sortCol === col) { this._sortAsc = !this._sortAsc; }
+                else { this._sortCol = col; this._sortAsc = false; }
+                // Update arrows
+                document.querySelectorAll('#mvSongTable th .ar').forEach(a => a.textContent = '');
+                const ar = document.getElementById('mvSort' + col.charAt(0).toUpperCase() + col.slice(1));
+                if (ar) ar.textContent = this._sortAsc ? '\u2191' : '\u2193';
+                this.drawSongTable();
+            },
+
+            bindSliders() {
+                const dur = document.getElementById('mvWiDur');
+                const fol = document.getElementById('mvWiFol');
+                const tag = document.getElementById('mvWiTag');
+                const update = () => {
+                    document.getElementById('mvWiDurVal').textContent = parseFloat(dur.value).toFixed(1) + ' min';
+                    const folV = Math.pow(10, parseFloat(fol.value));
+                    document.getElementById('mvWiFolVal').textContent = this.fmt(folV);
+                    document.getElementById('mvWiTagVal').textContent = tag.value;
+                    clearTimeout(this._wiDebounce);
+                    this._wiDebounce = setTimeout(() => this.triggerSimulate(), 200);
+                };
+                dur.addEventListener('input', update);
+                fol.addEventListener('input', update);
+                tag.addEventListener('input', update);
+            },
+
+            setOfficial(val, btn) {
+                this._official = val;
+                document.querySelectorAll('#mvWiOfficial button').forEach(b => b.classList.remove('active'));
+                btn.classList.add('active');
+                this.triggerSimulate();
+            },
+
+            triggerSimulate() {
+                const dur = parseFloat(document.getElementById('mvWiDur').value);
+                const fol = Math.pow(10, parseFloat(document.getElementById('mvWiFol').value));
+                const tag = parseFloat(document.getElementById('mvWiTag').value);
+                const url = '/api/music/simulate?duration_min=' + dur + '&channel_follower_count=' + fol + '&tag_count=' + tag + '&is_official=' + this._official;
+                fetch(url).then(r => r.json()).then(d => {
+                    document.getElementById('mvWiGrade').textContent = d.grade;
+                    document.getElementById('mvWiPct').textContent = d.percentile + 'th';
+                    document.getElementById('mvWiViews').textContent = this.fmt(d.predicted_views);
+                    document.getElementById('mvWiVerdict').textContent = d.verdict;
+                    document.getElementById('mvWiMeter').style.width = d.percentile + '%';
+                }).catch(err => console.warn('simulate error', err));
+            }
+        };
     </script>
 </body>
 </html>

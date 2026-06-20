@@ -15,6 +15,8 @@ from fastapi import FastAPI, HTTPException, Query
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import FileResponse, JSONResponse
 
+import music_ingest
+import music_pipeline
 from advanced_metrics import letter_grade as grade_for
 from bias_library import BIAS_LIBRARY, CATEGORIES
 from streamlens_processor import DataProcessor
@@ -72,6 +74,28 @@ class AnalysisCache:
 
 
 cache = AnalysisCache()
+
+
+class MusicCache:
+    """Cache of the real-data music report (recomputed only on refresh)."""
+
+    def __init__(self):
+        self._lock = Lock()
+        self._report: Optional[dict] = None
+
+    def report(self) -> dict:
+        with self._lock:
+            if self._report is None:
+                self._report = music_pipeline.full_report()
+            return self._report
+
+    def invalidate(self) -> None:
+        with self._lock:
+            self._report = None
+        music_pipeline.load_dataset.cache_clear()
+
+
+music_cache = MusicCache()
 
 
 @app.get("/", include_in_schema=False)
@@ -337,6 +361,98 @@ def characters(
     if year:
         df = df[df["year"] == year]
     return df.head(limit).to_dict("records")
+
+
+# --------------------------------------------------------------------------- #
+# Music Virality (real YouTube data)
+# --------------------------------------------------------------------------- #
+@app.get("/api/music/overview")
+def music_overview():
+    """Headline stats for the real top-music dataset."""
+    return music_cache.report()["overview"]
+
+
+@app.get("/api/music/powerlaw")
+def music_powerlaw():
+    """Power-law fit of view counts (alpha, KS, bootstrap CI, CCDF points)."""
+    return music_cache.report()["power_law"]
+
+
+@app.get("/api/music/inequality")
+def music_inequality():
+    """Attention inequality: Gini, Lorenz, Theil, channel concentration."""
+    return music_cache.report()["inequality"]
+
+
+@app.get("/api/music/correlations")
+def music_correlations():
+    """Spearman + partial correlations of each feature with view count."""
+    return music_cache.report()["correlations"]
+
+
+@app.get("/api/music/archetypes")
+def music_archetypes():
+    """K-means viral archetypes and the per-song scatter."""
+    return music_cache.report()["archetypes"]
+
+
+@app.get("/api/music/network")
+def music_network():
+    """Tag co-occurrence graph (nodes, edges, density, communities)."""
+    return music_cache.report()["network"]
+
+
+@app.get("/api/music/predictability")
+def music_predictability():
+    """Cross-validated ensemble R-squared and feature importances."""
+    return music_cache.report()["predictability"]
+
+
+@app.get("/api/music/songs")
+def music_songs(
+    limit: int = Query(default=100, ge=1, le=1000),
+    sort_by: str = "view_count",
+):
+    """The real songs table, sortable for the explorer."""
+    return music_pipeline.songs_table(limit=limit, sort_by=sort_by)
+
+
+@app.get("/api/music/simulate")
+def music_simulate(
+    duration_min: float = Query(default=3.2, ge=0.2, le=15.0),
+    channel_follower_count: float = Query(default=5_000_000, ge=0, le=500_000_000),
+    tag_count: float = Query(default=20, ge=0, le=200),
+    is_official: float = Query(default=1.0, ge=0.0, le=1.0),
+):
+    """What-if virality predictor: maps a hypothetical upload to a view percentile."""
+    return music_pipeline.simulate_virality(
+        duration_min=duration_min,
+        channel_follower_count=channel_follower_count,
+        tag_count=tag_count,
+        is_official=is_official,
+    )
+
+
+@app.get("/api/music/status")
+def music_status():
+    """Whether live YouTube Data API extraction is wired (key present) or not."""
+    return music_ingest.status()
+
+
+@app.post("/api/music/refresh")
+def music_refresh(
+    max_results: int = Query(default=100, ge=10, le=200),
+    region: str = "US",
+):
+    """Pull a fresh, larger sample from the YouTube Data API (needs a key)."""
+    if not music_ingest.available():
+        raise HTTPException(
+            status_code=503,
+            detail="No YOUTUBE_API_KEY configured; serving the bundled real dataset.",
+        )
+    path = music_ingest.refresh_dataset(max_results=max_results, region=region)
+    music_cache.invalidate()
+    return {"refreshed": True, "path": str(path), "overview": music_cache.report()["overview"]}
 
 
 if __name__ == "__main__":
