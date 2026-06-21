@@ -1287,8 +1287,11 @@
         .mv-source { display: inline-flex; align-items: center; gap: 0.5rem; margin-top: 1.6rem; font-size: 0.8rem; background: rgba(0,0,0,0.18); padding: 0.4rem 0.85rem; border-radius: 999px; }
         .mv-source b { font-weight: 700; }
 
-        /* Movement (section) */
-        .mv-movement { margin-top: 3.4rem; }
+        /* Movement (section) — scroll-triggered fade-in */
+        .mv-movement { margin-top: 3.4rem; opacity: 0; transform: translateY(32px); transition: opacity 0.7s cubic-bezier(0.16,1,0.3,1), transform 0.7s cubic-bezier(0.16,1,0.3,1); }
+        .mv-movement.mv-visible { opacity: 1; transform: translateY(0); }
+        .mv-panel { transition: box-shadow 0.3s ease, transform 0.3s ease; }
+        .mv-panel:hover { transform: translateY(-2px); box-shadow: 0 22px 48px -24px rgba(40,46,86,0.55); }
         .mv-mhead { display: flex; align-items: baseline; gap: 0.9rem; flex-wrap: wrap; border-bottom: 1px solid var(--line); padding-bottom: 0.8rem; }
         .mv-mnum { font-family: 'Space Grotesk', monospace; font-size: 0.8rem; font-weight: 600; color: var(--teal); letter-spacing: 0.16em; }
         .mv-mhead h3 { font-family: 'Fraunces', Georgia, serif; font-weight: 600; font-size: clamp(1.4rem, 2.8vw, 2rem); color: var(--ink); letter-spacing: -0.01em; }
@@ -2061,7 +2064,7 @@
             <!-- VIII. Bias Analysis -->
             <div class="mv-movement" id="mvBias">
                 <div class="mv-mhead"><span class="mv-mnum">08</span><h3>Bias in the Top 100</h3></div>
-                <p class="mv-lead">Who gets to dominate the charts? We measure gender representation, genre gatekeeping, collaboration patterns, and how attention concentrates among artists &mdash; revealing the structural biases baked into music virality.</p>
+                <p class="mv-lead">Who gets to dominate the charts? We measure gender representation, genre gatekeeping, collaboration patterns, language dominance, engagement disparities, and how attention concentrates &mdash; across <strong id="mvBiasTotalSongs">636</strong> real songs from 3 datasets.</p>
                 <div class="mv-panel">
                     <div class="mv-bias-grade" id="mvBiasGrade">
                         <div class="grade-letter" id="mvBiasGradeLetter">&mdash;</div>
@@ -2079,14 +2082,29 @@
                 </div>
                 <div class="mv-grid-2" style="margin-top:1rem;">
                     <div class="mv-panel"><div class="mv-chart" id="mvCollabChart" style="min-height:260px;"></div></div>
+                    <div class="mv-panel"><div class="mv-chart" id="mvLanguageChart" style="min-height:260px;"></div></div>
+                </div>
+                <div class="mv-grid-2" style="margin-top:1rem;">
+                    <div class="mv-panel"><div class="mv-chart" id="mvEngagementChart" style="min-height:260px;"></div></div>
+                    <div class="mv-panel"><div class="mv-chart" id="mvCountryChart" style="min-height:260px;"></div></div>
+                </div>
+                <div class="mv-grid-2" style="margin-top:1rem;">
                     <div class="mv-panel">
                         <div class="mv-figures">
                             <div class="mv-figure"><div class="k" id="mvBiasParity">&mdash;</div><div class="l">Gender parity (songs)</div></div>
                             <div class="mv-figure"><div class="k" id="mvBiasViewsParity">&mdash;</div><div class="l">Views parity (F/M ratio)</div></div>
                             <div class="mv-figure"><div class="k" id="mvBiasGenreDiv">&mdash;</div><div class="l">Genre diversity</div></div>
-                            <div class="mv-figure"><div class="k" id="mvBiasTop5">&mdash;</div><div class="l">Top 5 artist concentration</div></div>
+                            <div class="mv-figure"><div class="k" id="mvBiasTop5">&mdash;</div><div class="l">Top 5 concentration</div></div>
+                            <div class="mv-figure"><div class="k" id="mvBiasEngShare">&mdash;</div><div class="l">English dominance</div></div>
+                            <div class="mv-figure"><div class="k" id="mvBiasLangCount">&mdash;</div><div class="l">Languages detected</div></div>
                         </div>
                         <div class="mv-takeaway" id="mvBiasTakeaway"></div>
+                    </div>
+                    <div class="mv-panel" style="display:flex;flex-direction:column;align-items:center;justify-content:center;">
+                        <div style="font-size:0.85rem;color:var(--muted);text-align:center;">
+                            <strong>Data Sources</strong><br>
+                            <span id="mvBiasSourceList" style="font-size:0.78rem;line-height:1.6;"></span>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -3980,6 +3998,79 @@
                     }],
                     animation: true
                 });
+                // Language bias bar
+                if (b.language_bias && b.language_bias.counts) {
+                    var langEl = document.getElementById('mvLanguageChart');
+                    var langEc = echarts.init(langEl);
+                    this._echartsInstances.push(langEc);
+                    var lc = b.language_bias.counts;
+                    var langArr = Object.entries(lc).filter(function(e) { return e[0] !== 'Unknown'; }).sort(function(a, b) { return b[1] - a[1]; });
+                    var langColors = ['#5566f6','#f0779f','#0fb6a8','#f4a259','#a78bfa','#34d399','#fb7185','#fbbf24'];
+                    langEc.setOption({
+                        title: { text: 'Language Distribution', left: 'center', top: 8, textStyle: { fontSize: 13, fontWeight: 600, fontFamily: 'Inter' } },
+                        tooltip: { trigger: 'item', formatter: '{b}: {c} songs ({d}%)' },
+                        series: [{ type: 'pie', radius: ['35%', '65%'], center: ['50%', '55%'], roseType: 'radius',
+                            data: langArr.map(function(e, i) { return { name: e[0], value: e[1], itemStyle: { color: langColors[i % langColors.length] } }; }),
+                            label: { formatter: '{b}\n{c}', fontSize: 10 },
+                            emphasis: { scale: true, scaleSize: 6 },
+                            animationType: 'scale', animationEasing: 'elasticOut'
+                        }],
+                        animation: true, animationDuration: 1000
+                    });
+                }
+                // Engagement scatter
+                if (b.engagement_bias && b.engagement_bias.top_engaged_songs) {
+                    var engEl = document.getElementById('mvEngagementChart');
+                    var engEc = echarts.init(engEl);
+                    this._echartsInstances.push(engEc);
+                    var topEng = b.engagement_bias.top_engaged_songs;
+                    engEc.setOption({
+                        title: { text: 'Top Engagement (Likes/Views)', left: 'center', top: 8, textStyle: { fontSize: 13, fontWeight: 600, fontFamily: 'Inter' } },
+                        grid: { left: 60, right: 30, top: 45, bottom: 50 },
+                        xAxis: { type: 'category', data: topEng.map(function(s) { return s.title.length > 25 ? s.title.substring(0, 22) + '...' : s.title; }), axisLabel: { fontSize: 9, rotate: 15 } },
+                        yAxis: { type: 'value', name: 'Engagement %', axisLabel: { formatter: function(v) { return (v * 100).toFixed(1) + '%'; } }, splitLine: { lineStyle: { color: 'rgba(40,46,86,0.06)' } } },
+                        series: [{ type: 'bar', data: topEng.map(function(s, i) { return { value: s.engagement, itemStyle: { color: ['#a78bfa','#f0779f','#5566f6','#0fb6a8','#f4a259'][i] } }; }),
+                            barWidth: 32, label: { show: true, position: 'top', formatter: function(p) { return (p.value * 100).toFixed(1) + '%'; }, fontSize: 10 } }],
+                        tooltip: { formatter: function(p) { return topEng[p.dataIndex].title + ': ' + (topEng[p.dataIndex].engagement * 100).toFixed(2) + '% engagement'; } },
+                        animation: true, animationDuration: 800
+                    });
+                }
+                // Country treemap
+                if (b.country_bias && b.country_bias.counts) {
+                    var ctryEl = document.getElementById('mvCountryChart');
+                    var ctryEc = echarts.init(ctryEl);
+                    this._echartsInstances.push(ctryEc);
+                    var cc = b.country_bias.counts;
+                    var ctryArr = Object.entries(cc).sort(function(a, b) { return b[1] - a[1]; });
+                    var ctryColors = ['#5566f6','#0fb6a8','#f0779f','#f4a259','#a78bfa','#34d399','#fb7185','#fbbf24','#818cf8','#6ee7b7'];
+                    ctryEc.setOption({
+                        title: { text: 'Channel Country', left: 'center', top: 8, textStyle: { fontSize: 13, fontWeight: 600, fontFamily: 'Inter' } },
+                        tooltip: { formatter: '{b}: {c} channels' },
+                        series: [{ type: 'treemap', width: '90%', height: '70%', top: 40,
+                            data: ctryArr.map(function(e, i) { return { name: e[0], value: e[1], itemStyle: { color: ctryColors[i % ctryColors.length] } }; }),
+                            label: { fontSize: 12, fontWeight: 600 },
+                            breadcrumb: { show: false },
+                            levels: [{ itemStyle: { borderColor: '#fff', borderWidth: 2, gapWidth: 2 } }]
+                        }],
+                        animation: true, animationDuration: 900
+                    });
+                }
+                // Extra metrics
+                if (b.language_bias) {
+                    var engShareEl = document.getElementById('mvBiasEngShare');
+                    if (engShareEl) engShareEl.textContent = Math.round(b.language_bias.english_share * 100) + '%';
+                    var langCountEl = document.getElementById('mvBiasLangCount');
+                    if (langCountEl) langCountEl.textContent = b.language_bias.n_languages;
+                }
+                if (b.enriched_stats) {
+                    var totalEl = document.getElementById('mvBiasTotalSongs');
+                    if (totalEl) totalEl.textContent = b.enriched_stats.total_songs;
+                    var srcEl = document.getElementById('mvBiasSourceList');
+                    if (srcEl && b.enriched_stats.sources) {
+                        var srcNames = { primary_top100: 'Top 100 (2025)', most_viewed_2026: 'Most Viewed (2026)', youtube_music_data: 'YouTube Music Data' };
+                        srcEl.innerHTML = Object.entries(b.enriched_stats.sources).map(function(e) { return (srcNames[e[0]] || e[0]) + ': ' + e[1] + ' songs'; }).join('<br>');
+                    }
+                }
             },
 
             render3DScatter() {
@@ -4016,6 +4107,19 @@
                 }, { responsive: true, displayModeBar: true, modeBarButtonsToRemove: ['toImage'] });
             }
         };
+
+        // Scroll-triggered fade-in for music movements
+        (function initMvAnimations() {
+            var obs = new IntersectionObserver(function(entries) {
+                entries.forEach(function(e) {
+                    if (e.isIntersecting) {
+                        e.target.classList.add('mv-visible');
+                        obs.unobserve(e.target);
+                    }
+                });
+            }, { threshold: 0.08 });
+            document.querySelectorAll('.mv-movement').forEach(function(el) { obs.observe(el); });
+        })();
     </script>
 </body>
 </html>

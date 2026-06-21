@@ -47,6 +47,9 @@ from advanced_metrics import bootstrap_ci, gini, letter_grade, lorenz_points, th
 
 BASE_DIR = Path(__file__).resolve().parent
 DEFAULT_CSV = BASE_DIR / "data_sources" / "youtube-top-100-songs-2025.csv"
+SUPPLEMENT_MOST_VIEWED = BASE_DIR / "data_sources" / "most-viewed-yt-videos-2026.csv"
+SUPPLEMENT_MUSIC_DATA = BASE_DIR / "data_sources" / "youtube-music-data.csv"
+SUPPLEMENT_CHANNELS = BASE_DIR / "data_sources" / "youtube-top-channels-2026.csv"
 SEED = 42
 
 # Human-readable labels and tooltips for every engineered feature, reused by the
@@ -157,10 +160,219 @@ def engineer_features(df: pd.DataFrame) -> pd.DataFrame:
     ]
     out["thumbnail"] = df.get("thumbnail", pd.Series([""] * len(df))).astype(str)
     out["channel_url"] = df.get("channel_url", pd.Series([""] * len(df))).astype(str)
+    out["_raw_tags"] = df.get("tags", pd.Series([""] * len(df))).astype(str)
 
     out = out.dropna(subset=["view_count"]).reset_index(drop=True)
     out["view_count"] = out["view_count"].astype(float)
     return out
+
+
+def _parse_human_number(v: object) -> float:
+    """Parse '8.97B', '123M', '5.6K' → float."""
+    s = str(v).strip()
+    for suffix, mult in [("B", 1e9), ("b", 1e9), ("M", 1e6), ("m", 1e6),
+                         ("K", 1e3), ("k", 1e3)]:
+        if s.endswith(suffix):
+            try:
+                return float(s[:-1]) * mult
+            except ValueError:
+                return 0.0
+    try:
+        return float(s.replace(",", ""))
+    except (ValueError, TypeError):
+        return 0.0
+
+
+def _parse_duration_string(d: object) -> float:
+    """Parse '3:40' or '1:18:42' → seconds."""
+    parts = str(d).split(":")
+    try:
+        if len(parts) == 3:
+            return int(parts[0]) * 3600 + int(parts[1]) * 60 + int(parts[2])
+        if len(parts) == 2:
+            return int(parts[0]) * 60 + int(parts[1])
+    except (ValueError, TypeError):
+        pass
+    return 0.0
+
+
+def _load_supplement_most_viewed() -> pd.DataFrame:
+    """Load DS1: top 1000 most-viewed YT videos, filter to music, normalise."""
+    if not SUPPLEMENT_MOST_VIEWED.exists():
+        return pd.DataFrame()
+    df = pd.read_csv(SUPPLEMENT_MOST_VIEWED)
+    music = df[df["content_type"] == "Music Video"].copy()
+    if music.empty:
+        return pd.DataFrame()
+
+    def _extract_channel(title: str) -> str:
+        for sep in [" - ", " – "]:
+            if sep in title:
+                return title.split(sep)[0].strip()
+        return "Unknown"
+
+    out = pd.DataFrame()
+    out["title"] = music["title"].astype(str)
+    out["channel"] = music["title"].apply(_extract_channel)
+    out["view_count"] = music["views"].apply(_parse_human_number)
+    out["likes"] = music["likes"].apply(_parse_human_number)
+    out["detected_language"] = music.get(
+        "detected_language", pd.Series(["Unknown"] * len(music))
+    ).astype(str)
+    out["has_hashtags"] = music.get("has_hashtags", 0)
+    out["source"] = "most_viewed_2026"
+    return out.reset_index(drop=True)
+
+
+def _load_supplement_music_data() -> pd.DataFrame:
+    """Load DS2: 157 YouTube music videos with duration/likes/subs."""
+    if not SUPPLEMENT_MUSIC_DATA.exists():
+        return pd.DataFrame()
+    df = pd.read_csv(SUPPLEMENT_MUSIC_DATA)
+    if df.empty:
+        return pd.DataFrame()
+    out = pd.DataFrame()
+    out["title"] = df["title"].astype(str)
+    out["channel"] = df["channelName"].astype(str)
+    out["view_count"] = pd.to_numeric(df["viewCount"], errors="coerce")
+    out["likes"] = pd.to_numeric(df["likes"], errors="coerce")
+    out["duration"] = df["duration"].apply(_parse_duration_string)
+    out["channel_follower_count"] = pd.to_numeric(
+        df["numberOfSubscribers"], errors="coerce"
+    )
+    out["source"] = "youtube_music_data"
+    return out.dropna(subset=["view_count"]).reset_index(drop=True)
+
+
+def _load_channel_countries() -> Dict[str, str]:
+    """Load DS3: channel name → country mapping."""
+    if not SUPPLEMENT_CHANNELS.exists():
+        return {}
+    df = pd.read_csv(SUPPLEMENT_CHANNELS)
+    mapping: Dict[str, str] = {}
+    for _, row in df.iterrows():
+        name = str(row.get("Channel Name", "")).strip()
+        country = str(row.get("Country", "Unknown")).strip()
+        if name and country and country != "Unknown":
+            mapping[name] = country
+    return mapping
+
+
+def load_enriched_dataset() -> pd.DataFrame:
+    """Build the unified music dataset from all available sources.
+
+    Priority: the primary CSV (100 songs) is the authoritative source.
+    Supplementary datasets are merged only for rows not already present
+    (deduplicated on normalised title). Extra columns (likes,
+    detected_language, country) are attached where available.
+    """
+    primary = load_dataset()
+
+    # --- Supplement 1: most-viewed music videos ---
+    sup1 = _load_supplement_most_viewed()
+
+    # --- Supplement 2: YouTube music data ---
+    sup2 = _load_supplement_music_data()
+
+    # Deduplicate by normalised title
+    seen = set(primary["title"].str.lower().str.strip())
+    extras = []
+    for sup in [sup1, sup2]:
+        if sup.empty:
+            continue
+        sup["_norm"] = sup["title"].str.lower().str.strip()
+        novel = sup[~sup["_norm"].isin(seen)].copy()
+        seen.update(novel["_norm"])
+        extras.append(novel.drop(columns=["_norm"]))
+
+    if extras:
+        combined_extras = pd.concat(extras, ignore_index=True)
+        # Engineer features for supplementary data
+        sup_eng = pd.DataFrame()
+        sup_eng["title"] = combined_extras["title"]
+        sup_eng["channel"] = combined_extras["channel"]
+        sup_eng["view_count"] = combined_extras["view_count"].astype(float)
+        dur = combined_extras.get("duration")
+        if dur is not None:
+            sup_eng["duration_sec"] = pd.to_numeric(dur, errors="coerce")
+        else:
+            sup_eng["duration_sec"] = float("nan")
+        med_dur = primary["duration_min"].median() * 60
+        sup_eng["duration_min"] = (
+            sup_eng["duration_sec"].fillna(med_dur) / 60.0
+        )
+        fol = combined_extras.get("channel_follower_count")
+        if fol is not None:
+            sup_eng["channel_follower_count"] = pd.to_numeric(
+                fol, errors="coerce"
+            ).fillna(primary["channel_follower_count"].median())
+        else:
+            sup_eng["channel_follower_count"] = primary[
+                "channel_follower_count"
+            ].median()
+        sup_eng["virality_coefficient"] = (
+            sup_eng["view_count"]
+            / sup_eng["channel_follower_count"].clip(lower=1.0)
+        )
+        sup_eng["title_char_count"] = (
+            sup_eng["title"].str.len().astype(float)
+        )
+        sup_eng["title_word_count"] = (
+            sup_eng["title"].str.split().apply(len).astype(float)
+        )
+        sup_eng["tag_count"] = 0.0
+        sup_eng["description_len"] = 0.0
+        sup_eng["is_official"] = [
+            _looks_official(t, "") for t in sup_eng["title"]
+        ]
+        sup_eng["thumbnail"] = ""
+        sup_eng["channel_url"] = ""
+        sup_eng["_raw_tags"] = ""
+        # Carry over extra columns
+        if "likes" in combined_extras:
+            sup_eng["likes"] = pd.to_numeric(
+                combined_extras["likes"], errors="coerce"
+            ).fillna(0)
+        if "detected_language" in combined_extras:
+            sup_eng["detected_language"] = (
+                combined_extras["detected_language"].fillna("Unknown")
+            )
+        if "source" in combined_extras:
+            sup_eng["source"] = combined_extras["source"]
+
+        # Mark primary rows
+        primary_out = primary.copy()
+        if "likes" not in primary_out.columns:
+            primary_out["likes"] = float("nan")
+        if "detected_language" not in primary_out.columns:
+            primary_out["detected_language"] = "Unknown"
+        primary_out["source"] = "primary_top100"
+
+        merged = pd.concat(
+            [primary_out, sup_eng], ignore_index=True
+        )
+    else:
+        merged = primary.copy()
+        merged["source"] = "primary_top100"
+        if "likes" not in merged.columns:
+            merged["likes"] = float("nan")
+        if "detected_language" not in merged.columns:
+            merged["detected_language"] = "Unknown"
+
+    # --- Enrich with channel country from DS3 ---
+    countries = _load_channel_countries()
+    merged["country"] = merged["channel"].map(
+        lambda c: countries.get(c.strip(), "Unknown")
+    )
+
+    # --- Engagement ratio ---
+    likes = pd.to_numeric(merged.get("likes"), errors="coerce").fillna(0)
+    merged["engagement_ratio"] = (
+        likes / merged["view_count"].clip(lower=1.0)
+    )
+
+    merged = merged.dropna(subset=["view_count"]).reset_index(drop=True)
+    return merged
 
 
 @lru_cache(maxsize=4)
@@ -587,7 +799,7 @@ _ARTIST_GENDER: Dict[str, str] = {
     "Jackson Wang": "male", "ROLE MODEL": "male", "GIVĒON": "male",
     "Roy Woods": "male", "Vex Prince": "male", "sombr": "male",
     "David Guetta": "male", "keinemusik": "male",
-    "LLOUD Official": "male", "HoodTrophy Bino": "male",
+    "LLOUD Official": "female", "HoodTrophy Bino": "male",
     "RAAHiiM": "male", "PJ": "male",
     "Coldplay": "mixed", "Maroon 5": "mixed", "ImagineDragons": "mixed",
     "The Weeknd": "male",
@@ -595,6 +807,7 @@ _ARTIST_GENDER: Dict[str, str] = {
 
 # Genre heuristics from tags and title keywords.
 _GENRE_KEYWORDS: Dict[str, List[str]] = {
+    "K-Pop": ["k-pop", "kpop", "k pop", "yg entertainment", "blackpink", "jennie"],
     "Pop": ["pop", "dance pop", "synth", "electropop"],
     "Hip-Hop/Rap": ["hip hop", "rap", "trap", "hip-hop", "rapper"],
     "R&B/Soul": ["r&b", "rnb", "soul", "r & b"],
@@ -602,7 +815,6 @@ _GENRE_KEYWORDS: Dict[str, List[str]] = {
     "Electronic/Dance": ["edm", "electronic", "house", "techno", "dance", "dj"],
     "Country": ["country", "americana", "cowboy"],
     "Latin": ["latin", "reggaeton", "salsa", "bachata", "latino"],
-    "K-Pop": ["k-pop", "kpop", "k pop", "yg entertainment", "blackpink", "jennie"],
 }
 
 
@@ -628,7 +840,7 @@ def _detect_collab(title: str) -> bool:
 def bias_analysis(df: Optional[pd.DataFrame] = None) -> Dict[str, object]:
     """Compute music-specific bias dimensions from the real dataset."""
     df = load_dataset() if df is None else df
-    raw = pd.read_csv(DEFAULT_CSV)
+    df = df.copy()
 
     # --- Gender representation ---
     df["artist_gender"] = df["channel"].apply(_classify_gender)
@@ -658,9 +870,9 @@ def bias_analysis(df: Optional[pd.DataFrame] = None) -> Dict[str, object]:
     views_parity = round(f_avg / m_avg, 3) if m_avg > 0 else 0.0
 
     # --- Genre concentration ---
-    tags_col = raw.get("tags", pd.Series([""] * len(raw)))
+    tags_col = df["_raw_tags"].fillna("")
     df["genre"] = [
-        _classify_genre(t, ti) for t, ti in zip(tags_col.fillna(""), df["title"])
+        _classify_genre(t, ti) for t, ti in zip(tags_col, df["title"])
     ]
     genre_counts_dict = df["genre"].value_counts().to_dict()
     genre_views_dict: Dict[str, float] = {}
@@ -723,12 +935,77 @@ def bias_analysis(df: Optional[pd.DataFrame] = None) -> Dict[str, object]:
         "collab_rate": round(collab_count / len(df), 3),
         "concentration_top5": top5_share,
     }
+    vp_score = 1.0 - abs(1.0 - min(views_parity, 2.0))
     overall_bias_grade = letter_grade(
-        (gender_parity + min(views_parity, 1.0) + (1.0 - genre_gini) + (1.0 - top5_share)) / 4.0
+        (gender_parity + vp_score + (1.0 - genre_gini) + (1.0 - top5_share)) / 4.0
     )
 
+    # --- Language bias (from enriched dataset) ---
+    try:
+        edf = load_enriched_dataset()
+        lang_counts = edf["detected_language"].value_counts().to_dict()
+        lang_views: Dict[str, float] = {}
+        etotal = float(edf["view_count"].sum())
+        for lang in edf["detected_language"].unique():
+            lang_views[lang] = round(
+                float(edf.loc[edf["detected_language"] == lang, "view_count"].sum())
+            )
+        eng_share = round(lang_views.get("English", 0) / etotal, 4) if etotal else 0
+        lang_gini = round(float(gini(list(lang_views.values()))), 3)
+        language_bias = {
+            "counts": lang_counts,
+            "views": lang_views,
+            "english_share": eng_share,
+            "gini": lang_gini,
+            "n_languages": len([k for k in lang_counts if k != "Unknown"]),
+        }
+
+        # --- Engagement bias ---
+        eng_ratio = edf["engagement_ratio"].dropna()
+        engagement_bias = {
+            "median_engagement": round(float(eng_ratio.median()), 5),
+            "mean_engagement": round(float(eng_ratio.mean()), 5),
+            "top_engaged_songs": [],
+        }
+        if len(eng_ratio) > 0:
+            top_eng = edf.nlargest(5, "engagement_ratio")
+            engagement_bias["top_engaged_songs"] = [
+                {
+                    "title": str(r["title"])[:60],
+                    "engagement": round(float(r["engagement_ratio"]), 5),
+                    "views": float(r["view_count"]),
+                }
+                for _, r in top_eng.iterrows()
+            ]
+
+        # --- Country bias ---
+        country_counts = edf["country"].value_counts().to_dict()
+        country_views: Dict[str, float] = {}
+        for c in edf["country"].unique():
+            country_views[c] = round(
+                float(edf.loc[edf["country"] == c, "view_count"].sum())
+            )
+        country_bias = {
+            "counts": {k: v for k, v in country_counts.items() if k != "Unknown"},
+            "views": {k: round(v) for k, v in country_views.items() if k != "Unknown"},
+            "unknown_count": country_counts.get("Unknown", 0),
+        }
+
+        enriched_stats = {
+            "total_songs": int(len(edf)),
+            "sources": edf["source"].value_counts().to_dict(),
+        }
+    except Exception:
+        language_bias = {"counts": {}, "views": {}, "english_share": 0,
+                         "gini": 0, "n_languages": 0}
+        engagement_bias = {"median_engagement": 0, "mean_engagement": 0,
+                           "top_engaged_songs": []}
+        country_bias = {"counts": {}, "views": {}, "unknown_count": 0}
+        enriched_stats = {"total_songs": int(len(df)), "sources": {}}
+
     interpretation = (
-        f"Gender parity in the top 100 is {gender_parity:.2f} "
+        f"Analysing {enriched_stats['total_songs']} songs across multiple datasets. "
+        f"Gender parity is {gender_parity:.2f} "
         f"({'near-equal' if gender_parity > 0.8 else 'skewed'}). "
         f"Female artists average {f_avg:,.0f} views/song vs male {m_avg:,.0f} "
         f"(ratio {views_parity:.2f}). "
@@ -763,6 +1040,10 @@ def bias_analysis(df: Optional[pd.DataFrame] = None) -> Dict[str, object]:
             "top10_share": top10_share,
             "bottom50_share": bottom50_share,
         },
+        "language_bias": language_bias,
+        "engagement_bias": engagement_bias,
+        "country_bias": country_bias,
+        "enriched_stats": enriched_stats,
         "bias_scores": bias_scores,
         "overall_grade": overall_bias_grade,
         "interpretation": interpretation,
@@ -886,6 +1167,14 @@ def overview(df: Optional[pd.DataFrame] = None) -> Dict[str, object]:
     df = load_dataset() if df is None else df
     views = df["view_count"].to_numpy(dtype=float)
     durations = df["duration_min"].to_numpy(dtype=float)
+    # Enriched stats
+    try:
+        enriched = load_enriched_dataset()
+        enriched_count = int(len(enriched))
+        enriched_sources = enriched["source"].value_counts().to_dict()
+    except Exception:
+        enriched_count = int(len(df))
+        enriched_sources = {"primary_top100": int(len(df))}
     return {
         "n_songs": int(len(df)),
         "n_channels": int(df["channel"].nunique()),
@@ -896,7 +1185,9 @@ def overview(df: Optional[pd.DataFrame] = None) -> Dict[str, object]:
         "top_channel": str(df.loc[df["view_count"].idxmax(), "channel"]),
         "median_duration_min": round(float(np.median(durations)), 2),
         "official_share": round(float(df["is_official"].mean()), 3),
-        "data_source": "Real YouTube data - top music videos, 2025",
+        "data_source": "Real YouTube data - top music videos, 2025-2026",
+        "enriched_song_count": enriched_count,
+        "enriched_sources": enriched_sources,
     }
 
 
