@@ -11,6 +11,7 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/plotly.js/2.27.0/plotly.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.0/chart.umd.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/echarts/5.4.3/echarts.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
     <style>
         :root {
             /* Primary Theme — Aurora (light, airy) */
@@ -1186,6 +1187,7 @@
             if (path === '/api/music/network') return load('music/network.json').then(J);
             if (path === '/api/music/predictability') return load('music/predictability.json').then(J);
             if (path === '/api/music/status') return load('music/status.json').then(J);
+            if (path === '/api/music/bias') return load('music/bias.json').then(J);
             if (path === '/api/music/songs') {
                 return load('music/songs.json').then(function (rows) {
                     var key = qs.sort_by || 'view_count';
@@ -1354,6 +1356,12 @@
         .mv-num { font-family: 'Space Grotesk', monospace; }
         .mv-tag { display: inline-block; font-size: 0.68rem; padding: 0.1rem 0.45rem; border-radius: 6px; background: rgba(85,102,246,0.12); color: var(--indigo); font-weight: 600; }
         .mv-search { width: 100%; max-width: 22rem; padding: 0.6rem 0.9rem; border: 1px solid var(--line); border-radius: 12px; font-size: 0.9rem; margin-bottom: 1rem; background: var(--paper); color: var(--ink); }
+        .mv-bias-grade { text-align: center; padding: 1.6rem 1rem; }
+        .mv-bias-grade .grade-letter { font-family: 'Fraunces', serif; font-size: 3.6rem; font-weight: 600; line-height: 1; background: linear-gradient(135deg, var(--indigo), var(--teal)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
+        .mv-bias-grade .grade-label { font-size: 1.05rem; font-weight: 600; color: var(--ink); margin-top: 0.3rem; }
+        .mv-bias-grade .grade-sub { font-size: 0.82rem; color: var(--ink-dim); margin-top: 0.3rem; max-width: 28rem; margin-left: auto; margin-right: auto; }
+        .mv-chip { display: inline-flex; align-items: center; gap: 0.35rem; font-size: 0.78rem; padding: 0.2rem 0.6rem; border-radius: 8px; background: rgba(85,102,246,0.08); color: var(--ink); margin: 0.15rem; }
+        .mv-chip .sw { width: 10px; height: 10px; border-radius: 50%; display: inline-block; }
         .mv-refresh { display: flex; align-items: center; gap: 0.8rem; flex-wrap: wrap; margin-top: 1rem; font-size: 0.85rem; color: var(--ink-dim); }
         .mv-refresh button { border: 1px solid var(--line); background: var(--paper); color: var(--ink); padding: 0.5rem 1rem; border-radius: 10px; font-weight: 600; cursor: pointer; font-size: 0.85rem; }
         .mv-refresh button:hover { border-color: var(--indigo); color: var(--indigo); }
@@ -2050,9 +2058,49 @@
                 </div>
             </div>
 
-            <!-- VIII. Songs Explorer -->
+            <!-- VIII. Bias Analysis -->
+            <div class="mv-movement" id="mvBias">
+                <div class="mv-mhead"><span class="mv-mnum">08</span><h3>Bias in the Top 100</h3></div>
+                <p class="mv-lead">Who gets to dominate the charts? We measure gender representation, genre gatekeeping, collaboration patterns, and how attention concentrates among artists &mdash; revealing the structural biases baked into music virality.</p>
+                <div class="mv-panel">
+                    <div class="mv-bias-grade" id="mvBiasGrade">
+                        <div class="grade-letter" id="mvBiasGradeLetter">&mdash;</div>
+                        <div class="grade-label">Overall Equity Grade</div>
+                        <div class="grade-sub" id="mvBiasGradeSub">Compositing gender parity, views parity, genre diversity, and concentration</div>
+                    </div>
+                </div>
+                <div class="mv-grid-2" style="margin-top:1.2rem;">
+                    <div class="mv-panel"><div class="mv-chart" id="mvGenderChart" style="min-height:300px;"></div></div>
+                    <div class="mv-panel"><div class="mv-chart" id="mvGenreChart" style="min-height:300px;"></div></div>
+                </div>
+                <div class="mv-grid-2" style="margin-top:1rem;">
+                    <div class="mv-panel"><div class="mv-chart" id="mvGenderViewsChart" style="min-height:280px;"></div></div>
+                    <div class="mv-panel"><div class="mv-chart" id="mvDurationBiasChart" style="min-height:280px;"></div></div>
+                </div>
+                <div class="mv-grid-2" style="margin-top:1rem;">
+                    <div class="mv-panel"><div class="mv-chart" id="mvCollabChart" style="min-height:260px;"></div></div>
+                    <div class="mv-panel">
+                        <div class="mv-figures">
+                            <div class="mv-figure"><div class="k" id="mvBiasParity">&mdash;</div><div class="l">Gender parity (songs)</div></div>
+                            <div class="mv-figure"><div class="k" id="mvBiasViewsParity">&mdash;</div><div class="l">Views parity (F/M ratio)</div></div>
+                            <div class="mv-figure"><div class="k" id="mvBiasGenreDiv">&mdash;</div><div class="l">Genre diversity</div></div>
+                            <div class="mv-figure"><div class="k" id="mvBiasTop5">&mdash;</div><div class="l">Top 5 artist concentration</div></div>
+                        </div>
+                        <div class="mv-takeaway" id="mvBiasTakeaway"></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- IX. 3D Archetype Landscape -->
+            <div class="mv-movement" id="mv3DLandscape">
+                <div class="mv-mhead"><span class="mv-mnum">09</span><h3>3D Virality Landscape</h3></div>
+                <p class="mv-lead">The same archetype clusters rendered in three dimensions &mdash; views, virality, and channel size form the axes. Drag to rotate, scroll to zoom. Each sphere is a real song; colour encodes the cluster.</p>
+                <div class="mv-panel"><div class="mv-chart tall" id="mv3DScatter" style="min-height:480px;"></div></div>
+            </div>
+
+            <!-- X. Songs Explorer -->
             <div class="mv-movement" id="mvSongsExplorer">
-                <div class="mv-mhead"><span class="mv-mnum">08</span><h3>Real Songs Explorer</h3></div>
+                <div class="mv-mhead"><span class="mv-mnum">10</span><h3>Real Songs Explorer</h3></div>
                 <p class="mv-lead">The raw dataset behind every chart above. Search, sort by any column, and verify the numbers for yourself.</p>
                 <input type="text" class="mv-search" id="mvSongSearch" placeholder="Search songs or channels&hellip;">
                 <div class="mv-tablewrap" style="max-height:520px; overflow-y:auto;">
@@ -3416,7 +3464,9 @@
                 'The Tag Universe': 'A force-directed co-occurrence graph where nodes are tags and edges form when two tags appear on the same video. Node size = degree (how connected); colour = community (greedy modularity). Drag nodes to explore.',
                 'How Predictable Is Virality?': 'Cross-validated ensemble of RandomForest + GradientBoosting predicting log(views) from pre-publication features only (no target leakage). The R\u00b2 is the honest out-of-fold score; the importance bars are from the fitted RandomForest.',
                 'What-If Virality Predictor': 'Set hypothetical upload parameters and the trained RandomForest model predicts where the video would rank among the real top 100. On the static site this snaps to a precomputed grid; on the live API it is continuous.',
-                'Real Songs Explorer': 'The raw dataset behind every chart \u2014 100 real YouTube music videos with actual view counts, durations, and virality coefficients. Click any column header to sort; type in the search box to filter.'
+                'Real Songs Explorer': 'The raw dataset behind every chart \u2014 100 real YouTube music videos with actual view counts, durations, and virality coefficients. Click any column header to sort; type in the search box to filter.',
+                'Bias in the Top 100': 'Gender representation, genre concentration, collaboration patterns, duration bias, and attention concentration \u2014 measuring the structural biases baked into music virality. The equity grade composites gender parity, views parity, genre diversity, and top-5 concentration.',
+                '3D Virality Landscape': 'A Plotly 3D scatter of views \u00d7 virality \u00d7 subscribers with archetype clusters. Drag to rotate, scroll to zoom. Each sphere is a real song coloured by its K-means cluster assignment.'
             };
             document.querySelectorAll('.viz-title').forEach(h => {
                 if (h.querySelector('.sl-info')) return;
@@ -3479,7 +3529,7 @@
             load() {
                 if (this._loaded) return;
                 this._loaded = true;
-                const ep = ['overview','powerlaw','inequality','correlations','archetypes','network','predictability','songs','status'];
+                const ep = ['overview','powerlaw','inequality','correlations','archetypes','network','predictability','songs','status','bias'];
                 Promise.all(ep.map(e => fetch('/api/music/' + e).then(r => r.json())))
                     .then(results => {
                         const keys = ep;
@@ -3499,6 +3549,8 @@
                 this.renderArchetypes();
                 this.renderNetwork();
                 this.renderPredictability();
+                this.renderBias();
+                this.render3DScatter();
                 this.renderSongs();
             },
 
@@ -3833,6 +3885,135 @@
                     document.getElementById('mvWiVerdict').textContent = d.verdict;
                     document.getElementById('mvWiMeter').style.width = d.percentile + '%';
                 }).catch(err => console.warn('simulate error', err));
+            },
+
+            renderBias() {
+                const b = this._data.bias;
+                if (!b) return;
+                // Grade
+                document.getElementById('mvBiasGradeLetter').textContent = b.overall_grade;
+                document.getElementById('mvBiasParity').textContent = b.bias_scores.gender_parity;
+                document.getElementById('mvBiasViewsParity').textContent = b.bias_scores.views_parity + 'x';
+                document.getElementById('mvBiasGenreDiv').textContent = b.bias_scores.genre_diversity;
+                document.getElementById('mvBiasTop5').textContent = Math.round(b.concentration.top5_share * 100) + '%';
+                document.getElementById('mvBiasTakeaway').innerHTML = '<b>Takeaway:</b> ' + b.interpretation;
+                // Gender donut (ECharts)
+                const genderEl = document.getElementById('mvGenderChart');
+                const genderEc = echarts.init(genderEl);
+                this._echartsInstances.push(genderEc);
+                const gc = b.gender.counts;
+                const gColors = { female: '#f0779f', male: '#5566f6', mixed: '#0fb6a8', unknown: '#cbd5e1' };
+                genderEc.setOption({
+                    title: { text: 'Artist Gender (Songs)', left: 'center', top: 8, textStyle: { fontSize: 13, fontWeight: 600, fontFamily: 'Inter' } },
+                    tooltip: { trigger: 'item', formatter: '{b}: {c} songs ({d}%)' },
+                    series: [{ type: 'pie', radius: ['40%', '70%'], center: ['50%', '55%'], avoidLabelOverlap: true,
+                        label: { formatter: '{b}\n{c}', fontSize: 11 },
+                        data: Object.entries(gc).map(([k, v]) => ({ name: k, value: v, itemStyle: { color: gColors[k] || '#94a3b8' } })),
+                        emphasis: { scale: true, scaleSize: 6 }
+                    }],
+                    animation: true, animationDuration: 800
+                });
+                // Genre bar (ECharts)
+                const genreEl = document.getElementById('mvGenreChart');
+                const genreEc = echarts.init(genreEl);
+                this._echartsInstances.push(genreEc);
+                const genres = Object.entries(b.genres.counts).sort((a, b) => b[1] - a[1]);
+                genreEc.setOption({
+                    title: { text: 'Genre Distribution', left: 'center', top: 8, textStyle: { fontSize: 13, fontWeight: 600, fontFamily: 'Inter' } },
+                    grid: { left: 120, right: 30, top: 40, bottom: 20 },
+                    xAxis: { type: 'value', splitLine: { lineStyle: { color: 'rgba(40,46,86,0.06)' } } },
+                    yAxis: { type: 'category', data: genres.map(g => g[0]).reverse(), axisLabel: { fontSize: 11 } },
+                    series: [{ type: 'bar', data: genres.map(g => g[1]).reverse(),
+                        itemStyle: { color: new echarts.graphic.LinearGradient(0,0,1,0,[{offset:0,color:'#5566f6'},{offset:1,color:'#0fb6a8'}]), borderRadius: [0,4,4,0] },
+                        barWidth: 16 }],
+                    tooltip: { formatter: '{b}: {c} songs' },
+                    animation: true
+                });
+                // Gender views comparison bar
+                const gvEl = document.getElementById('mvGenderViewsChart');
+                const gvEc = echarts.init(gvEl);
+                this._echartsInstances.push(gvEc);
+                const avgV = b.gender.avg_views_by_gender;
+                const genders = Object.keys(avgV);
+                gvEc.setOption({
+                    title: { text: 'Avg Views per Song by Gender', left: 'center', top: 8, textStyle: { fontSize: 13, fontWeight: 600, fontFamily: 'Inter' } },
+                    grid: { left: 80, right: 30, top: 45, bottom: 30 },
+                    xAxis: { type: 'category', data: genders, axisLabel: { fontSize: 12 } },
+                    yAxis: { type: 'value', axisLabel: { formatter: function(v) { return v >= 1e6 ? (v/1e6).toFixed(0) + 'M' : v; } }, splitLine: { lineStyle: { color: 'rgba(40,46,86,0.06)' } } },
+                    series: [{ type: 'bar', data: genders.map(g => ({ value: avgV[g], itemStyle: { color: gColors[g] || '#94a3b8' } })),
+                        barWidth: 40, label: { show: true, position: 'top', formatter: function(p) { return (p.value/1e6).toFixed(0) + 'M'; }, fontSize: 11 } }],
+                    tooltip: { formatter: function(p) { return p.name + ': ' + (p.value).toLocaleString() + ' avg views'; } },
+                    animation: true
+                });
+                // Duration bias bar
+                var dbEl = document.getElementById('mvDurationBiasChart');
+                var dbEc = echarts.init(dbEl);
+                this._echartsInstances.push(dbEc);
+                var db = b.duration_bias;
+                var durCats = ['< 3 min', '3–4 min', '> 4 min'];
+                var durData = [db.short_under_3min, db.medium_3to4min, db.long_over_4min];
+                dbEc.setOption({
+                    title: { text: 'Duration vs Average Views', left: 'center', top: 8, textStyle: { fontSize: 13, fontWeight: 600, fontFamily: 'Inter' } },
+                    grid: { left: 80, right: 30, top: 45, bottom: 30 },
+                    xAxis: { type: 'category', data: durCats },
+                    yAxis: { type: 'value', axisLabel: { formatter: function(v) { return v >= 1e6 ? (v/1e6).toFixed(0) + 'M' : v; } }, splitLine: { lineStyle: { color: 'rgba(40,46,86,0.06)' } } },
+                    series: [{ type: 'bar', data: durData.map(function(d, i) { return { value: d.avg_views, itemStyle: { color: ['#f4a259','#5566f6','#0fb6a8'][i] } }; }),
+                        barWidth: 50, label: { show: true, position: 'top', formatter: function(p) { return durData[p.dataIndex].count + ' songs'; }, fontSize: 10 } }],
+                    tooltip: { formatter: function(p) { return p.name + ': ' + (p.value).toLocaleString() + ' avg views (' + durData[p.dataIndex].count + ' songs)'; } },
+                    animation: true
+                });
+                // Collaboration pie
+                var collEl = document.getElementById('mvCollabChart');
+                var collEc = echarts.init(collEl);
+                this._echartsInstances.push(collEc);
+                var coll = b.collaboration;
+                collEc.setOption({
+                    title: { text: 'Solo vs Collaboration', left: 'center', top: 8, textStyle: { fontSize: 13, fontWeight: 600, fontFamily: 'Inter' } },
+                    tooltip: { trigger: 'item', formatter: '{b}: {c} songs ({d}%)' },
+                    series: [{ type: 'pie', radius: ['40%', '70%'], center: ['50%', '55%'],
+                        data: [
+                            { name: 'Solo', value: coll.solo_count, itemStyle: { color: '#5566f6' } },
+                            { name: 'Collaboration', value: coll.collab_count, itemStyle: { color: '#f4a259' } }
+                        ],
+                        label: { formatter: '{b}\n{c} ({d}%)', fontSize: 11 },
+                        emphasis: { scale: true, scaleSize: 6 }
+                    }],
+                    animation: true
+                });
+            },
+
+            render3DScatter() {
+                var d = this._data.archetypes;
+                if (!d || !d.points) return;
+                var pts = d.points;
+                var clusterNames = d.clusters.map(function(c) { return c.name; });
+                var traces = clusterNames.map(function(name, i) {
+                    var p = pts.filter(function(pt) { return pt.archetype === name; });
+                    return {
+                        x: p.map(function(pt) { return Math.log10(pt.views || 1); }),
+                        y: p.map(function(pt) { return Math.log10(pt.virality || 0.01); }),
+                        z: p.map(function(pt) { return Math.log10(pt.followers || 1); }),
+                        text: p.map(function(pt) { return pt.title + '\n' + pt.channel; }),
+                        mode: 'markers', type: 'scatter3d', name: name,
+                        marker: { size: 5, color: MusicViz._ARCH_COLORS[i % MusicViz._ARCH_COLORS.length], opacity: 0.85,
+                            line: { width: 0.5, color: '#fff' } },
+                        hovertemplate: '%{text}<extra>' + name + '</extra>'
+                    };
+                });
+                Plotly.newPlot('mv3DScatter', traces, {
+                    scene: {
+                        xaxis: { title: 'log₁₀(Views)', gridcolor: 'rgba(40,46,86,0.1)', backgroundcolor: 'rgba(244,246,255,0.5)' },
+                        yaxis: { title: 'log₁₀(Virality)', gridcolor: 'rgba(40,46,86,0.1)', backgroundcolor: 'rgba(244,246,255,0.5)' },
+                        zaxis: { title: 'log₁₀(Subscribers)', gridcolor: 'rgba(40,46,86,0.1)', backgroundcolor: 'rgba(244,246,255,0.5)' },
+                        camera: { eye: { x: 1.6, y: 1.6, z: 1.2 } },
+                        aspectratio: { x: 1, y: 1, z: 0.8 }
+                    },
+                    margin: { l: 0, r: 0, t: 10, b: 10 },
+                    paper_bgcolor: 'rgba(0,0,0,0)',
+                    font: { family: 'Inter, sans-serif', color: '#5a6178' },
+                    legend: { orientation: 'h', y: -0.05, font: { size: 11 } },
+                    hovermode: 'closest'
+                }, { responsive: true, displayModeBar: true, modeBarButtonsToRemove: ['toImage'] });
             }
         };
     </script>

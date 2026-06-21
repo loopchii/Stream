@@ -86,7 +86,9 @@ The newest module goes beyond synthetic data entirely. It analyses the **100 mos
 | **Tag co-occurrence network** | NetworkX graph of shared tags, greedy-modularity communities, density | Movement 05 — D3 force-directed graph |
 | **Predictability** | RandomForest + GradientBoosting ensemble, 5-fold cross-validated R² | Movement 06 — skill-vs-luck gauge + importances |
 | **What-If virality predictor** | Trained model maps hypothetical (duration, subscribers, tags, official) → percentile | Movement 07 — slider controls + grade gauge |
-| **Real songs explorer** | Sortable, searchable table of all 100 tracks with computed features | Movement 08 — sortable table |
+| **Bias analysis** | Gender parity, genre concentration (Gini), collaboration patterns, duration bias, attention concentration | Movement 08 — equity grade + 6 charts |
+| **3D virality landscape** | Plotly 3D scatter of views × virality × subscribers, coloured by archetype cluster | Movement 09 — interactive 3D orbit |
+| **Real songs explorer** | Sortable, searchable table of all 100 tracks with computed features | Movement 10 — sortable table |
 
 **Live data extraction (optional):** If you set a `YOUTUBE_API_KEY` environment variable, the built-in `music_ingest.py` module calls the YouTube Data API v3 to refresh view counts and pull additional tracks on demand — no code changes needed. Without a key, the app serves the committed real dataset.
 
@@ -247,6 +249,7 @@ python streamlens_processor.py
 | `/api/music/predictability` | GET | Cross-validated ensemble R² and feature importances |
 | `/api/music/songs` | GET | Real songs table (sortable, `?limit=` `?sort_by=`) |
 | `/api/music/simulate` | GET | What-If virality predictor (`?duration_min=` `?channel_follower_count=` `?tag_count=`) |
+| `/api/music/bias` | GET | Gender, genre, collaboration, duration, and concentration bias metrics |
 | `/api/music/status` | GET | Whether a YouTube API key is configured for live data |
 | `/api/music/refresh` | POST | Pull fresh data from YouTube Data API v3 (needs key) |
 
@@ -509,7 +512,7 @@ Check out [contributing.md](contributing.md) for guidelines. Fair warning: I'm p
 </tr>
 <tr style="background-color:#F0F8FF;">
 <td><strong>Test Coverage</strong></td>
-<td>95 pytest tests (pipeline + API + music)</td>
+<td>98 pytest tests (pipeline + API + music + bias)</td>
 <td>Run with <code>pytest tests -q</code>; CI on Python 3.11/3.12</td>
 </tr>
 <tr>
@@ -524,7 +527,7 @@ Check out [contributing.md](contributing.md) for guidelines. Fair warning: I'm p
 </tr>
 <tr>
 <td><strong>Visualization Stack</strong></td>
-<td>D3.js, Plotly WebGL/3D, Chart.js, Apache ECharts</td>
+<td>D3.js, Plotly WebGL/3D, Chart.js, Apache ECharts, Three.js</td>
 <td>Single-file dashboard, no build step</td>
 </tr>
 </table>

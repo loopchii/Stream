@@ -76,6 +76,7 @@ def build_music() -> None:
     write_json(out / "network.json", report["network"])
     write_json(out / "predictability.json", report["predictability"])
     write_json(out / "songs.json", report["songs"])
+    write_json(out / "bias.json", report["bias"])
     write_json(out / "status.json", {"live_available": False, "source": "bundled_csv",
                                      "note": "Static build - committed real dataset."})
     write_json(out / "simulate.json", music_pipeline.simulate_grid())
