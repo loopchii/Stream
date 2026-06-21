@@ -92,7 +92,7 @@ The newest module goes beyond synthetic data entirely. It analyses the **100 mos
 
 **Live data extraction (optional):** If you set a `YOUTUBE_API_KEY` environment variable, the built-in `music_ingest.py` module calls the YouTube Data API v3 to refresh view counts and pull additional tracks on demand — no code changes needed. Without a key, the app serves the committed real dataset.
 
-Data source: YouTube, 2025. No synthetic data is used in this module.
+Data sources: YouTube Top 100 (2025), Most Viewed Music Videos (2026, Kaggle), YouTube Music Data (Kaggle), YouTube Top Channels (2026, Kaggle). **636 real songs** from 3 datasets. No synthetic data is used in this module.
 
 ## The Mathematical Framework
 
