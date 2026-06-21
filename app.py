@@ -439,6 +439,12 @@ def music_status():
     return music_ingest.status()
 
 
+@app.get("/api/music/bias")
+def music_bias():
+    """Gender, genre, collaboration, and concentration bias metrics."""
+    return music_cache.report()["bias"]
+
+
 @app.post("/api/music/refresh")
 def music_refresh(
     max_results: int = Query(default=100, ge=10, le=200),

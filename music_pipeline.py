@@ -395,12 +395,14 @@ def archetype_analysis(df: Optional[pd.DataFrame] = None, k: int = 5) -> Dict[st
             "channel": ch,
             "views": float(v),
             "virality": float(vir),
+            "followers": float(fol),
             "duration_min": float(d),
             "archetype": name,
         }
-        for t, ch, v, vir, d, name in zip(
+        for t, ch, v, vir, fol, d, name in zip(
             df["title"], df["channel"], df["view_count"],
-            df["virality_coefficient"], df["duration_min"], names,
+            df["virality_coefficient"], df["channel_follower_count"],
+            df["duration_min"], names,
         )
     ]
     return {"k": k, "clusters": clusters, "points": scatter}
@@ -556,6 +558,215 @@ def _predict_percentile(df: pd.DataFrame, features: List[str], query: Dict[str, 
     pred_views = float(np.expm1(pred_log))
     percentile = float((y < pred_log).mean() * 100.0)
     return {"predicted_views": pred_views, "percentile": round(percentile, 1)}
+
+
+# --------------------------------------------------------------------------- #
+# Music-specific bias analysis
+# --------------------------------------------------------------------------- #
+
+# Artist gender mapping — hand-labeled from the real 65-channel list.
+# Categories: "female", "male", "mixed" (group/collab), "non-binary".
+# Channels not listed default to "unknown".
+_ARTIST_GENDER: Dict[str, str] = {
+    "ROSÉ": "female", "Lady Gaga": "female", "Reneé Rapp": "female",
+    "Billie Eilish": "female", "Sabrina Carpenter": "female",
+    "Ariana Grande": "female", "Charli xcx": "female",
+    "Chappell Roan": "female", "Dua Lipa": "female",
+    "Gracie Abrams": "female", "Lola Young": "female",
+    "Miley Cyrus": "female", "Selena Gomez": "female",
+    "Tate McRae": "female", "Taylor Swift": "female", "Tyla": "female",
+    "Addison Rae": "female", "Claudia Valentina": "female",
+    "Doechii": "female", "Ravyn Lenae": "female", "JENNIE": "female",
+    "Sevdaliza": "female",
+    "Ed Sheeran": "male", "Kendrick Lamar": "male", "Drake": "male",
+    "Post Malone": "male", "Tommy Richman": "male", "Shaboozey": "male",
+    "Benson Boone": "male", "Alex Warren": "male", "Dean Lewis": "male",
+    "Justin Bieber": "male", "Damiano David": "male",
+    "Myles Smith": "male", "Sean Paul": "male", "Teddy Swims": "male",
+    "yung kai": "male", "d4vd": "male", "keshi": "male",
+    "Jackson Wang": "male", "ROLE MODEL": "male", "GIVĒON": "male",
+    "Roy Woods": "male", "Vex Prince": "male", "sombr": "male",
+    "David Guetta": "male", "keinemusik": "male",
+    "LLOUD Official": "male", "HoodTrophy Bino": "male",
+    "RAAHiiM": "male", "PJ": "male",
+    "Coldplay": "mixed", "Maroon 5": "mixed", "ImagineDragons": "mixed",
+    "The Weeknd": "male",
+}
+
+# Genre heuristics from tags and title keywords.
+_GENRE_KEYWORDS: Dict[str, List[str]] = {
+    "Pop": ["pop", "dance pop", "synth", "electropop"],
+    "Hip-Hop/Rap": ["hip hop", "rap", "trap", "hip-hop", "rapper"],
+    "R&B/Soul": ["r&b", "rnb", "soul", "r & b"],
+    "Rock/Alternative": ["rock", "alternative", "indie rock", "punk"],
+    "Electronic/Dance": ["edm", "electronic", "house", "techno", "dance", "dj"],
+    "Country": ["country", "americana", "cowboy"],
+    "Latin": ["latin", "reggaeton", "salsa", "bachata", "latino"],
+    "K-Pop": ["k-pop", "kpop", "k pop", "yg entertainment", "blackpink", "jennie"],
+}
+
+
+def _classify_gender(channel: str) -> str:
+    return _ARTIST_GENDER.get(channel.strip(), "unknown")
+
+
+def _classify_genre(tags: object, title: object) -> str:
+    blob = f"{tags} {title}".lower()
+    for genre, keywords in _GENRE_KEYWORDS.items():
+        for kw in keywords:
+            if kw in blob:
+                return genre
+    return "Other/Unclassified"
+
+
+def _detect_collab(title: str) -> bool:
+    indicators = [" ft.", " feat.", " ft ", " feat ", " x ", " & ", " with ", " featuring "]
+    low = title.lower()
+    return any(ind in low for ind in indicators)
+
+
+def bias_analysis(df: Optional[pd.DataFrame] = None) -> Dict[str, object]:
+    """Compute music-specific bias dimensions from the real dataset."""
+    df = load_dataset() if df is None else df
+    raw = pd.read_csv(DEFAULT_CSV)
+
+    # --- Gender representation ---
+    df["artist_gender"] = df["channel"].apply(_classify_gender)
+    gender_counts = df["artist_gender"].value_counts().to_dict()
+    gender_views: Dict[str, float] = {}
+    for g in df["artist_gender"].unique():
+        gender_views[g] = float(df.loc[df["artist_gender"] == g, "view_count"].sum())
+    total_views = float(df["view_count"].sum())
+    gender_view_share = {g: round(v / total_views, 4) for g, v in gender_views.items()}
+
+    # Female vs male parity
+    female_songs = gender_counts.get("female", 0)
+    male_songs = gender_counts.get("male", 0)
+    total_gendered = female_songs + male_songs
+    female_ratio = female_songs / total_gendered if total_gendered else 0.5
+    gender_parity = round(1.0 - abs(0.5 - female_ratio) * 2, 3)
+
+    # Gender × views disparity (do female artists get fewer views per song?)
+    avg_views_by_gender = {}
+    for g in ["female", "male", "mixed"]:
+        subset = df[df["artist_gender"] == g]
+        if len(subset) > 0:
+            avg_views_by_gender[g] = round(float(subset["view_count"].mean()))
+    # Views parity: ratio of female avg to male avg (1.0 = equal)
+    f_avg = avg_views_by_gender.get("female", 0)
+    m_avg = avg_views_by_gender.get("male", 1)
+    views_parity = round(f_avg / m_avg, 3) if m_avg > 0 else 0.0
+
+    # --- Genre concentration ---
+    tags_col = raw.get("tags", pd.Series([""] * len(raw)))
+    df["genre"] = [
+        _classify_genre(t, ti) for t, ti in zip(tags_col.fillna(""), df["title"])
+    ]
+    genre_counts_dict = df["genre"].value_counts().to_dict()
+    genre_views_dict: Dict[str, float] = {}
+    for g in df["genre"].unique():
+        genre_views_dict[g] = float(df.loc[df["genre"] == g, "view_count"].sum())
+    genre_gini = round(float(gini(list(genre_views_dict.values()))), 3)
+
+    # --- Collaboration patterns ---
+    df["is_collab"] = df["title"].apply(_detect_collab)
+    collab_count = int(df["is_collab"].sum())
+    collab_view_share = round(
+        float(df.loc[df["is_collab"], "view_count"].sum()) / total_views, 4
+    )
+
+    # --- Duration bias (do longer songs get fewer views?) ---
+    short = df[df["duration_min"] < 3.0]
+    medium = df[(df["duration_min"] >= 3.0) & (df["duration_min"] <= 4.0)]
+    long_ = df[df["duration_min"] > 4.0]
+    duration_bias = {
+        "short_under_3min": {
+            "count": int(len(short)),
+            "avg_views": round(float(short["view_count"].mean())) if len(short) else 0,
+        },
+        "medium_3to4min": {
+            "count": int(len(medium)),
+            "avg_views": round(float(medium["view_count"].mean())) if len(medium) else 0,
+        },
+        "long_over_4min": {
+            "count": int(len(long_)),
+            "avg_views": round(float(long_["view_count"].mean())) if len(long_) else 0,
+        },
+    }
+
+    # --- Official vs unofficial bias ---
+    official = df[df["is_official"] == 1]
+    unofficial = df[df["is_official"] == 0]
+    official_bias = {
+        "official_count": int(len(official)),
+        "unofficial_count": int(len(unofficial)),
+        "official_avg_views": round(float(official["view_count"].mean())) if len(official) else 0,
+        "unofficial_avg_views": round(float(unofficial["view_count"].mean())) if len(unofficial) else 0,
+        "official_view_share": round(
+            float(official["view_count"].sum()) / total_views, 4
+        ) if total_views > 0 else 0.0,
+    }
+
+    # --- Top artist concentration (is the top too concentrated?) ---
+    channel_views = df.groupby("channel")["view_count"].sum().sort_values(ascending=False)
+    top5_share = round(float(channel_views.head(5).sum()) / total_views, 4)
+    top10_share = round(float(channel_views.head(10).sum()) / total_views, 4)
+    bottom50_share = round(
+        float(channel_views.tail(len(channel_views) // 2).sum()) / total_views, 4
+    )
+
+    # --- Summary bias scores ---
+    bias_scores = {
+        "gender_parity": gender_parity,
+        "views_parity": views_parity,
+        "genre_diversity": round(1.0 - genre_gini, 3),
+        "collab_rate": round(collab_count / len(df), 3),
+        "concentration_top5": top5_share,
+    }
+    overall_bias_grade = letter_grade(
+        (gender_parity + min(views_parity, 1.0) + (1.0 - genre_gini) + (1.0 - top5_share)) / 4.0
+    )
+
+    interpretation = (
+        f"Gender parity in the top 100 is {gender_parity:.2f} "
+        f"({'near-equal' if gender_parity > 0.8 else 'skewed'}). "
+        f"Female artists average {f_avg:,.0f} views/song vs male {m_avg:,.0f} "
+        f"(ratio {views_parity:.2f}). "
+        f"Genre concentration (Gini {genre_gini}) suggests "
+        f"{'broad' if genre_gini < 0.4 else 'moderate' if genre_gini < 0.6 else 'high'} diversity. "
+        f"The top 5 channels control {top5_share * 100:.0f}% of all views."
+    )
+
+    return {
+        "gender": {
+            "counts": gender_counts,
+            "view_share": gender_view_share,
+            "avg_views_by_gender": avg_views_by_gender,
+            "gender_parity": gender_parity,
+            "views_parity": views_parity,
+            "female_ratio": round(female_ratio, 3),
+        },
+        "genres": {
+            "counts": genre_counts_dict,
+            "views": {k: round(v) for k, v in genre_views_dict.items()},
+            "gini": genre_gini,
+        },
+        "collaboration": {
+            "collab_count": collab_count,
+            "solo_count": int(len(df) - collab_count),
+            "collab_view_share": collab_view_share,
+        },
+        "duration_bias": duration_bias,
+        "official_bias": official_bias,
+        "concentration": {
+            "top5_share": top5_share,
+            "top10_share": top10_share,
+            "bottom50_share": bottom50_share,
+        },
+        "bias_scores": bias_scores,
+        "overall_grade": overall_bias_grade,
+        "interpretation": interpretation,
+    }
 
 
 # --------------------------------------------------------------------------- #
@@ -724,6 +935,7 @@ def full_report(df: Optional[pd.DataFrame] = None) -> Dict[str, object]:
         "network": network_analysis(),
         "predictability": predictability_analysis(df),
         "songs": songs_table(df, limit=100),
+        "bias": bias_analysis(df),
         "feature_labels": FEATURE_LABELS,
     }
 

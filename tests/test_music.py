@@ -11,6 +11,7 @@ from fastapi.testclient import TestClient
 from app import app
 from music_pipeline import (
     archetype_analysis,
+    bias_analysis,
     correlation_analysis,
     full_report,
     gini,
@@ -147,11 +148,27 @@ class TestPipeline:
         assert len(songs) == 10
         assert songs[0]["view_count"] >= songs[1]["view_count"]
 
+    def test_bias_analysis(self, df):
+        b = bias_analysis(df)
+        assert 0.0 <= b["gender"]["gender_parity"] <= 1.0
+        assert b["gender"]["counts"]["female"] > 0
+        assert b["gender"]["counts"]["male"] > 0
+        assert b["genres"]["gini"] >= 0.0
+        assert b["collaboration"]["collab_count"] >= 0
+        assert b["concentration"]["top5_share"] > 0
+        assert b["overall_grade"]
+
+    def test_archetypes_have_followers(self, df):
+        a = archetype_analysis(df)
+        for pt in a["points"]:
+            assert "followers" in pt
+            assert pt["followers"] > 0
+
     def test_full_report(self, df):
         r = full_report(df)
         expected_keys = [
             "overview", "power_law", "inequality", "correlations",
-            "archetypes", "network", "predictability", "songs",
+            "archetypes", "network", "predictability", "songs", "bias",
         ]
         for k in expected_keys:
             assert k in r
@@ -214,6 +231,14 @@ class TestMusicAPI:
         res = client.get("/api/music/status")
         assert res.status_code == 200
         assert "live_available" in res.json()
+
+    def test_bias(self, client):
+        res = client.get("/api/music/bias")
+        assert res.status_code == 200
+        d = res.json()
+        assert "gender" in d
+        assert "genres" in d
+        assert "overall_grade" in d
 
     def test_refresh_no_key(self, client):
         res = client.post("/api/music/refresh")
