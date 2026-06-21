@@ -18,6 +18,7 @@ import json
 from pathlib import Path
 
 import app as backend
+import music_pipeline
 
 BASE = Path(__file__).resolve().parent
 DATA = BASE / "data"
@@ -55,9 +56,29 @@ def build_data() -> None:
         if n == DEFAULT_SIZE:
             write_json(out / "results.json", backend.results())
 
+    build_music()
+
     # Disable Jekyll so GitHub Pages serves the data/ files verbatim.
     (BASE / ".nojekyll").write_text("", encoding="utf-8")
     print("  wrote .nojekyll")
+
+
+def build_music() -> None:
+    """Bake the real-data music virality module into data/music/*.json."""
+    print("Running real-data music pipeline ...")
+    out = DATA / "music"
+    report = music_pipeline.full_report()
+    write_json(out / "overview.json", report["overview"])
+    write_json(out / "powerlaw.json", report["power_law"])
+    write_json(out / "inequality.json", report["inequality"])
+    write_json(out / "correlations.json", report["correlations"])
+    write_json(out / "archetypes.json", report["archetypes"])
+    write_json(out / "network.json", report["network"])
+    write_json(out / "predictability.json", report["predictability"])
+    write_json(out / "songs.json", report["songs"])
+    write_json(out / "status.json", {"live_available": False, "source": "bundled_csv",
+                                     "note": "Static build - committed real dataset."})
+    write_json(out / "simulate.json", music_pipeline.simulate_grid())
 
 
 if __name__ == "__main__":

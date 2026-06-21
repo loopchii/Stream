@@ -14,7 +14,7 @@
 
 [![Open Live App](https://img.shields.io/badge/Live%20Demo-Open%20StreamLens%20in%20your%20browser-FFB6C1?style=for-the-badge)](https://cazzy-aporbo.github.io/StreamLens-Analytics/)
 
-<sub>The full dashboard — all six screens, charts, the Verdict scorecard, and the What‑If simulator — runs entirely in your browser. No install, no server. Every number is pre‑computed by the same Python pipeline in this repo (run `python build_static.py` to regenerate), so the live figures match the API exactly.</sub>
+<sub>The full dashboard — all seven tabs, charts, the Verdict scorecard, the Music Virality module, and both What‑If simulators — runs entirely in your browser. No install, no server. Every number is pre‑computed by the same Python pipeline in this repo (run `python build_static.py` to regenerate), so the live figures match the API exactly.</sub>
 
 </div>
 
@@ -63,7 +63,7 @@ StreamLens models representation across streaming media from 2015 to 2026. Inste
 
 **Honesty note:** the dataset is synthetic — generated with a fixed random seed (`np.random.seed(42)`) and shaped to mirror patterns reported in media-representation research. It is ideal for learning and demonstrating the methods; it is not a measurement of real shows. Every screen in the app discloses this.
 
-The interactive dashboard lets you explore these patterns yourself across six screens — Dashboard, Explore Data, Insights, a 57-entry Bias Library, Learn, and a Verdict scorecard — filtering by platform, genre, media type, and year.
+The interactive dashboard lets you explore these patterns yourself across seven tabs — Dashboard, Explore Data, Insights, a 57-entry Bias Library, Learn, a Verdict scorecard, and the new **Music Virality** module (real YouTube data) — filtering by platform, genre, media type, and year.
 
 <div align="center">
   
@@ -72,6 +72,25 @@ The interactive dashboard lets you explore these patterns yourself across six sc
 ![separator](https://img.shields.io/badge/-F0F8FF?style=flat&color=F0F8FF)
 
 </div>
+
+## Music Virality Module — Real YouTube Data
+
+The newest module goes beyond synthetic data entirely. It analyses the **100 most-watched YouTube music videos of 2025** — 10.59 billion real views from 65 channels — using the actual `youtube-top-100-songs-2025.csv` dataset.
+
+| Analysis | What It Computes | Where to See It |
+|---|---|---|
+| **Power-law fit** | MLE exponent α with bootstrap 95% CI + KS distance (Clauset method) | Movement 01 — log-log CCDF scatter |
+| **Inequality** | Gini coefficient, Lorenz curve, Theil entropy, top-k channel concentration | Movement 02 — Lorenz curve + channel bar |
+| **Correlation architecture** | Spearman ρ + partial correlations controlling for channel size, with bootstrap CIs | Movement 03 — heatmap + ranked bar chart (toggle raw/partial) |
+| **Viral archetypes** | K-means (k=5) on log-views, virality, channel size, duration → named strategies | Movement 04 — scatter coloured by cluster |
+| **Tag co-occurrence network** | NetworkX graph of shared tags, greedy-modularity communities, density | Movement 05 — D3 force-directed graph |
+| **Predictability** | RandomForest + GradientBoosting ensemble, 5-fold cross-validated R² | Movement 06 — skill-vs-luck gauge + importances |
+| **What-If virality predictor** | Trained model maps hypothetical (duration, subscribers, tags, official) → percentile | Movement 07 — slider controls + grade gauge |
+| **Real songs explorer** | Sortable, searchable table of all 100 tracks with computed features | Movement 08 — sortable table |
+
+**Live data extraction (optional):** If you set a `YOUTUBE_API_KEY` environment variable, the built-in `music_ingest.py` module calls the YouTube Data API v3 to refresh view counts and pull additional tracks on demand — no code changes needed. Without a key, the app serves the committed real dataset.
+
+Data source: YouTube, 2025. No synthetic data is used in this module.
 
 ## The Mathematical Framework
 
@@ -219,6 +238,17 @@ python streamlens_processor.py
 | `/api/bias-library` | GET | 50+ documented bias types, filterable by `?category=` |
 | `/api/export` | GET | Download full results as JSON |
 | `/api/characters` | GET | Filterable character records (`platform`, `genre`, `year`, `limit`) |
+| `/api/music/overview` | GET | Headline stats: songs, channels, total views |
+| `/api/music/powerlaw` | GET | Power-law fit: α, KS distance, bootstrap CI, CCDF |
+| `/api/music/inequality` | GET | Gini, Lorenz, Theil, top-k channel concentration |
+| `/api/music/correlations` | GET | Spearman + partial correlations with bootstrap CIs |
+| `/api/music/archetypes` | GET | K-means viral archetype clusters + scatter |
+| `/api/music/network` | GET | Tag co-occurrence graph (nodes, edges, communities) |
+| `/api/music/predictability` | GET | Cross-validated ensemble R² and feature importances |
+| `/api/music/songs` | GET | Real songs table (sortable, `?limit=` `?sort_by=`) |
+| `/api/music/simulate` | GET | What-If virality predictor (`?duration_min=` `?channel_follower_count=` `?tag_count=`) |
+| `/api/music/status` | GET | Whether a YouTube API key is configured for live data |
+| `/api/music/refresh` | POST | Pull fresh data from YouTube Data API v3 (needs key) |
 
 Interactive API docs are available at `http://localhost:8000/docs`.
 
@@ -294,6 +324,7 @@ Because the data is synthetic, treat the exact values as demonstrations of the m
 - **Bias Library (Act IV)** — 57 documented bias types across 8 categories, searchable, with the ones StreamLens quantifies marked
 - **Learn (Act V)** — plain-language explanations of every metric, with pointers into the source code
 - **Verdict (Act VI)** — a platform A–F report card, a Lorenz/Gini inequality curve, Cramér's V effect-size bars, a fitted decade trend line, and a What-If parity simulator wired to the backend
+- **Music Virality (Real Data)** — eight-movement deep dive into 100 real YouTube music videos: power-law, inequality, correlations, archetypes, tag network, predictability, What-If predictor, and a sortable real-songs explorer
 
 ### Bubble Chart: The Big Picture
 Each bubble is a platform-genre combination with its own color. I spent way too long on the color system, but now you can instantly see patterns:
@@ -363,6 +394,9 @@ StreamLens-Analytics/
 ├── app.py                        # FastAPI server (dashboard + REST API)
 ├── streamlens_processor.py       # Main processing pipeline
 ├── bias_library.py               # 57 documented bias types served at /api/bias-library
+├── music_pipeline.py             # Real-data music virality analysis (power-law, Gini, clustering, RF)
+├── music_ingest.py               # YouTube Data API v3 live extraction (key-optional)
+├── data_sources/                 # Real CSV data (youtube-top-100-songs-2025.csv)
 ├── StreamLen_processors.ipynb    # Jupyter notebook with full analysis
 ├── streaming-bias-index.html     # Legacy static dashboard
 ├── analysis_results.json         # Latest exported analysis results
@@ -371,7 +405,8 @@ StreamLens-Analytics/
 │
 ├── tests/
 │   ├── test_analyzer.py          # Unit tests for the pipeline
-│   └── test_api.py               # API tests
+│   ├── test_api.py               # API tests
+│   └── test_music.py             # Music pipeline + API tests
 │
 └── .github/workflows/ci.yml     # CI: lint + tests on Python 3.11/3.12
 ```
@@ -474,7 +509,7 @@ Check out [contributing.md](contributing.md) for guidelines. Fair warning: I'm p
 </tr>
 <tr style="background-color:#F0F8FF;">
 <td><strong>Test Coverage</strong></td>
-<td>35 pytest tests (pipeline + API)</td>
+<td>95 pytest tests (pipeline + API + music)</td>
 <td>Run with <code>pytest tests -q</code>; CI on Python 3.11/3.12</td>
 </tr>
 <tr>
@@ -489,7 +524,7 @@ Check out [contributing.md](contributing.md) for guidelines. Fair warning: I'm p
 </tr>
 <tr>
 <td><strong>Visualization Stack</strong></td>
-<td>D3.js, Plotly (incl. 3D), Chart.js</td>
+<td>D3.js, Plotly WebGL/3D, Chart.js, Apache ECharts</td>
 <td>Single-file dashboard, no build step</td>
 </tr>
 </table>
