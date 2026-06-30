@@ -339,6 +339,10 @@
             font-size: 0.88rem;
             text-transform: uppercase;
             letter-spacing: 0.15rem;
+            background: linear-gradient(96deg, #ffe2a4 0%, #dbcfff 36%, #8fe2df 72%, #ffb8c8 100%);
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
             color: var(--primary-accent);
             margin-bottom: 0.85rem;
         }
@@ -364,6 +368,10 @@
 
         .hero-proof-item strong {
             display: block;
+            background: linear-gradient(96deg, #fff4cf 0%, #ddd2ff 42%, #9de9de 80%, #ffc0d6 100%);
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
             color: var(--primary-text);
             margin-bottom: 0.2rem;
             font-size: 0.9rem;
@@ -424,6 +432,10 @@
         }
 
         .research-card h4 {
+            background: linear-gradient(96deg, #ffe0a3 0%, #dfd2ff 34%, #8fe6dd 68%, #ffc3d2 100%);
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
             color: var(--primary-accent);
             margin-bottom: 0.45rem;
             font-size: 0.95rem;
@@ -451,6 +463,10 @@
             font-size: 0.72rem;
             text-transform: uppercase;
             letter-spacing: 0.22em;
+            background: linear-gradient(96deg, rgba(255,223,164,0.98) 0%, rgba(220,209,255,0.94) 38%, rgba(145,231,223,0.94) 76%, rgba(255,191,208,0.96) 100%);
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
             color: var(--primary-text-dim);
             font-weight: 800;
         }
@@ -579,6 +595,10 @@
         }
 
         .entry-card h4 {
+            background: linear-gradient(96deg, #fff4d0 0%, #ddd2ff 36%, #8fe2df 70%, #ffc2d0 100%);
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
             color: var(--primary-text);
             font-size: 1.05rem;
             margin-bottom: 0.4rem;
@@ -794,10 +814,11 @@
         .viz-title {
             font-size: 1.8rem;
             margin-bottom: 1rem;
-            color: var(--primary-accent);
+            color: #f6f1ff;
             display: flex;
             align-items: center;
             gap: 1rem;
+            text-shadow: 0 10px 28px rgba(91, 85, 255, 0.18);
         }
 
         .viz-title::before {
@@ -883,6 +904,10 @@
         }
 
         .viz-explanation h4 {
+            background: linear-gradient(96deg, #ffe2aa 0%, #dcd0ff 34%, #92e5de 74%, #ffbfca 100%);
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
             color: var(--primary-secondary);
             margin-bottom: 0.5rem;
             font-size: 1rem;
@@ -1768,6 +1793,10 @@
             font-size: 0.7rem;
             text-transform: uppercase;
             letter-spacing: 0.18em;
+            background: linear-gradient(96deg, rgba(255,227,167,0.98) 0%, rgba(219,210,255,0.96) 38%, rgba(143,228,221,0.95) 74%, rgba(255,193,214,0.96) 100%);
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
             color: rgba(244,235,255,0.76);
             font-weight: 700;
             padding-right: 0.25rem;
@@ -1825,6 +1854,7 @@
             font-size: 1rem;
             line-height: 1.05;
             margin-bottom: 0.28rem;
+            color: #fbf8ff;
         }
         .mv-route-step .s {
             display: block;
@@ -1840,7 +1870,14 @@
         .mv-panel:hover { transform: translateY(-2px); box-shadow: 0 22px 48px -24px rgba(40,46,86,0.55); }
         .mv-mhead { display: flex; align-items: baseline; gap: 0.9rem; flex-wrap: wrap; border-bottom: 1px solid var(--line); padding-bottom: 0.8rem; }
         .mv-mnum { font-family: 'Space Grotesk', monospace; font-size: 0.8rem; font-weight: 600; color: var(--teal); letter-spacing: 0.16em; }
-        .mv-mhead h3 { font-family: 'Fraunces', Georgia, serif; font-weight: 600; font-size: clamp(1.4rem, 2.8vw, 2rem); color: var(--ink); letter-spacing: -0.01em; }
+        .mv-mhead h3 {
+            font-family: 'Fraunces', Georgia, serif;
+            font-weight: 600;
+            font-size: clamp(1.4rem, 2.8vw, 2rem);
+            color: var(--ink);
+            letter-spacing: -0.01em;
+            text-shadow: 0 12px 30px rgba(91,85,255,0.18);
+        }
         .mv-lead { color: var(--ink-dim); max-width: 70ch; line-height: 1.65; margin: 0.9rem 0 1.4rem; font-size: 1rem; }
         .mv-takeaway { display: flex; gap: 0.7rem; align-items: flex-start; margin-top: 1.1rem; padding: 0.9rem 1.1rem; border-left: 3px solid var(--teal); background: linear-gradient(90deg, rgba(15,182,168,0.08), transparent); border-radius: 0 12px 12px 0; color: var(--ink); font-size: 0.95rem; line-height: 1.55; }
         .mv-takeaway b { color: var(--teal); }
@@ -2092,6 +2129,12 @@
         }
         .mv-role-kicker { font-size: 0.72rem; text-transform: uppercase; letter-spacing: 1.8px; color: var(--indigo); font-weight: 800; margin-bottom: 0.35rem; }
         .mv-role-card h4 { font-size: 1.05rem; margin: 0 0 0.35rem; color: var(--ink); }
+        .mv-role-card h4 {
+            background: linear-gradient(96deg, #fff2c9 0%, #dbd0ff 38%, #8fe5dd 72%, #ffc0cb 100%);
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
         .mv-role-card p { font-size: 0.92rem; line-height: 1.7; color: var(--ink-dim); margin: 0.25rem 0 0.75rem; }
         .mv-role-signals { display: flex; flex-wrap: wrap; gap: 0.55rem; margin-top: 0.75rem; }
         .mv-role-signal {
@@ -2750,7 +2793,7 @@
             <div class="hero-copy">
                 <span class="header-kicker">Loopchii Research Surface</span>
                 <h1>Stream</h1>
-                <div class="subtitle">A public Loopchii field for media, attention, and cultural pressure. Built to be inspectable, reproducible, and explicit about what is modeled, what is real, and where the claim boundary ends.</div>
+                <div class="subtitle">A public Loopchii research surface for media, attention, and cultural pressure. Some layers are synthetic and clearly labeled. Some are public, real, and checkable. The point is not to perform certainty; it is to show the work, keep the claim smaller than the evidence, and leave room for disagreement where the data truly runs out.</div>
                 <div class="hero-chip-row">
                     <span class="hero-chip">Synthetic base clearly labeled</span>
                     <span class="hero-chip">Real YouTube music module</span>
@@ -2763,20 +2806,20 @@
                 </div>
             </div>
             <aside class="hero-sidecard">
-                <h3>What To Do Here</h3>
-                <p>Use the public surface the way you would use a serious field note: inspect the route, test the method, follow the pressure point, and keep the claim smaller than the evidence.</p>
+                <h3>Read It Like A Field Note</h3>
+                <p>This surface works best when you move between impression and proof. Take in the pattern first. Then open the rows, the methods, and the repository until the conclusion either holds up or gives way.</p>
                 <div class="hero-proof-list">
                     <div class="hero-proof-item">
-                        <strong>Check the moving parts</strong>
-                        <span>The repository, preview, and methods notebook all stay close enough to compare.</span>
+                        <strong>Compare the surface to the source</strong>
+                        <span>The preview, repository, and methods notebook stay close enough to check against each other instead of asking for blind trust.</span>
                     </div>
                     <div class="hero-proof-item">
-                        <strong>Stay clear on what is real</strong>
-                        <span>The synthetic base is labeled. The music layer is real and intentionally separated.</span>
+                        <strong>Keep the claim boundary visible</strong>
+                        <span>The synthetic base stays labeled throughout. The music field uses public source data and remains separate on purpose.</span>
                     </div>
                     <div class="hero-proof-item">
-                        <strong>Follow the strongest route</strong>
-                        <span>Engineers can start with the notebook, skeptics with music, and researchers with the processing walkthrough.</span>
+                        <strong>Take the lane that fits the question</strong>
+                        <span>If you care about implementation, use the notebook. If you care about public pressure, go to music. If you care about method, stay with the walkthrough.</span>
                     </div>
                 </div>
             </aside>
@@ -2797,46 +2840,46 @@
     <div class="story-strip" id="storyStrip">
         <span class="act" id="storyAct">Act I — The Question</span>
         <h3 id="storyTitle">Who gets to be the story?</h3>
-        <p id="storyText">Streaming reaches billions of hours of attention every day. The faces, voices, and lives on screen quietly teach us who counts as a hero, an expert, a love interest, or background. <strong>Stream</strong> turns that cultural pressure into a surface you can inspect: start on the Dashboard, pull apart the rows in Explore, read the live findings in Insights, and then check the methods before you believe any of it.</p>
+        <p id="storyText">Streaming now shapes an enormous share of cultural memory. What repeats, what disappears, and who gets framed as central is not neutral. <strong>Stream</strong> turns that pressure into something inspectable: a public surface where you can move from atmosphere, to rows, to method, to consequence without pretending the model knows more than it does.</p>
     </div>
 
     <div class="research-strip">
         <div class="research-card">
             <h4>Published Work</h4>
-            <p>Public research should feel testable, not ceremonial. Stream is here to be opened, challenged, and extended.</p>
+            <p>Public research should survive contact. Stream is here to be opened, questioned, corrected, and extended.</p>
         </div>
         <div class="research-card">
             <h4>Bounded Honesty</h4>
-            <p>The base representation dataset is synthetic and labeled throughout. The music virality lane is real and kept distinct on purpose.</p>
+            <p>Not every layer carries the same claim. The synthetic base is labeled throughout; the music field uses public source data and stays distinct on purpose.</p>
         </div>
         <div class="research-card">
             <h4>Useful Friction</h4>
-            <p>The point is to compare signals, question assumptions, and leave with a sharper sense of what media systems reward, flatten, or repeat.</p>
+            <p>Good analysis leaves a little resistance behind. It should sharpen what you notice, not rush you into agreement.</p>
         </div>
     </div>
 
     <div class="journey-strip">
-        <div class="journey-label">Follow the path</div>
+        <div class="journey-label">Suggested Route</div>
         <div class="journey-rail">
             <button class="journey-step" onclick="showTab('dashboard', document.querySelector('[data-tab=dashboard]'))">
                 <span class="num">01</span>
                 <span class="title">Observe</span>
-                <span class="desc">Start with the dashboard to see the shape of the whole field.</span>
+                <span class="desc">The dashboard gives the field in one glance: who appears, who concentrates attention, and where imbalance keeps repeating.</span>
             </button>
             <button class="journey-step" onclick="showTab('insights', document.querySelector('[data-tab=insights]'))">
                 <span class="num">02</span>
                 <span class="title">Compare</span>
-                <span class="desc">Move into the tables and charts where the pattern becomes measurable.</span>
+                <span class="desc">The charts and tables are where atmosphere hardens into numbers you can challenge.</span>
             </button>
             <button class="journey-step" onclick="showTab('learn', document.querySelector('[data-tab=learn]'))">
                 <span class="num">03</span>
                 <span class="title">Learn</span>
-                <span class="desc">Open the methods lens to see how the numbers were built.</span>
+                <span class="desc">The methods tab shows what each statistic notices, what it misses, and why another lens may be needed.</span>
             </button>
             <button class="journey-step" onclick="showTab('music', document.querySelector('[data-tab=music]'))">
                 <span class="num">04</span>
                 <span class="title">Real data</span>
-                <span class="desc">End in the music lane, where the public YouTube data stays separate.</span>
+                <span class="desc">The music field keeps the public YouTube evidence separate so a real attention market can be inspected on its own terms.</span>
             </button>
         </div>
     </div>
@@ -2844,26 +2887,26 @@
     <div class="entry-grid">
         <div class="entry-card">
             <span class="entry-kicker">For Engineers</span>
-            <h4>Inspect the moving parts</h4>
-            <p>Start with the notebook if you want payloads, response shapes, public lens routes, and media-lab endpoints before the visuals.</p>
+            <h4>See the mechanics in the open</h4>
+            <p>The notebook is the shortest route if you want endpoints, response shapes, processing steps, and public analysis hooks before the visuals.</p>
             <a class="entry-link" href="./StreamLen_processors.html" target="_blank" rel="noopener noreferrer">Open the methods notebook</a>
         </div>
         <div class="entry-card">
             <span class="entry-kicker">For Researchers</span>
-            <h4>Check the methods first</h4>
-            <p>Use the public walkthrough when you want assumptions, processing path, and measurement posture before interpretation.</p>
+            <h4>Read the method before the message</h4>
+            <p>The walkthrough is for anyone who wants assumptions, tradeoffs, and measurement posture in plain view before a conclusion hardens.</p>
             <a class="entry-link" href="https://htmlpreview.github.io/?https://github.com/loopchii/Stream/blob/main/StreamLen_processors.html" target="_blank" rel="noopener noreferrer">Read the walkthrough</a>
         </div>
         <div class="entry-card">
             <span class="entry-kicker">For Skeptics</span>
-            <h4>Stress the risky paths</h4>
-            <p>Start in the real-data lane if you want attention loops, public risk logic, and the non-synthetic layer first.</p>
+            <h4>Test the claims where they are most fragile</h4>
+            <p>The real-data lane is useful if you want public attention loops, concentration, and exposure logic before spending time with the synthetic base.</p>
             <button class="entry-link" onclick="showTab('music', document.querySelector('[data-tab=music]'));">Jump to music virality</button>
         </div>
         <div class="entry-card">
             <span class="entry-kicker">For Contributors</span>
-            <h4>Improve the public surface</h4>
-            <p>Help with clarity, reproducibility, source hygiene, and visual quality. The first landing should already feel worth staying for.</p>
+            <h4>Contribute where the surface is still thin</h4>
+            <p>The repository is open because public research improves under pressure. If something feels weak, unclear, or brittle, that is a real contribution surface.</p>
             <a class="entry-link" href="https://github.com/loopchii/Stream/blob/main/contributing.md" target="_blank" rel="noopener noreferrer">Read contribution guide</a>
         </div>
     </div>
@@ -3293,7 +3336,7 @@
                 <h2 class="viz-title">Learn the Methods</h2>
                 <div class="viz-explanation">
                     <h4>Understand Every Metric</h4>
-                    <p>Each card explains one of the statistical methods used by Stream, with a hands-on way to see it in action. The point is not just to read the answer, but to understand what the metric is sensitive to, what it ignores, and why that matters.</p>
+                    <p>Each card explains one of the statistics Stream uses, but the point is not to rehearse definitions. It is to see where a metric is sturdy, where it overreaches, and when another lens says something more useful.</p>
                 </div>
                 <div class="learn-grid" id="learnGrid">
                     <div class="learn-card"><p>Loading content…</p></div>
@@ -3405,12 +3448,12 @@
             <div class="mv-route" id="mvRoute">
                 <div class="mv-route-label">Path</div>
                 <div class="mv-route-track">
-                    <button class="mv-route-step" data-target="mvPowerLaw" style="--route-wash:rgba(91,85,255,0.18)" onclick="MusicViz.jumpToSection('mvPowerLaw')"><span class="n">01</span><span class="t">Attention curve</span><span class="s">Start with concentration before you trust the leaderboard.</span></button>
-                    <button class="mv-route-step" data-target="mvCorrelation" style="--route-wash:rgba(15,182,168,0.18)" onclick="MusicViz.jumpToSection('mvCorrelation')"><span class="n">02</span><span class="t">What actually travels</span><span class="s">Separate scale from structure and see what still matters.</span></button>
-                    <button class="mv-route-step" data-target="mvArchetypes" style="--route-wash:rgba(240,119,159,0.18)" onclick="MusicViz.jumpToSection('mvArchetypes')"><span class="n">03</span><span class="t">Release archetypes</span><span class="s">Move sideways into the shapes videos use to win attention.</span></button>
-                    <button class="mv-route-step" data-target="mvResonance" style="--route-wash:rgba(244,162,89,0.18)" onclick="MusicViz.jumpToSection('mvResonance')"><span class="n">04</span><span class="t">Resonance map</span><span class="s">Follow the repeated patterns, not just the headline song.</span></button>
-                    <button class="mv-route-step" data-target="mvBias" style="--route-wash:rgba(124,58,237,0.18)" onclick="MusicViz.jumpToSection('mvBias')"><span class="n">05</span><span class="t">Who benefits</span><span class="s">Shift into artists, buyers, consumers, and research lenses.</span></button>
-                    <button class="mv-route-step" data-target="mvSongsExplorer" style="--route-wash:rgba(72,201,194,0.18)" onclick="MusicViz.jumpToSection('mvSongsExplorer')"><span class="n">06</span><span class="t">Source rows</span><span class="s">End where the summaries can be checked against raw songs.</span></button>
+                    <button class="mv-route-step" data-target="mvPowerLaw" style="--route-wash:rgba(91,85,255,0.18)" onclick="MusicViz.jumpToSection('mvPowerLaw')"><span class="n">01</span><span class="t">Attention curve</span><span class="s">Before a hit list means anything, check how brutally attention narrows.</span></button>
+                    <button class="mv-route-step" data-target="mvCorrelation" style="--route-wash:rgba(15,182,168,0.18)" onclick="MusicViz.jumpToSection('mvCorrelation')"><span class="n">02</span><span class="t">What actually travels</span><span class="s">Some signals disappear once scale is stripped away. The survivors matter.</span></button>
+                    <button class="mv-route-step" data-target="mvArchetypes" style="--route-wash:rgba(240,119,159,0.18)" onclick="MusicViz.jumpToSection('mvArchetypes')"><span class="n">03</span><span class="t">Release archetypes</span><span class="s">Not every viral track wins the same way. Release shape matters.</span></button>
+                    <button class="mv-route-step" data-target="mvResonance" style="--route-wash:rgba(244,162,89,0.18)" onclick="MusicViz.jumpToSection('mvResonance')"><span class="n">04</span><span class="t">Resonance map</span><span class="s">The repeats are often more revealing than the winners.</span></button>
+                    <button class="mv-route-step" data-target="mvBias" style="--route-wash:rgba(124,58,237,0.18)" onclick="MusicViz.jumpToSection('mvBias')"><span class="n">05</span><span class="t">Who benefits</span><span class="s">The same field lands differently for artists, buyers, listeners, and researchers.</span></button>
+                    <button class="mv-route-step" data-target="mvSongsExplorer" style="--route-wash:rgba(72,201,194,0.18)" onclick="MusicViz.jumpToSection('mvSongsExplorer')"><span class="n">06</span><span class="t">Source rows</span><span class="s">Every summary should be able to walk back down to the songs.</span></button>
                 </div>
             </div>
 
@@ -3574,7 +3617,7 @@
             <!-- IX. Bias Analysis -->
             <div class="mv-movement" id="mvBias">
                 <div class="mv-mhead"><span class="mv-mnum">09</span><h3>Bias in the Top 100</h3></div>
-                <p class="mv-lead">Who gets to dominate the charts? We measure gender representation, genre gatekeeping, collaboration patterns, language dominance, engagement disparities, and how attention concentrates &mdash; across <strong id="mvBiasTotalSongs">636</strong> real songs from 3 public datasets. The point is not to moralize the chart; it is to show where the pressure comes from, which genre families dominate, and which variables explain the shape of the chart best.</p>
+                <p class="mv-lead">Who accumulates the front row, and by what pattern? We measure gender representation, genre gatekeeping, collaboration patterns, language dominance, engagement disparities, and attention concentration across <strong id="mvBiasTotalSongs">636</strong> real songs from 3 public datasets. This section is less interested in blame than structure: where exposure gathers, which genre families keep inheriting the advantage, and which variables still tilt the field after the surface story changes.</p>
                 <div class="mv-panel">
                     <div class="mv-bias-grade" id="mvBiasGrade">
                         <div class="grade-letter" id="mvBiasGradeLetter">&mdash;</div>
@@ -3587,7 +3630,7 @@
                         <div class="mv-mhead" style="margin-bottom:0;">
                             <span class="mv-mnum">L</span><h3 style="font-size:1.05rem;">Role Lens</h3>
                         </div>
-                        <p class="mv-role-headline">The same chart means something different depending on who is reading it. An artist wants a release strategy. A buyer wants repeatability. A consumer wants discovery. A researcher wants proof. Click a lens to change the framing without changing the facts.</p>
+                        <p class="mv-role-headline">The facts do not change when the reader changes, but the consequence does. A creator reads this for room to maneuver. A buyer reads it for repeatable demand. A listener reads it for breadth. A researcher reads it for falsifiable structure. Change the lens; keep the evidence.</p>
                         <div class="mv-role-switch" id="mvRoleSwitch">
                             <button class="active" data-role="artist" onclick="MusicViz.setRole('artist', this)">Artist</button>
                             <button data-role="consumer" onclick="MusicViz.setRole('consumer', this)">Consumer</button>
