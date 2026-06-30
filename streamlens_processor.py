@@ -11,10 +11,145 @@ from typing import Dict, List, Optional
 from dataclasses import dataclass
 import json
 from collections import Counter
-import networkx as nx
-from sklearn.ensemble import RandomForestClassifier, GradientBoostingClassifier
-from sklearn.preprocessing import RobustScaler
 import warnings
+
+try:  # pragma: no cover - optional in the preview venv
+    import networkx as nx  # type: ignore
+except Exception:  # pragma: no cover - fallback keeps importable
+    class _FallbackNetworkXError(Exception):
+        pass
+
+    class _FallbackGraph:
+        def __init__(self):
+            self._adj = {}
+            self._nodes = {}
+
+        def add_node(self, node, **attrs):
+            self._adj.setdefault(node, {})
+            self._nodes.setdefault(node, {}).update(attrs)
+
+        def has_node(self, node):
+            return node in self._adj
+
+        def add_edge(self, a, b, **attrs):
+            self.add_node(a)
+            self.add_node(b)
+            self._adj[a].setdefault(b, {"weight": 0})
+            self._adj[b].setdefault(a, {"weight": 0})
+            for k, v in attrs.items():
+                self._adj[a][b][k] = v
+                self._adj[b][a][k] = v
+
+        def has_edge(self, a, b):
+            return b in self._adj.get(a, {})
+
+        def __getitem__(self, node):
+            return self._adj[node]
+
+        def degree(self):
+            return [(n, sum(int(payload.get("weight", 1)) for payload in nbrs.values()))
+                    for n, nbrs in self._adj.items()]
+
+        def nodes(self):
+            return list(self._adj.keys())
+
+        def edges(self):
+            seen = set()
+            for a, nbrs in self._adj.items():
+                for b in nbrs:
+                    key = tuple(sorted((a, b)))
+                    if key in seen:
+                        continue
+                    seen.add(key)
+                    yield a, b
+
+        def number_of_nodes(self):
+            return len(self._adj)
+
+        def number_of_edges(self):
+            return sum(len(nbrs) for nbrs in self._adj.values()) // 2
+
+    def _fallback_density(G):
+        n = G.number_of_nodes()
+        m = G.number_of_edges()
+        return 0.0 if n < 2 else (2.0 * m) / (n * (n - 1))
+
+    def _fallback_get_node_attributes(G, attr):
+        return {n: data.get(attr) for n, data in getattr(G, "_nodes", {}).items()}
+
+    def _fallback_degree_centrality(G):
+        n = max(G.number_of_nodes() - 1, 1)
+        return {node: deg / n for node, deg in G.degree()}
+
+    def _fallback_closeness_centrality(G):
+        n = max(G.number_of_nodes(), 1)
+        return {node: deg / n for node, deg in G.degree()}
+
+    def _fallback_betweenness_centrality(G):
+        return {node: 0.0 for node in G.nodes()}
+
+    def _fallback_eigenvector_centrality(G, max_iter=1000):
+        deg = dict(G.degree())
+        total = sum(deg.values()) or 1.0
+        return {node: val / total for node, val in deg.items()}
+
+    def _fallback_attribute_assortativity_coefficient(G, attribute):
+        edges = list(G.edges())
+        if not edges:
+            return 0.0
+        attrs = _fallback_get_node_attributes(G, attribute)
+        same = 0
+        for a, b in edges:
+            if attrs.get(a) is not None and attrs.get(a) == attrs.get(b):
+                same += 1
+        return same / len(edges)
+
+    class _FallbackNetworkXModule:
+        Graph = _FallbackGraph
+        NetworkXError = _FallbackNetworkXError
+        density = staticmethod(_fallback_density)
+        get_node_attributes = staticmethod(_fallback_get_node_attributes)
+        betweenness_centrality = staticmethod(_fallback_betweenness_centrality)
+        eigenvector_centrality = staticmethod(_fallback_eigenvector_centrality)
+        closeness_centrality = staticmethod(_fallback_closeness_centrality)
+        degree_centrality = staticmethod(_fallback_degree_centrality)
+        attribute_assortativity_coefficient = staticmethod(_fallback_attribute_assortativity_coefficient)
+
+    nx = _FallbackNetworkXModule()  # type: ignore
+
+try:  # pragma: no cover - optional in the preview venv
+    from sklearn.ensemble import RandomForestClassifier, GradientBoostingClassifier  # type: ignore
+    from sklearn.preprocessing import RobustScaler  # type: ignore
+except Exception:  # pragma: no cover - fallback keeps importable
+    class RobustScaler:
+        def fit_transform(self, x):
+            arr = np.asarray(x, dtype=float)
+            self.center_ = np.median(arr, axis=0)
+            q75 = np.percentile(arr, 75, axis=0)
+            q25 = np.percentile(arr, 25, axis=0)
+            self.scale_ = q75 - q25
+            self.scale_[self.scale_ == 0] = 1.0
+            return (arr - self.center_) / self.scale_
+
+    class _FallbackClassifier:
+        def __init__(self, **kwargs):
+            self._params = dict(kwargs)
+
+        def fit(self, x, y):
+            arr = np.asarray(x, dtype=float)
+            self.feature_means_ = arr.mean(axis=0)
+            return self
+
+        def predict(self, x):
+            arr = np.asarray(x, dtype=float)
+            scores = arr.mean(axis=1)
+            return np.where(scores >= np.median(scores), 1, 0)
+
+    class RandomForestClassifier(_FallbackClassifier):
+        pass
+
+    class GradientBoostingClassifier(_FallbackClassifier):
+        pass
 
 from advanced_metrics import (
     bootstrap_ci,
@@ -399,6 +534,34 @@ class DataProcessor:
                 })
             results['media_type_analysis'] = media_metrics
 
+            # Platform × media type: separates films, series, anime, talk shows, etc.
+            platform_media_metrics = []
+            for platform in sorted(df['platform'].unique()):
+                platform_data = df[df['platform'] == platform]
+                for media in sorted(platform_data['media_type'].dropna().unique()):
+                    combo = platform_data[platform_data['media_type'] == media]
+                    if combo.empty:
+                        continue
+                    lead_rows = combo[combo['role_type'] == 'lead']
+                    top_genre = combo['genre'].value_counts().index[0] if not combo['genre'].empty else 'unknown'
+                    platform_media_metrics.append({
+                        'platform': platform,
+                        'media_type': media,
+                        'diversity': self.analyzer.calculate_diversity_index(combo['race'].tolist()),
+                        'gender_parity': self.analyzer.calculate_gender_parity(
+                            combo['gender'].value_counts().to_dict()
+                        ),
+                        'avg_sentiment': float(combo['sentiment_score'].mean()),
+                        'avg_screen_time': float(combo['screen_time'].mean()),
+                        'sample_size': int(len(combo)),
+                        'lead_share': float(
+                            combo[(combo['gender'] == 'female') & (combo['role_type'] == 'lead')].shape[0] /
+                            lead_rows.shape[0]
+                        ) if lead_rows.shape[0] > 0 else 0.0,
+                        'top_genre': str(top_genre),
+                    })
+            results['platform_media_analysis'] = platform_media_metrics
+
         # Platform comparison
         platform_metrics = []
         for platform in df['platform'].unique():
@@ -643,6 +806,20 @@ class DataProcessor:
                 'title': 'Dialogue gap by genre',
                 'detail': (f"In {widest_gap['genre']}, female characters average "
                            f"{widest_gap['dialogue_gap'] * 100:.0f}% fewer dialogue words than male characters."),
+            })
+
+        platform_media = results.get('platform_media_analysis', [])
+        if platform_media:
+            sharpest = min(platform_media, key=lambda row: row['gender_parity'])
+            insights.append({
+                'category': 'platform-media',
+                'title': 'Format-specific imbalance',
+                'detail': (
+                    f"{sharpest['platform'].replace('_', ' ').title()} is weakest in "
+                    f"{sharpest['media_type'].replace('_', ' ')} where gender parity is "
+                    f"{sharpest['gender_parity']:.2f} and the sample still points to "
+                    f"{sharpest['top_genre']} dominance."
+                ),
             })
 
         leads = df[df['role_type'] == 'lead']

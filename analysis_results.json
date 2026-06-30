@@ -1,434 +1,1590 @@
 {
   "overall_metrics": {
-    "diversity_index": 0.7036058402875651,
-    "gender_parity": 0.686,
+    "diversity_index": 0.7026587608941878,
+    "gender_parity": 0.76,
     "intersectionality": {
       "male_white_<30": {
-        "representation": 0.1812,
+        "representation": 0.17,
         "baseline": 0.022222222222222223,
-        "ratio": 8.154,
-        "screen_time": 59.465784602353516
+        "ratio": 7.65,
+        "screen_time": 63.79162010137878
       },
       "male_white_30-50": {
-        "representation": 0.157,
+        "representation": 0.17,
         "baseline": 0.022222222222222223,
-        "ratio": 7.0649999999999995,
-        "screen_time": 60.805462093916546
+        "ratio": 7.65,
+        "screen_time": 62.327668650403986
       },
       "male_white_>50": {
-        "representation": 0.0478,
+        "representation": 0.025,
         "baseline": 0.022222222222222223,
-        "ratio": 2.151,
-        "screen_time": 60.922014164678
+        "ratio": 1.125,
+        "screen_time": 57.16497470350032
       },
       "male_black_<30": {
-        "representation": 0.0374,
-        "baseline": 0.022222222222222223,
-        "ratio": 1.683,
-        "screen_time": 63.92510190303237
-      },
-      "male_black_30-50": {
-        "representation": 0.0304,
-        "baseline": 0.022222222222222223,
-        "ratio": 1.3679999999999999,
-        "screen_time": 63.20786630795515
-      },
-      "male_black_>50": {
-        "representation": 0.0104,
-        "baseline": 0.022222222222222223,
-        "ratio": 0.46799999999999997,
-        "screen_time": 52.375975638694094
-      },
-      "male_asian_<30": {
-        "representation": 0.0168,
-        "baseline": 0.022222222222222223,
-        "ratio": 0.7559999999999999,
-        "screen_time": 60.93846287763523
-      },
-      "male_asian_30-50": {
-        "representation": 0.0126,
-        "baseline": 0.022222222222222223,
-        "ratio": 0.567,
-        "screen_time": 59.00017813648883
-      },
-      "male_asian_>50": {
-        "representation": 0.0044,
-        "baseline": 0.022222222222222223,
-        "ratio": 0.198,
-        "screen_time": 55.198560594619885
-      },
-      "male_hispanic_<30": {
-        "representation": 0.057,
-        "baseline": 0.022222222222222223,
-        "ratio": 2.565,
-        "screen_time": 61.317884819065334
-      },
-      "male_hispanic_30-50": {
-        "representation": 0.0462,
-        "baseline": 0.022222222222222223,
-        "ratio": 2.0789999999999997,
-        "screen_time": 60.923651474254626
-      },
-      "male_hispanic_>50": {
         "representation": 0.015,
         "baseline": 0.022222222222222223,
         "ratio": 0.6749999999999999,
-        "screen_time": 58.04261434798232
+        "screen_time": 70.08442369394427
+      },
+      "male_black_30-50": {
+        "representation": 0.06,
+        "baseline": 0.022222222222222223,
+        "ratio": 2.6999999999999997,
+        "screen_time": 53.96791183772214
+      },
+      "male_black_>50": {
+        "representation": 0.005,
+        "baseline": 0.022222222222222223,
+        "ratio": 0.225,
+        "screen_time": 70.27937033298356
+      },
+      "male_asian_<30": {
+        "representation": 0.025,
+        "baseline": 0.022222222222222223,
+        "ratio": 1.125,
+        "screen_time": 63.18343680760661
+      },
+      "male_hispanic_<30": {
+        "representation": 0.04,
+        "baseline": 0.022222222222222223,
+        "ratio": 1.8,
+        "screen_time": 72.41072671072048
+      },
+      "male_hispanic_30-50": {
+        "representation": 0.055,
+        "baseline": 0.022222222222222223,
+        "ratio": 2.475,
+        "screen_time": 64.82661571328161
+      },
+      "male_hispanic_>50": {
+        "representation": 0.025,
+        "baseline": 0.022222222222222223,
+        "ratio": 1.125,
+        "screen_time": 57.34541329882889
       },
       "male_other_<30": {
-        "representation": 0.0086,
+        "representation": 0.015,
         "baseline": 0.022222222222222223,
-        "ratio": 0.387,
-        "screen_time": 56.47141385100962
+        "ratio": 0.6749999999999999,
+        "screen_time": 44.06539818358774
       },
       "male_other_30-50": {
-        "representation": 0.0072,
+        "representation": 0.005,
         "baseline": 0.022222222222222223,
-        "ratio": 0.32399999999999995,
-        "screen_time": 63.28384691980958
-      },
-      "male_other_>50": {
-        "representation": 0.0024,
-        "baseline": 0.022222222222222223,
-        "ratio": 0.10799999999999998,
-        "screen_time": 70.47119413536001
+        "ratio": 0.225,
+        "screen_time": 73.55282550086774
       },
       "female_white_<30": {
-        "representation": 0.101,
+        "representation": 0.155,
         "baseline": 0.022222222222222223,
-        "ratio": 4.545,
-        "screen_time": 44.26924019948936
+        "ratio": 6.975,
+        "screen_time": 47.71385470569353
       },
       "female_white_30-50": {
-        "representation": 0.0822,
+        "representation": 0.065,
         "baseline": 0.022222222222222223,
-        "ratio": 3.699,
-        "screen_time": 45.48765883564069
+        "ratio": 2.925,
+        "screen_time": 51.94926860357825
       },
       "female_white_>50": {
-        "representation": 0.026,
+        "representation": 0.015,
         "baseline": 0.022222222222222223,
-        "ratio": 1.17,
-        "screen_time": 46.33470289097895
+        "ratio": 0.6749999999999999,
+        "screen_time": 58.11579489335704
       },
       "female_black_<30": {
-        "representation": 0.0212,
+        "representation": 0.015,
         "baseline": 0.022222222222222223,
-        "ratio": 0.954,
-        "screen_time": 45.5667016124238
+        "ratio": 0.6749999999999999,
+        "screen_time": 36.71831124964484
       },
       "female_black_30-50": {
-        "representation": 0.0194,
+        "representation": 0.015,
         "baseline": 0.022222222222222223,
-        "ratio": 0.873,
-        "screen_time": 46.82556372321647
+        "ratio": 0.6749999999999999,
+        "screen_time": 39.63898592594259
       },
       "female_black_>50": {
-        "representation": 0.0052,
+        "representation": 0.015,
         "baseline": 0.022222222222222223,
-        "ratio": 0.23399999999999999,
-        "screen_time": 46.91171315295049
+        "ratio": 0.6749999999999999,
+        "screen_time": 47.512850896782766
       },
       "female_asian_<30": {
-        "representation": 0.0092,
+        "representation": 0.015,
         "baseline": 0.022222222222222223,
-        "ratio": 0.414,
-        "screen_time": 42.0825530900295
-      },
-      "female_asian_30-50": {
-        "representation": 0.0074,
-        "baseline": 0.022222222222222223,
-        "ratio": 0.333,
-        "screen_time": 43.60310584565369
-      },
-      "female_asian_>50": {
-        "representation": 0.0018,
-        "baseline": 0.022222222222222223,
-        "ratio": 0.08099999999999999,
-        "screen_time": 44.580275911523856
+        "ratio": 0.6749999999999999,
+        "screen_time": 50.00963525160386
       },
       "female_hispanic_<30": {
-        "representation": 0.0284,
+        "representation": 0.045,
         "baseline": 0.022222222222222223,
-        "ratio": 1.278,
-        "screen_time": 46.70841887237827
+        "ratio": 2.025,
+        "screen_time": 45.66626444156086
       },
       "female_hispanic_30-50": {
-        "representation": 0.0244,
+        "representation": 0.02,
         "baseline": 0.022222222222222223,
-        "ratio": 1.098,
-        "screen_time": 45.614457344731726
+        "ratio": 0.9,
+        "screen_time": 42.23143289717779
       },
       "female_hispanic_>50": {
-        "representation": 0.008,
+        "representation": 0.005,
         "baseline": 0.022222222222222223,
-        "ratio": 0.36,
-        "screen_time": 50.34667802339669
+        "ratio": 0.225,
+        "screen_time": 36.91252105027593
       },
       "female_other_<30": {
-        "representation": 0.0036,
+        "representation": 0.01,
         "baseline": 0.022222222222222223,
-        "ratio": 0.16199999999999998,
-        "screen_time": 47.4252511060153
-      },
-      "female_other_30-50": {
-        "representation": 0.0032,
-        "baseline": 0.022222222222222223,
-        "ratio": 0.144,
-        "screen_time": 38.88821996182971
+        "ratio": 0.45,
+        "screen_time": 57.71047633354772
       },
       "female_other_>50": {
-        "representation": 0.002,
+        "representation": 0.005,
         "baseline": 0.022222222222222223,
-        "ratio": 0.09,
-        "screen_time": 49.867704536333115
-      },
-      "non-binary_white_<30": {
-        "representation": 0.0056,
-        "baseline": 0.022222222222222223,
-        "ratio": 0.252,
-        "screen_time": 39.419016489405976
+        "ratio": 0.225,
+        "screen_time": 40.41321716929743
       },
       "non-binary_white_30-50": {
-        "representation": 0.007,
+        "representation": 0.005,
         "baseline": 0.022222222222222223,
-        "ratio": 0.315,
-        "screen_time": 31.135824648143988
-      },
-      "non-binary_white_>50": {
-        "representation": 0.001,
-        "baseline": 0.022222222222222223,
-        "ratio": 0.045,
-        "screen_time": 28.498746577951152
+        "ratio": 0.225,
+        "screen_time": 2.7425672433979895
       },
       "non-binary_black_<30": {
-        "representation": 0.0012,
+        "representation": 0.005,
         "baseline": 0.022222222222222223,
-        "ratio": 0.05399999999999999,
-        "screen_time": 31.494713499038667
-      },
-      "non-binary_black_30-50": {
-        "representation": 0.0014,
-        "baseline": 0.022222222222222223,
-        "ratio": 0.063,
-        "screen_time": 35.00162319851252
-      },
-      "non-binary_black_>50": {
-        "representation": 0.0004,
-        "baseline": 0.022222222222222223,
-        "ratio": 0.018,
-        "screen_time": 31.49638956525795
-      },
-      "non-binary_asian_<30": {
-        "representation": 0.0006,
-        "baseline": 0.022222222222222223,
-        "ratio": 0.026999999999999996,
-        "screen_time": 28.297283558394273
-      },
-      "non-binary_asian_30-50": {
-        "representation": 0.0004,
-        "baseline": 0.022222222222222223,
-        "ratio": 0.018,
-        "screen_time": 37.82372579119098
-      },
-      "non-binary_asian_>50": {
-        "representation": 0.0004,
-        "baseline": 0.022222222222222223,
-        "ratio": 0.018,
-        "screen_time": 31.446368543226313
-      },
-      "non-binary_hispanic_<30": {
-        "representation": 0.001,
-        "baseline": 0.022222222222222223,
-        "ratio": 0.045,
-        "screen_time": 31.598523895344478
-      },
-      "non-binary_hispanic_30-50": {
-        "representation": 0.0018,
-        "baseline": 0.022222222222222223,
-        "ratio": 0.08099999999999999,
-        "screen_time": 41.51067140196853
-      },
-      "non-binary_hispanic_>50": {
-        "representation": 0.0004,
-        "baseline": 0.022222222222222223,
-        "ratio": 0.018,
-        "screen_time": 46.92235126368726
-      },
-      "non-binary_other_<30": {
-        "representation": 0.0008,
-        "baseline": 0.022222222222222223,
-        "ratio": 0.036,
-        "screen_time": 30.656393614585774
-      },
-      "non-binary_other_30-50": {
-        "representation": 0.0004,
-        "baseline": 0.022222222222222223,
-        "ratio": 0.018,
-        "screen_time": 30.185579153524333
-      },
-      "non-binary_other_>50": {
-        "representation": 0.0002,
-        "baseline": 0.022222222222222223,
-        "ratio": 0.009,
-        "screen_time": 57.445236752715836
+        "ratio": 0.225,
+        "screen_time": 29.50759323772535
       }
     }
   },
   "temporal_analysis": [
     {
-      "year": 2021,
-      "diversity": 0.7130094943705839,
-      "gender_parity": 0.6847599164926931,
-      "avg_sentiment": 0.5735998586234936
-    },
-    {
-      "year": 2019,
-      "diversity": 0.7158804557254,
-      "gender_parity": 0.6827309236947792,
-      "avg_sentiment": 0.5575273976328805
-    },
-    {
-      "year": 2023,
-      "diversity": 0.7149989050669333,
-      "gender_parity": 0.7177570093457943,
-      "avg_sentiment": 0.5745999967324709
+      "year": 2015,
+      "diversity": 0.8737065197658209,
+      "gender_parity": 0.631578947368421,
+      "avg_sentiment": 0.5709955863846244
     },
     {
       "year": 2016,
-      "diversity": 0.7138553979992471,
-      "gender_parity": 0.7249466950959488,
-      "avg_sentiment": 0.5717514636699262
-    },
-    {
-      "year": 2022,
-      "diversity": 0.7193058916613497,
-      "gender_parity": 0.6602316602316602,
-      "avg_sentiment": 0.5675351431601209
+      "diversity": 0.7559699029892673,
+      "gender_parity": 0.9230769230769231,
+      "avg_sentiment": 0.583676080835664
     },
     {
       "year": 2017,
-      "diversity": 0.68079389617858,
-      "gender_parity": 0.6961538461538461,
-      "avg_sentiment": 0.5715959706764736
-    },
-    {
-      "year": 2020,
-      "diversity": 0.681997637292684,
-      "gender_parity": 0.696969696969697,
-      "avg_sentiment": 0.5625866190402112
+      "diversity": 0.5291385216131671,
+      "gender_parity": 0.631578947368421,
+      "avg_sentiment": 0.5511502229263372
     },
     {
       "year": 2018,
-      "diversity": 0.6940669313373423,
-      "gender_parity": 0.7227926078028748,
-      "avg_sentiment": 0.5588626372457141
+      "diversity": 0.7975511165325083,
+      "gender_parity": 0.9565217391304348,
+      "avg_sentiment": 0.5755758669952898
+    },
+    {
+      "year": 2019,
+      "diversity": 0.6919331647988415,
+      "gender_parity": 0.782608695652174,
+      "avg_sentiment": 0.5587121659249885
+    },
+    {
+      "year": 2020,
+      "diversity": 0.7873777147099386,
+      "gender_parity": 0.5263157894736842,
+      "avg_sentiment": 0.5716370215878941
+    },
+    {
+      "year": 2021,
+      "diversity": 0.7867012262088835,
+      "gender_parity": 0.6153846153846154,
+      "avg_sentiment": 0.7038592175085759
+    },
+    {
+      "year": 2022,
+      "diversity": 0.9182958340544894,
+      "gender_parity": 0.6666666666666666,
+      "avg_sentiment": 0.48463474917732086
+    },
+    {
+      "year": 2023,
+      "diversity": 0.5462947022805017,
+      "gender_parity": 0.7272727272727273,
+      "avg_sentiment": 0.5211839634585359
     },
     {
       "year": 2024,
-      "diversity": 0.7148619105611547,
-      "gender_parity": 0.6255144032921811,
-      "avg_sentiment": 0.5762589799368745
+      "diversity": 0.7783853970487746,
+      "gender_parity": 0.7142857142857143,
+      "avg_sentiment": 0.6298927441165498
     },
     {
-      "year": 2015,
-      "diversity": 0.6722858309899117,
-      "gender_parity": 0.6458333333333334,
-      "avg_sentiment": 0.5819923929172421
+      "year": 2025,
+      "diversity": 0.8154913038332714,
+      "gender_parity": 0.7826086956521738,
+      "avg_sentiment": 0.5375715308562447
+    },
+    {
+      "year": 2026,
+      "diversity": 0.8949645376549995,
+      "gender_parity": 0.36363636363636365,
+      "avg_sentiment": 0.5952119647136306
     }
   ],
   "platform_comparison": [
     {
       "platform": "hbo_max",
-      "diversity": 0.690604013470149,
-      "female_leads": 0.30303030303030304,
-      "avg_screen_time_disparity": 14.486199187003745
-    },
-    {
-      "platform": "netflix",
-      "diversity": 0.7190386995165596,
-      "female_leads": 0.33098591549295775,
-      "avg_screen_time_disparity": 12.11050286137365
-    },
-    {
-      "platform": "disney_plus",
-      "diversity": 0.6910158324175473,
-      "female_leads": 0.37209302325581395,
-      "avg_screen_time_disparity": 13.639531978886282
+      "diversity": 0.726556860698837,
+      "female_leads": 0.5454545454545454,
+      "avg_screen_time_disparity": 4.021292286444506
     },
     {
       "platform": "apple_tv",
-      "diversity": 0.7049863813628456,
-      "female_leads": 0.3107142857142857,
-      "avg_screen_time_disparity": 9.727324892628458
-    },
-    {
-      "platform": "hulu",
-      "diversity": 0.7095468191680839,
-      "female_leads": 0.3549618320610687,
-      "avg_screen_time_disparity": 16.485613024491222
+      "diversity": 0.6679589526496192,
+      "female_leads": 0.5882352941176471,
+      "avg_screen_time_disparity": 13.117322078939827
     },
     {
       "platform": "amazon_prime",
-      "diversity": 0.6984279931262183,
-      "female_leads": 0.3818770226537217,
-      "avg_screen_time_disparity": 13.346732897410366
+      "diversity": 0.6375960305123816,
+      "female_leads": 0.25,
+      "avg_screen_time_disparity": 12.369527758141228
+    },
+    {
+      "platform": "hulu",
+      "diversity": 0.6892766414141805,
+      "female_leads": 0.18181818181818182,
+      "avg_screen_time_disparity": 20.447569086707627
+    },
+    {
+      "platform": "netflix",
+      "diversity": 0.7537426230630556,
+      "female_leads": 0.15384615384615385,
+      "avg_screen_time_disparity": 6.653128978237351
+    },
+    {
+      "platform": "disney_plus",
+      "diversity": 0.8186358261902681,
+      "female_leads": 0.4166666666666667,
+      "avg_screen_time_disparity": 13.76842081901546
     }
   ],
-  "genre_analysis": {},
+  "genre_analysis": [
+    {
+      "genre": "action",
+      "diversity": 0.7631054471978407,
+      "gender_parity": 0.35,
+      "male_lead_share": 0.75,
+      "dialogue_gap": 0.09715661609717663,
+      "avg_screen_time": 54.404631125682535,
+      "sample_size": 40
+    },
+    {
+      "genre": "comedy",
+      "diversity": 0.723800437105776,
+      "gender_parity": 0.8125,
+      "male_lead_share": 0.5454545454545454,
+      "dialogue_gap": 0.2818142218350238,
+      "avg_screen_time": 60.08787581269677,
+      "sample_size": 32
+    },
+    {
+      "genre": "documentary",
+      "diversity": 0.6615604593591888,
+      "gender_parity": 0.875,
+      "male_lead_share": 0.5555555555555556,
+      "dialogue_gap": 0.36931285070370723,
+      "avg_screen_time": 54.8985781297508,
+      "sample_size": 32
+    },
+    {
+      "genre": "drama",
+      "diversity": 0.7536921396450189,
+      "gender_parity": 0.8,
+      "male_lead_share": 0.6923076923076923,
+      "dialogue_gap": 0.3902708794190075,
+      "avg_screen_time": 54.04915096379505,
+      "sample_size": 30
+    },
+    {
+      "genre": "scifi",
+      "diversity": 0.6280403415430014,
+      "gender_parity": 0.7567567567567568,
+      "male_lead_share": 0.6666666666666666,
+      "dialogue_gap": 0.033380352970313054,
+      "avg_screen_time": 56.78494529220391,
+      "sample_size": 37
+    },
+    {
+      "genre": "thriller",
+      "diversity": 0.5499760810029751,
+      "gender_parity": 0.896551724137931,
+      "male_lead_share": 0.45454545454545453,
+      "dialogue_gap": 0.3756475256254822,
+      "avg_screen_time": 57.92781176054513,
+      "sample_size": 29
+    }
+  ],
   "bias_detection": {
     "role_stereotyping": {
       "lead": {
         "distribution": {
-          "female": 578,
-          "male": 1074,
-          "non-binary": 38
+          "female": 26,
+          "male": 42,
+          "non-binary": 0
         },
-        "chi_square": 953.2023668639051,
+        "chi_square": 39.647058823529406,
         "stereotype_score": 1,
         "dominant_gender": "male"
       },
       "minor": {
         "distribution": {
-          "female": 584,
-          "male": 1036,
-          "non-binary": 36
+          "female": 22,
+          "male": 36,
+          "non-binary": 0
         },
-        "chi_square": 908.5797101449275,
+        "chi_square": 34.06896551724138,
         "stereotype_score": 1,
         "dominant_gender": "male"
       },
       "support": {
         "distribution": {
-          "female": 553,
-          "male": 1062,
-          "non-binary": 39
+          "female": 28,
+          "male": 44,
+          "non-binary": 2
         },
-        "chi_square": 949.0967351874244,
+        "chi_square": 36.43243243243243,
         "stereotype_score": 1,
         "dominant_gender": "male"
       }
     },
     "dialogue_bias": {
       "dialogue_female": {
-        "observed": 1554709,
-        "expected": 1820205.3333333333,
-        "bias_score": 38725.467793438176,
-        "percentage": 28.47131166154148
+        "observed": 71694,
+        "expected": 75314.0,
+        "bias_score": 173.9968664524524,
+        "percentage": 31.73115224261094
       },
       "dialogue_male": {
-        "observed": 3829342,
-        "expected": 1820205.3333333333,
-        "bias_score": 2217678.451667968,
-        "percentage": 70.12655715032882
+        "observed": 153610,
+        "expected": 75314.0,
+        "bias_score": 81396.07000026555,
+        "percentage": 67.98647440493578
       },
       "dialogue_non-binary": {
-        "observed": 76565,
-        "expected": 1820205.3333333333,
-        "bias_score": 1670295.9585659076,
-        "percentage": 1.402131188129691
+        "observed": 638,
+        "expected": 75314.0,
+        "bias_score": 74043.40462596595,
+        "percentage": 0.2823733524532845
+      }
+    },
+    "age_bias": {
+      "dialogue_30-50": {
+        "observed": 91837,
+        "expected": 75314.0,
+        "bias_score": 3624.95059351515,
+        "percentage": 40.64627205211957
+      },
+      "dialogue_<30": {
+        "observed": 114336,
+        "expected": 75314.0,
+        "bias_score": 20218.239424277028,
+        "percentage": 50.604137344982334
+      },
+      "dialogue_>50": {
+        "observed": 19769,
+        "expected": 75314.0,
+        "bias_score": 40965.11969886077,
+        "percentage": 8.749590602898088
+      }
+    },
+    "racial_dialogue_bias": {
+      "dialogue_asian": {
+        "observed": 9633,
+        "expected": 45188.4,
+        "bias_score": 27975.906851315827,
+        "percentage": 4.263483548875375
+      },
+      "dialogue_black": {
+        "observed": 26792,
+        "expected": 45188.4,
+        "bias_score": 7489.256821662197,
+        "percentage": 11.857910437191846
+      },
+      "dialogue_hispanic": {
+        "observed": 44015,
+        "expected": 45188.4,
+        "bias_score": 30.469491285374193,
+        "percentage": 19.48066317904595
+      },
+      "dialogue_other": {
+        "observed": 7258,
+        "expected": 45188.4,
+        "bias_score": 31838.154131591295,
+        "percentage": 3.2123288277522555
+      },
+      "dialogue_white": {
+        "observed": 138244,
+        "expected": 45188.4,
+        "bias_score": 191627.6011401156,
+        "percentage": 61.18561400713457
+      }
+    },
+    "sentiment_bias": {
+      "female": {
+        "avg_sentiment": 0.5880930463842133,
+        "deviation_from_mean": 0.01665768013387925
+      },
+      "male": {
+        "avg_sentiment": 0.5638227172981823,
+        "deviation_from_mean": -0.007612648952151746
+      },
+      "non-binary": {
+        "avg_sentiment": 0.40281510724417025,
+        "deviation_from_mean": -0.16862025900616384
+      }
+    },
+    "screen_time_bias": {
+      "female": {
+        "avg_screen_time": 47.67270427400575,
+        "ratio_vs_overall": 0.8468992676799342
+      },
+      "male": {
+        "avg_screen_time": 62.318033866075965,
+        "ratio_vs_overall": 1.1070716051912868
+      },
+      "non-binary": {
+        "avg_screen_time": 16.12508024056167,
+        "ratio_vs_overall": 0.2864599114940111
       }
     }
   },
-  "network_metrics": {}
+  "network_metrics": {
+    "nodes": 197,
+    "edges": 393,
+    "gender_homophily": 0.5623409669211196,
+    "racial_homophily": 0.3994910941475827,
+    "density": 0.020356365896612452
+  },
+  "media_type_analysis": [
+    {
+      "media_type": "animation",
+      "diversity": 0.5246455665662211,
+      "gender_parity": 0.4545454545454546,
+      "avg_sentiment": 0.5519474351178233,
+      "sample_size": 22
+    },
+    {
+      "media_type": "anime",
+      "diversity": 0.7355278445292194,
+      "gender_parity": 0.8571428571428571,
+      "avg_sentiment": 0.5741464132595914,
+      "sample_size": 21
+    },
+    {
+      "media_type": "docuseries",
+      "diversity": 0.8920795639257109,
+      "gender_parity": 0.8333333333333333,
+      "avg_sentiment": 0.5755039693329037,
+      "sample_size": 12
+    },
+    {
+      "media_type": "film",
+      "diversity": 0.7022882427880917,
+      "gender_parity": 0.6976744186046512,
+      "avg_sentiment": 0.574159782841621,
+      "sample_size": 43
+    },
+    {
+      "media_type": "kids",
+      "diversity": 0.8631205685666311,
+      "gender_parity": 0.2857142857142857,
+      "avg_sentiment": 0.47834776158694015,
+      "sample_size": 7
+    },
+    {
+      "media_type": "limited_series",
+      "diversity": 0.9852281360342515,
+      "gender_parity": 0.5714285714285714,
+      "avg_sentiment": 0.5166927631475832,
+      "sample_size": 7
+    },
+    {
+      "media_type": "reality",
+      "diversity": 0.6458459985690298,
+      "gender_parity": 0.7142857142857143,
+      "avg_sentiment": 0.5969873960809448,
+      "sample_size": 14
+    },
+    {
+      "media_type": "series",
+      "diversity": 0.7413433115982051,
+      "gender_parity": 0.7333333333333333,
+      "avg_sentiment": 0.5749130321503645,
+      "sample_size": 60
+    },
+    {
+      "media_type": "sports_doc",
+      "diversity": 0,
+      "gender_parity": 0.0,
+      "avg_sentiment": 0.6237816311973462,
+      "sample_size": 1
+    },
+    {
+      "media_type": "standup",
+      "diversity": 0.8962406251802889,
+      "gender_parity": 1.0,
+      "avg_sentiment": 0.6258486678582457,
+      "sample_size": 6
+    },
+    {
+      "media_type": "talk_show",
+      "diversity": 0.8322488896002306,
+      "gender_parity": 0.8571428571428572,
+      "avg_sentiment": 0.6136391313135918,
+      "sample_size": 7
+    }
+  ],
+  "platform_media_analysis": [
+    {
+      "platform": "amazon_prime",
+      "media_type": "animation",
+      "diversity": 0,
+      "gender_parity": 0.0,
+      "avg_sentiment": 0.4380319304456582,
+      "avg_screen_time": 92.33812735259967,
+      "sample_size": 3,
+      "lead_share": 0.0,
+      "top_genre": "action"
+    },
+    {
+      "platform": "amazon_prime",
+      "media_type": "anime",
+      "diversity": 0,
+      "gender_parity": 0.0,
+      "avg_sentiment": 0.5525695736560173,
+      "avg_screen_time": 64.55626124959083,
+      "sample_size": 3,
+      "lead_share": 0.0,
+      "top_genre": "drama"
+    },
+    {
+      "platform": "amazon_prime",
+      "media_type": "docuseries",
+      "diversity": 0,
+      "gender_parity": 0.0,
+      "avg_sentiment": 0.4338017822203391,
+      "avg_screen_time": 40.344079436191755,
+      "sample_size": 1,
+      "lead_share": 0.0,
+      "top_genre": "documentary"
+    },
+    {
+      "platform": "amazon_prime",
+      "media_type": "film",
+      "diversity": 0.72483409150576,
+      "gender_parity": 0.2857142857142857,
+      "avg_sentiment": 0.5486450024956434,
+      "avg_screen_time": 64.1655675909378,
+      "sample_size": 7,
+      "lead_share": 0.0,
+      "top_genre": "documentary"
+    },
+    {
+      "platform": "amazon_prime",
+      "media_type": "kids",
+      "diversity": 0,
+      "gender_parity": 0.0,
+      "avg_sentiment": 0.46104033931412075,
+      "avg_screen_time": 88.71771603994779,
+      "sample_size": 1,
+      "lead_share": 0.0,
+      "top_genre": "thriller"
+    },
+    {
+      "platform": "amazon_prime",
+      "media_type": "reality",
+      "diversity": 0,
+      "gender_parity": 0.0,
+      "avg_sentiment": 0.603882614511193,
+      "avg_screen_time": 54.10216646193734,
+      "sample_size": 1,
+      "lead_share": 0.0,
+      "top_genre": "action"
+    },
+    {
+      "platform": "amazon_prime",
+      "media_type": "series",
+      "diversity": 0.9349775297671233,
+      "gender_parity": 0.6,
+      "avg_sentiment": 0.5350732890998054,
+      "avg_screen_time": 56.83330683095579,
+      "sample_size": 10,
+      "lead_share": 0.3333333333333333,
+      "top_genre": "documentary"
+    },
+    {
+      "platform": "amazon_prime",
+      "media_type": "talk_show",
+      "diversity": 0,
+      "gender_parity": 0.0,
+      "avg_sentiment": 0.5032273971055125,
+      "avg_screen_time": 63.29696814006303,
+      "sample_size": 3,
+      "lead_share": 0.0,
+      "top_genre": "scifi"
+    },
+    {
+      "platform": "apple_tv",
+      "media_type": "animation",
+      "diversity": 0.9182958340544894,
+      "gender_parity": 1.0,
+      "avg_sentiment": 0.5401602415178113,
+      "avg_screen_time": 62.797771393888304,
+      "sample_size": 6,
+      "lead_share": 0.0,
+      "top_genre": "documentary"
+    },
+    {
+      "platform": "apple_tv",
+      "media_type": "anime",
+      "diversity": 0,
+      "gender_parity": 0.6666666666666666,
+      "avg_sentiment": 0.5717538654739908,
+      "avg_screen_time": 62.792463814873805,
+      "sample_size": 3,
+      "lead_share": 1.0,
+      "top_genre": "action"
+    },
+    {
+      "platform": "apple_tv",
+      "media_type": "film",
+      "diversity": 0.9206198357143047,
+      "gender_parity": 0.6666666666666666,
+      "avg_sentiment": 0.6643420209827412,
+      "avg_screen_time": 48.45856470992728,
+      "sample_size": 6,
+      "lead_share": 0.4,
+      "top_genre": "thriller"
+    },
+    {
+      "platform": "apple_tv",
+      "media_type": "kids",
+      "diversity": 0,
+      "gender_parity": 0.0,
+      "avg_sentiment": 0.6959842049355656,
+      "avg_screen_time": 99.31470598914338,
+      "sample_size": 1,
+      "lead_share": 0.0,
+      "top_genre": "scifi"
+    },
+    {
+      "platform": "apple_tv",
+      "media_type": "limited_series",
+      "diversity": 0,
+      "gender_parity": 1.0,
+      "avg_sentiment": 0.606868009711477,
+      "avg_screen_time": 47.53178402194824,
+      "sample_size": 2,
+      "lead_share": 1.0,
+      "top_genre": "scifi"
+    },
+    {
+      "platform": "apple_tv",
+      "media_type": "reality",
+      "diversity": 0.6500224216483541,
+      "gender_parity": 1.0,
+      "avg_sentiment": 0.5958013180407337,
+      "avg_screen_time": 53.49666621744537,
+      "sample_size": 6,
+      "lead_share": 0.6666666666666666,
+      "top_genre": "scifi"
+    },
+    {
+      "platform": "apple_tv",
+      "media_type": "series",
+      "diversity": 0.46343678232466695,
+      "gender_parity": 0.8571428571428571,
+      "avg_sentiment": 0.5712779516656303,
+      "avg_screen_time": 58.79668800218443,
+      "sample_size": 14,
+      "lead_share": 0.5,
+      "top_genre": "scifi"
+    },
+    {
+      "platform": "apple_tv",
+      "media_type": "standup",
+      "diversity": 1.0,
+      "gender_parity": 1.0,
+      "avg_sentiment": 0.6169866341798321,
+      "avg_screen_time": 62.74311101365638,
+      "sample_size": 2,
+      "lead_share": 1.0,
+      "top_genre": "comedy"
+    },
+    {
+      "platform": "apple_tv",
+      "media_type": "talk_show",
+      "diversity": 0,
+      "gender_parity": 0.0,
+      "avg_sentiment": 0.7088657590961437,
+      "avg_screen_time": 54.9017110264985,
+      "sample_size": 1,
+      "lead_share": 1.0,
+      "top_genre": "drama"
+    },
+    {
+      "platform": "disney_plus",
+      "media_type": "animation",
+      "diversity": 0,
+      "gender_parity": 0.6666666666666666,
+      "avg_sentiment": 0.5950357988908471,
+      "avg_screen_time": 61.825696095966485,
+      "sample_size": 3,
+      "lead_share": 0.5,
+      "top_genre": "action"
+    },
+    {
+      "platform": "disney_plus",
+      "media_type": "anime",
+      "diversity": 0.8112781244591328,
+      "gender_parity": 1.0,
+      "avg_sentiment": 0.5924669338881493,
+      "avg_screen_time": 44.908897307467875,
+      "sample_size": 4,
+      "lead_share": 1.0,
+      "top_genre": "action"
+    },
+    {
+      "platform": "disney_plus",
+      "media_type": "docuseries",
+      "diversity": 0.8699155297736259,
+      "gender_parity": 0.2857142857142858,
+      "avg_sentiment": 0.5810866821268762,
+      "avg_screen_time": 49.66246356897948,
+      "sample_size": 7,
+      "lead_share": 0.5,
+      "top_genre": "comedy"
+    },
+    {
+      "platform": "disney_plus",
+      "media_type": "film",
+      "diversity": 0.7233083338141042,
+      "gender_parity": 0.4444444444444444,
+      "avg_sentiment": 0.5830336001035991,
+      "avg_screen_time": 68.00184600283443,
+      "sample_size": 9,
+      "lead_share": 0.25,
+      "top_genre": "documentary"
+    },
+    {
+      "platform": "disney_plus",
+      "media_type": "kids",
+      "diversity": 0,
+      "gender_parity": 0.0,
+      "avg_sentiment": 0.4161803685990481,
+      "avg_screen_time": 33.64450852725968,
+      "sample_size": 1,
+      "lead_share": 0.0,
+      "top_genre": "action"
+    },
+    {
+      "platform": "disney_plus",
+      "media_type": "limited_series",
+      "diversity": 1.0,
+      "gender_parity": 0.0,
+      "avg_sentiment": 0.40005114671540554,
+      "avg_screen_time": 38.7155142015916,
+      "sample_size": 2,
+      "lead_share": 0.0,
+      "top_genre": "drama"
+    },
+    {
+      "platform": "disney_plus",
+      "media_type": "series",
+      "diversity": 0.8631205685666311,
+      "gender_parity": 0.8571428571428571,
+      "avg_sentiment": 0.5237590959548143,
+      "avg_screen_time": 54.407988856522934,
+      "sample_size": 7,
+      "lead_share": 0.5,
+      "top_genre": "scifi"
+    },
+    {
+      "platform": "disney_plus",
+      "media_type": "standup",
+      "diversity": 1.0,
+      "gender_parity": 1.0,
+      "avg_sentiment": 0.6545481043662932,
+      "avg_screen_time": 68.38555438709415,
+      "sample_size": 2,
+      "lead_share": 0.0,
+      "top_genre": "comedy"
+    },
+    {
+      "platform": "hbo_max",
+      "media_type": "animation",
+      "diversity": 0,
+      "gender_parity": 0.5,
+      "avg_sentiment": 0.5475223761705896,
+      "avg_screen_time": 45.6116831993757,
+      "sample_size": 4,
+      "lead_share": 0.0,
+      "top_genre": "scifi"
+    },
+    {
+      "platform": "hbo_max",
+      "media_type": "anime",
+      "diversity": 1.0,
+      "gender_parity": 0.0,
+      "avg_sentiment": 0.6725667377000715,
+      "avg_screen_time": 78.27095831540734,
+      "sample_size": 2,
+      "lead_share": 0.0,
+      "top_genre": "comedy"
+    },
+    {
+      "platform": "hbo_max",
+      "media_type": "film",
+      "diversity": 0.72483409150576,
+      "gender_parity": 0.0,
+      "avg_sentiment": 0.5318935944697072,
+      "avg_screen_time": 49.21126490858201,
+      "sample_size": 7,
+      "lead_share": 1.0,
+      "top_genre": "drama"
+    },
+    {
+      "platform": "hbo_max",
+      "media_type": "kids",
+      "diversity": 0.9182958340544894,
+      "gender_parity": 0.6666666666666666,
+      "avg_sentiment": 0.45354112969953864,
+      "avg_screen_time": 59.77095654536593,
+      "sample_size": 3,
+      "lead_share": 0.0,
+      "top_genre": "thriller"
+    },
+    {
+      "platform": "hbo_max",
+      "media_type": "limited_series",
+      "diversity": 0,
+      "gender_parity": 0.0,
+      "avg_sentiment": 0.6440073516533454,
+      "avg_screen_time": 25.05303843856557,
+      "sample_size": 1,
+      "lead_share": 0.0,
+      "top_genre": "action"
+    },
+    {
+      "platform": "hbo_max",
+      "media_type": "reality",
+      "diversity": 0,
+      "gender_parity": 0.0,
+      "avg_sentiment": 0.7316942617012162,
+      "avg_screen_time": 32.55057102430411,
+      "sample_size": 1,
+      "lead_share": 0.0,
+      "top_genre": "action"
+    },
+    {
+      "platform": "hbo_max",
+      "media_type": "series",
+      "diversity": 1.0,
+      "gender_parity": 0.75,
+      "avg_sentiment": 0.6880896293179402,
+      "avg_screen_time": 51.585621224842015,
+      "sample_size": 8,
+      "lead_share": 0.75,
+      "top_genre": "drama"
+    },
+    {
+      "platform": "hbo_max",
+      "media_type": "standup",
+      "diversity": 0,
+      "gender_parity": 0.0,
+      "avg_sentiment": 0.4143916174091133,
+      "avg_screen_time": 65.58757277772473,
+      "sample_size": 1,
+      "lead_share": 0.0,
+      "top_genre": "documentary"
+    },
+    {
+      "platform": "hbo_max",
+      "media_type": "talk_show",
+      "diversity": 0,
+      "gender_parity": 0.0,
+      "avg_sentiment": 0.6902900432596676,
+      "avg_screen_time": 86.57500959731136,
+      "sample_size": 1,
+      "lead_share": 1.0,
+      "top_genre": "action"
+    },
+    {
+      "platform": "hulu",
+      "media_type": "animation",
+      "diversity": 1.0,
+      "gender_parity": 0.0,
+      "avg_sentiment": 0.5725785054359198,
+      "avg_screen_time": 31.096737331996962,
+      "sample_size": 2,
+      "lead_share": 0.0,
+      "top_genre": "action"
+    },
+    {
+      "platform": "hulu",
+      "media_type": "anime",
+      "diversity": 0.7896900821428474,
+      "gender_parity": 0.33333333333333326,
+      "avg_sentiment": 0.5829679411863212,
+      "avg_screen_time": 45.74504051038267,
+      "sample_size": 6,
+      "lead_share": 0.0,
+      "top_genre": "action"
+    },
+    {
+      "platform": "hulu",
+      "media_type": "docuseries",
+      "diversity": 0,
+      "gender_parity": 0.0,
+      "avg_sentiment": 0.6169893332851768,
+      "avg_screen_time": 45.50107309950978,
+      "sample_size": 2,
+      "lead_share": 0.0,
+      "top_genre": "comedy"
+    },
+    {
+      "platform": "hulu",
+      "media_type": "film",
+      "diversity": 0.6695919455357792,
+      "gender_parity": 0.5,
+      "avg_sentiment": 0.6258626412089048,
+      "avg_screen_time": 70.20275775566003,
+      "sample_size": 8,
+      "lead_share": 0.3333333333333333,
+      "top_genre": "action"
+    },
+    {
+      "platform": "hulu",
+      "media_type": "kids",
+      "diversity": 0,
+      "gender_parity": 0.0,
+      "avg_sentiment": 0.41460602916123074,
+      "avg_screen_time": 53.95846363217988,
+      "sample_size": 1,
+      "lead_share": 0.0,
+      "top_genre": "scifi"
+    },
+    {
+      "platform": "hulu",
+      "media_type": "limited_series",
+      "diversity": 0,
+      "gender_parity": 0.0,
+      "avg_sentiment": 0.5192292978141896,
+      "avg_screen_time": 47.48937641614459,
+      "sample_size": 1,
+      "lead_share": 0.0,
+      "top_genre": "drama"
+    },
+    {
+      "platform": "hulu",
+      "media_type": "reality",
+      "diversity": 0,
+      "gender_parity": 1.0,
+      "avg_sentiment": 0.48376311045490317,
+      "avg_screen_time": 25.410022365812967,
+      "sample_size": 2,
+      "lead_share": 0.0,
+      "top_genre": "documentary"
+    },
+    {
+      "platform": "hulu",
+      "media_type": "series",
+      "diversity": 0.8194483718728035,
+      "gender_parity": 0.75,
+      "avg_sentiment": 0.543230800188933,
+      "avg_screen_time": 46.18622257956881,
+      "sample_size": 8,
+      "lead_share": 0.25,
+      "top_genre": "comedy"
+    },
+    {
+      "platform": "hulu",
+      "media_type": "standup",
+      "diversity": 0,
+      "gender_parity": 0.0,
+      "avg_sentiment": 0.7976309126481103,
+      "avg_screen_time": 36.7893346895768,
+      "sample_size": 1,
+      "lead_share": 0.0,
+      "top_genre": "action"
+    },
+    {
+      "platform": "netflix",
+      "media_type": "animation",
+      "diversity": 0.8112781244591328,
+      "gender_parity": 0.0,
+      "avg_sentiment": 0.6168581049803832,
+      "avg_screen_time": 64.43451255149208,
+      "sample_size": 4,
+      "lead_share": 0.0,
+      "top_genre": "scifi"
+    },
+    {
+      "platform": "netflix",
+      "media_type": "anime",
+      "diversity": 0.9182958340544894,
+      "gender_parity": 0.6666666666666667,
+      "avg_sentiment": 0.4904318343302417,
+      "avg_screen_time": 41.699086638018095,
+      "sample_size": 3,
+      "lead_share": 1.0,
+      "top_genre": "documentary"
+    },
+    {
+      "platform": "netflix",
+      "media_type": "docuseries",
+      "diversity": 1.0,
+      "gender_parity": 1.0,
+      "avg_sentiment": 0.5853302041580096,
+      "avg_screen_time": 52.021824381970106,
+      "sample_size": 2,
+      "lead_share": 0.0,
+      "top_genre": "scifi"
+    },
+    {
+      "platform": "netflix",
+      "media_type": "film",
+      "diversity": 0.920619835714305,
+      "gender_parity": 0.33333333333333326,
+      "avg_sentiment": 0.4808074711553612,
+      "avg_screen_time": 59.20964605230828,
+      "sample_size": 6,
+      "lead_share": 0.0,
+      "top_genre": "scifi"
+    },
+    {
+      "platform": "netflix",
+      "media_type": "limited_series",
+      "diversity": 0,
+      "gender_parity": 0.0,
+      "avg_sentiment": 0.43977437971178235,
+      "avg_screen_time": 65.4624557023318,
+      "sample_size": 1,
+      "lead_share": 0.0,
+      "top_genre": "comedy"
+    },
+    {
+      "platform": "netflix",
+      "media_type": "reality",
+      "diversity": 0.946394630357186,
+      "gender_parity": 0.5,
+      "avg_sentiment": 0.6199781349416523,
+      "avg_screen_time": 58.00464050252534,
+      "sample_size": 4,
+      "lead_share": 0.0,
+      "top_genre": "drama"
+    },
+    {
+      "platform": "netflix",
+      "media_type": "series",
+      "diversity": 0.9214632400757697,
+      "gender_parity": 0.3076923076923077,
+      "avg_sentiment": 0.5868677389974079,
+      "avg_screen_time": 52.46137332897741,
+      "sample_size": 13,
+      "lead_share": 0.2,
+      "top_genre": "scifi"
+    },
+    {
+      "platform": "netflix",
+      "media_type": "sports_doc",
+      "diversity": 0,
+      "gender_parity": 0.0,
+      "avg_sentiment": 0.6237816311973462,
+      "avg_screen_time": 84.891803158671,
+      "sample_size": 1,
+      "lead_share": 0.0,
+      "top_genre": "comedy"
+    },
+    {
+      "platform": "netflix",
+      "media_type": "talk_show",
+      "diversity": 1.0,
+      "gender_parity": 0.0,
+      "avg_sentiment": 0.6933179627613969,
+      "avg_screen_time": 64.54371207819912,
+      "sample_size": 2,
+      "lead_share": 0.0,
+      "top_genre": "thriller"
+    }
+  ],
+  "advanced_metrics": {
+    "inequality": {
+      "screen_time": {
+        "gini": 0.23234848397507735,
+        "theil": 0.08369348800823809,
+        "lorenz": [
+          {
+            "p": 0.0,
+            "l": 0.0
+          },
+          {
+            "p": 0.05,
+            "l": 0.012868674920837486
+          },
+          {
+            "p": 0.1,
+            "l": 0.035998720890006074
+          },
+          {
+            "p": 0.15,
+            "l": 0.06336653290111101
+          },
+          {
+            "p": 0.2,
+            "l": 0.09344441243587237
+          },
+          {
+            "p": 0.25,
+            "l": 0.12672779333816703
+          },
+          {
+            "p": 0.3,
+            "l": 0.1626958553746189
+          },
+          {
+            "p": 0.35,
+            "l": 0.2016183514092348
+          },
+          {
+            "p": 0.4,
+            "l": 0.2437546988798262
+          },
+          {
+            "p": 0.45,
+            "l": 0.28800801307867147
+          },
+          {
+            "p": 0.5,
+            "l": 0.33459666523616816
+          },
+          {
+            "p": 0.55,
+            "l": 0.3838418652212615
+          },
+          {
+            "p": 0.6,
+            "l": 0.4366626473678314
+          },
+          {
+            "p": 0.65,
+            "l": 0.49252206882943583
+          },
+          {
+            "p": 0.7,
+            "l": 0.5504910469286792
+          },
+          {
+            "p": 0.75,
+            "l": 0.6107306554826092
+          },
+          {
+            "p": 0.8,
+            "l": 0.6753630253534857
+          },
+          {
+            "p": 0.85,
+            "l": 0.7450999652661546
+          },
+          {
+            "p": 0.9,
+            "l": 0.8217589989419243
+          },
+          {
+            "p": 0.95,
+            "l": 0.9057578478629256
+          },
+          {
+            "p": 1.0,
+            "l": 0.9999999999999997
+          }
+        ]
+      },
+      "dialogue": {
+        "gini": 0.24172796558408804,
+        "theil": 0.09147515644232124,
+        "lorenz": [
+          {
+            "p": 0.0,
+            "l": 0.0
+          },
+          {
+            "p": 0.05,
+            "l": 0.011666710925812819
+          },
+          {
+            "p": 0.1,
+            "l": 0.03203034407060219
+          },
+          {
+            "p": 0.15,
+            "l": 0.05641270768604332
+          },
+          {
+            "p": 0.2,
+            "l": 0.0856060404882669
+          },
+          {
+            "p": 0.25,
+            "l": 0.11845960467730657
+          },
+          {
+            "p": 0.3,
+            "l": 0.15428738348779775
+          },
+          {
+            "p": 0.35,
+            "l": 0.19428437386585937
+          },
+          {
+            "p": 0.4,
+            "l": 0.2374680227669048
+          },
+          {
+            "p": 0.45,
+            "l": 0.2833470536686406
+          },
+          {
+            "p": 0.5,
+            "l": 0.3305671366987988
+          },
+          {
+            "p": 0.55,
+            "l": 0.37955315966044384
+          },
+          {
+            "p": 0.6,
+            "l": 0.4323056359596711
+          },
+          {
+            "p": 0.65,
+            "l": 0.48789512352727693
+          },
+          {
+            "p": 0.7,
+            "l": 0.5449540147471476
+          },
+          {
+            "p": 0.75,
+            "l": 0.6057173964999867
+          },
+          {
+            "p": 0.8,
+            "l": 0.6711191367696134
+          },
+          {
+            "p": 0.85,
+            "l": 0.7426773242690602
+          },
+          {
+            "p": 0.9,
+            "l": 0.8189137035168318
+          },
+          {
+            "p": 0.95,
+            "l": 0.9040151897389596
+          },
+          {
+            "p": 1.0,
+            "l": 1.0
+          }
+        ]
+      }
+    },
+    "diversity_detail": {
+      "race_shannon": 0.7026587608941878,
+      "race_simpson": 0.5781499999999999,
+      "gender_simpson": 0.48340000000000005,
+      "age_simpson": 0.57485
+    },
+    "effect_sizes": {
+      "gender_dialogue": {
+        "chi_square": 155613.47149268395,
+        "cramers_v": 0.5868270349132165,
+        "magnitude": "large"
+      },
+      "age_dialogue": {
+        "chi_square": 64808.30971665295,
+        "cramers_v": 0.3787057202927641,
+        "magnitude": "medium"
+      },
+      "racial_dialogue": {
+        "chi_square": 258961.3884359703,
+        "cramers_v": 0.5352898733082737,
+        "magnitude": "large"
+      }
+    },
+    "trend": {
+      "gender_parity": {
+        "slope": -0.017614116852405624,
+        "intercept": 36.2827844190329,
+        "r_squared": 0.15267802237917094
+      },
+      "diversity": {
+        "slope": 0.006770588742767362,
+        "intercept": -12.915323726303907,
+        "r_squared": 0.03952542523501956
+      },
+      "series": [
+        {
+          "year": 2015,
+          "diversity": 0.8737065197658209,
+          "gender_parity": 0.631578947368421,
+          "avg_sentiment": 0.5709955863846244
+        },
+        {
+          "year": 2016,
+          "diversity": 0.7559699029892673,
+          "gender_parity": 0.9230769230769231,
+          "avg_sentiment": 0.583676080835664
+        },
+        {
+          "year": 2017,
+          "diversity": 0.5291385216131671,
+          "gender_parity": 0.631578947368421,
+          "avg_sentiment": 0.5511502229263372
+        },
+        {
+          "year": 2018,
+          "diversity": 0.7975511165325083,
+          "gender_parity": 0.9565217391304348,
+          "avg_sentiment": 0.5755758669952898
+        },
+        {
+          "year": 2019,
+          "diversity": 0.6919331647988415,
+          "gender_parity": 0.782608695652174,
+          "avg_sentiment": 0.5587121659249885
+        },
+        {
+          "year": 2020,
+          "diversity": 0.7873777147099386,
+          "gender_parity": 0.5263157894736842,
+          "avg_sentiment": 0.5716370215878941
+        },
+        {
+          "year": 2021,
+          "diversity": 0.7867012262088835,
+          "gender_parity": 0.6153846153846154,
+          "avg_sentiment": 0.7038592175085759
+        },
+        {
+          "year": 2022,
+          "diversity": 0.9182958340544894,
+          "gender_parity": 0.6666666666666666,
+          "avg_sentiment": 0.48463474917732086
+        },
+        {
+          "year": 2023,
+          "diversity": 0.5462947022805017,
+          "gender_parity": 0.7272727272727273,
+          "avg_sentiment": 0.5211839634585359
+        },
+        {
+          "year": 2024,
+          "diversity": 0.7783853970487746,
+          "gender_parity": 0.7142857142857143,
+          "avg_sentiment": 0.6298927441165498
+        },
+        {
+          "year": 2025,
+          "diversity": 0.8154913038332714,
+          "gender_parity": 0.7826086956521738,
+          "avg_sentiment": 0.5375715308562447
+        },
+        {
+          "year": 2026,
+          "diversity": 0.8949645376549995,
+          "gender_parity": 0.36363636363636365,
+          "avg_sentiment": 0.5952119647136306
+        }
+      ]
+    },
+    "confidence": {
+      "gender_parity": {
+        "point": 0.76,
+        "low": 0.62,
+        "high": 0.89
+      },
+      "diversity": {
+        "point": 0.7026587608941876,
+        "low": 0.6209892713712969,
+        "high": 0.7657602209554014
+      }
+    },
+    "scorecard": {
+      "dimensions": [
+        "diversity",
+        "parity",
+        "dialogue_equity",
+        "screen_equity"
+      ],
+      "platforms": [
+        {
+          "diversity": 0.819,
+          "parity": 0.971,
+          "dialogue_equity": 0.683,
+          "screen_equity": 0.777,
+          "overall": 0.812,
+          "grade": "B+",
+          "grades": {
+            "diversity": "B+",
+            "parity": "A+",
+            "dialogue_equity": "C+",
+            "screen_equity": "B"
+          },
+          "sample_size": 35,
+          "platform": "disney_plus"
+        },
+        {
+          "diversity": 0.727,
+          "parity": 0.786,
+          "dialogue_equity": 0.897,
+          "screen_equity": 0.792,
+          "overall": 0.8,
+          "grade": "B+",
+          "grades": {
+            "diversity": "B-",
+            "parity": "B",
+            "dialogue_equity": "A-",
+            "screen_equity": "B"
+          },
+          "sample_size": 28,
+          "platform": "hbo_max"
+        },
+        {
+          "diversity": 0.668,
+          "parity": 0.878,
+          "dialogue_equity": 0.722,
+          "screen_equity": 0.737,
+          "overall": 0.751,
+          "grade": "B",
+          "grades": {
+            "diversity": "C+",
+            "parity": "A-",
+            "dialogue_equity": "B-",
+            "screen_equity": "B-"
+          },
+          "sample_size": 41,
+          "platform": "apple_tv"
+        },
+        {
+          "diversity": 0.754,
+          "parity": 0.5,
+          "dialogue_equity": 0.754,
+          "screen_equity": 0.806,
+          "overall": 0.704,
+          "grade": "B-",
+          "grades": {
+            "diversity": "B",
+            "parity": "D+",
+            "dialogue_equity": "B",
+            "screen_equity": "B+"
+          },
+          "sample_size": 36,
+          "platform": "netflix"
+        },
+        {
+          "diversity": 0.638,
+          "parity": 0.483,
+          "dialogue_equity": 0.746,
+          "screen_equity": 0.806,
+          "overall": 0.668,
+          "grade": "C+",
+          "grades": {
+            "diversity": "C",
+            "parity": "D",
+            "dialogue_equity": "B-",
+            "screen_equity": "B+"
+          },
+          "sample_size": 29,
+          "platform": "amazon_prime"
+        },
+        {
+          "diversity": 0.689,
+          "parity": 0.516,
+          "dialogue_equity": 0.725,
+          "screen_equity": 0.735,
+          "overall": 0.666,
+          "grade": "C+",
+          "grades": {
+            "diversity": "C+",
+            "parity": "D+",
+            "dialogue_equity": "B-",
+            "screen_equity": "B-"
+          },
+          "sample_size": 31,
+          "platform": "hulu"
+        }
+      ],
+      "industry": {
+        "diversity": 0.703,
+        "parity": 0.76,
+        "dialogue_equity": 0.749,
+        "screen_equity": 0.768,
+        "overall": 0.745,
+        "grade": "B-",
+        "grades": {
+          "diversity": "B-",
+          "parity": "B",
+          "dialogue_equity": "B-",
+          "screen_equity": "B"
+        },
+        "sample_size": 200,
+        "platform": "industry"
+      }
+    }
+  },
+  "insights": [
+    {
+      "category": "trend",
+      "title": "Gender parity over time",
+      "detail": "Gender parity has declined by 0.27 points between 2015 and 2026."
+    },
+    {
+      "category": "platform",
+      "title": "Platform diversity gap",
+      "detail": "Disney Plus leads on diversity (0.82) while Amazon Prime trails (0.64)."
+    },
+    {
+      "category": "genre",
+      "title": "Genre lead-role skew",
+      "detail": "Action has the highest male lead share at 75% of lead roles."
+    },
+    {
+      "category": "dialogue",
+      "title": "Dialogue gap by genre",
+      "detail": "In drama, female characters average 39% fewer dialogue words than male characters."
+    },
+    {
+      "category": "platform-media",
+      "title": "Format-specific imbalance",
+      "detail": "Amazon Prime is weakest in animation where gender parity is 0.00 and the sample still points to action dominance."
+    },
+    {
+      "category": "intersectional",
+      "title": "Intersectional representation",
+      "detail": "Women of color hold 15% of lead roles across the dataset."
+    },
+    {
+      "category": "network",
+      "title": "Interaction homophily",
+      "detail": "Gender homophily in interaction networks is 0.56 (positive values mean characters interact mostly within their own group)."
+    }
+  ]
 }

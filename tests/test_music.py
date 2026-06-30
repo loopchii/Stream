@@ -154,8 +154,11 @@ class TestPipeline:
         assert b["gender"]["counts"]["female"] > 0
         assert b["gender"]["counts"]["male"] > 0
         assert b["genres"]["gini"] >= 0.0
+        assert len(b["genre_breakdown"]) > 0
         assert b["collaboration"]["collab_count"] >= 0
         assert b["concentration"]["top5_share"] > 0
+        assert "years" in b["publication_timeline"]
+        assert {'artist', 'consumer', 'business', 'research'} <= set(b["role_perspectives"])
         assert b["overall_grade"]
 
     def test_archetypes_have_followers(self, df):
@@ -238,7 +241,22 @@ class TestMusicAPI:
         d = res.json()
         assert "gender" in d
         assert "genres" in d
+        assert "genre_breakdown" in d
+        assert "publication_timeline" in d
         assert "overall_grade" in d
+
+    def test_genres(self, client):
+        res = client.get("/api/music/genres")
+        assert res.status_code == 200
+        rows = res.json()
+        assert len(rows) > 0
+        assert {"genre", "song_count", "view_share", "avg_views", "avg_duration_min", "collab_share"} <= set(rows[0])
+
+    def test_timeline(self, client):
+        res = client.get("/api/music/timeline")
+        assert res.status_code == 200
+        body = res.json()
+        assert "years" in body
 
     def test_refresh_no_key(self, client):
         res = client.post("/api/music/refresh")

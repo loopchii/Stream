@@ -167,6 +167,12 @@ def media_types():
     return cache.results().get("media_type_analysis", [])
 
 
+@app.get("/api/metrics/platform-media")
+def platform_media_types():
+    """Per-platform media-type breakdown (film vs series vs docs, etc.)."""
+    return cache.results().get("platform_media_analysis", [])
+
+
 @app.get("/api/metrics/network")
 def network():
     return cache.results()["network_metrics"]
@@ -491,6 +497,18 @@ def music_status():
 def music_bias():
     """Gender, genre, collaboration, and concentration bias metrics."""
     return music_cache.report()["bias"]
+
+
+@app.get("/api/music/genres")
+def music_genres():
+    """Per-genre breakdown with view share, duration, and collaboration mix."""
+    return music_cache.report()["bias"].get("genre_breakdown", [])
+
+
+@app.get("/api/music/timeline")
+def music_timeline():
+    """Upload/publication time series from the public supplemental datasets."""
+    return music_cache.report()["bias"].get("publication_timeline", {})
 
 
 @app.post("/api/music/refresh")

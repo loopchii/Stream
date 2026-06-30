@@ -1041,17 +1041,32 @@
         .chip.active { background: var(--primary-accent); color: #fff; }
 
         .bias-card {
-            background: var(--primary-surface);
+            position: relative;
+            overflow: hidden;
+            background: linear-gradient(160deg, rgba(255,255,255,0.92), rgba(244,246,255,0.88));
             border-radius: 16px;
             padding: 1.25rem;
-            border-top: 3px solid var(--primary-secondary);
-            transition: transform 0.25s ease, box-shadow 0.25s ease;
+            border: 1px solid rgba(85,102,246,0.12);
+            border-top: 3px solid var(--accent, var(--primary-secondary));
+            transition: transform 0.25s ease, box-shadow 0.25s ease, border-color 0.25s ease;
             animation: fadeIn 0.5s ease both;
         }
 
-        .bias-card:hover { transform: translateY(-5px) rotate(-0.3deg); box-shadow: 0 16px 30px rgba(108, 92, 231, 0.2); }
-        .bias-card .cat { font-size: 0.72rem; text-transform: uppercase; letter-spacing: 1.5px; color: var(--primary-secondary); font-weight: 700; }
-        .bias-card h4 { color: var(--primary-accent); margin: 0.3rem 0 0.5rem; }
+        .bias-card::after {
+            content: '';
+            position: absolute;
+            inset: auto -30px -30px auto;
+            width: 140px;
+            height: 140px;
+            border-radius: 50%;
+            background: radial-gradient(circle, var(--accent-soft, rgba(85,102,246,0.18)) 0%, rgba(85,102,246,0) 70%);
+            pointer-events: none;
+        }
+
+        .bias-card:hover { transform: translateY(-5px) rotate(-0.3deg); box-shadow: 0 16px 30px rgba(108, 92, 231, 0.2); border-color: rgba(85,102,246,0.24); }
+        .bias-card .cat { display: inline-flex; align-items: center; gap: 0.35rem; font-size: 0.72rem; text-transform: uppercase; letter-spacing: 1.5px; color: var(--accent, var(--primary-secondary)); font-weight: 700; background: var(--accent-soft, rgba(85,102,246,0.08)); padding: 0.22rem 0.55rem; border-radius: 999px; }
+        .bias-card h4 { color: var(--ink); margin: 0.6rem 0 0.5rem; }
+        .bias-card .meta { color: var(--accent, var(--primary-secondary)); font-size: 0.78rem; font-weight: 700; margin-bottom: 0.35rem; }
         .bias-card p { color: var(--primary-text-dim); font-size: 0.9rem; line-height: 1.6; margin-bottom: 0.4rem; }
         .bias-card .why { border-left: 3px solid var(--primary-tertiary); padding-left: 0.6rem; font-style: italic; }
         .bias-card .measured { display: inline-block; margin-top: 0.4rem; font-size: 0.75rem; font-weight: 700; color: #1b9e77; }
@@ -1418,6 +1433,7 @@
             if (path === '/api/metrics/overview') return load('n' + state.n + '/overview.json').then(J);
             if (path === '/api/metrics/genres') return load('n' + state.n + '/genres.json').then(J);
             if (path === '/api/metrics/media') return load('n' + state.n + '/media.json').then(J);
+            if (path === '/api/metrics/platform-media') return load('n' + state.n + '/platform-media.json').then(J);
             if (path === '/api/metrics/bias') return load('n' + state.n + '/bias.json').then(J);
             if (path === '/api/insights') return load('n' + state.n + '/insights.json').then(J);
             if (path === '/api/metrics/intersectionality') return load('n' + state.n + '/intersectionality.json').then(J);
@@ -1470,6 +1486,8 @@
             if (path === '/api/music/predictability') return load('music/predictability.json').then(J);
             if (path === '/api/music/status') return load('music/status.json').then(J);
             if (path === '/api/music/bias') return load('music/bias.json').then(J);
+            if (path === '/api/music/genres') return load('music/genres.json').then(J);
+            if (path === '/api/music/timeline') return load('music/timeline.json').then(J);
             if (path === '/api/music/songs') {
                 return load('music/songs.json').then(function (rows) {
                     var key = qs.sort_by || 'view_count';
@@ -1645,6 +1663,41 @@
         .mv-bias-grade .grade-letter { font-family: 'Fraunces', serif; font-size: 3.6rem; font-weight: 600; line-height: 1; background: linear-gradient(135deg, var(--indigo), var(--teal)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
         .mv-bias-grade .grade-label { font-size: 1.05rem; font-weight: 600; color: var(--ink); margin-top: 0.3rem; }
         .mv-bias-grade .grade-sub { font-size: 0.82rem; color: var(--ink-dim); margin-top: 0.3rem; max-width: 28rem; margin-left: auto; margin-right: auto; }
+        .mv-role-shell { display: grid; gap: 0.9rem; }
+        .mv-role-headline { font-size: 0.92rem; color: var(--ink-dim); line-height: 1.55; max-width: 58rem; }
+        .mv-role-switch { display: inline-flex; flex-wrap: wrap; gap: 0.4rem; padding: 0.25rem; border-radius: 999px; background: rgba(85,102,246,0.07); }
+        .mv-role-switch button { border: none; background: transparent; color: var(--ink-dim); padding: 0.48rem 0.95rem; border-radius: 999px; font-size: 0.82rem; font-weight: 700; cursor: pointer; transition: all 0.2s ease; }
+        .mv-role-switch button.active { background: linear-gradient(135deg, var(--indigo), var(--teal)); color: #fff; box-shadow: 0 8px 18px rgba(85,102,246,0.22); }
+        .mv-role-card {
+            position: relative;
+            overflow: hidden;
+            border-radius: 20px;
+            padding: 1.2rem 1.25rem;
+            border: 1px solid rgba(85,102,246,0.12);
+            background: linear-gradient(150deg, rgba(255,255,255,0.94), rgba(244,246,255,0.8));
+        }
+        .mv-role-card::after {
+            content: '';
+            position: absolute;
+            inset: auto -50px -45px auto;
+            width: 180px;
+            height: 180px;
+            border-radius: 50%;
+            background: radial-gradient(circle, rgba(85,102,246,0.16), rgba(85,102,246,0) 72%);
+            pointer-events: none;
+        }
+        .mv-role-kicker { font-size: 0.72rem; text-transform: uppercase; letter-spacing: 1.8px; color: var(--indigo); font-weight: 800; margin-bottom: 0.35rem; }
+        .mv-role-card h4 { font-size: 1.05rem; margin: 0 0 0.35rem; color: var(--ink); }
+        .mv-role-card p { font-size: 0.92rem; line-height: 1.7; color: var(--ink-dim); margin: 0.25rem 0 0.75rem; }
+        .mv-role-signals { display: flex; flex-wrap: wrap; gap: 0.55rem; margin-top: 0.75rem; }
+        .mv-role-signal {
+            display: inline-flex; flex-direction: column; gap: 0.14rem;
+            min-width: 8.2rem; padding: 0.65rem 0.75rem;
+            border-radius: 14px; background: rgba(85,102,246,0.07); border: 1px solid rgba(85,102,246,0.12);
+        }
+        .mv-role-signal .k { font-size: 0.7rem; text-transform: uppercase; letter-spacing: 1.3px; color: var(--ink-dim); font-weight: 700; }
+        .mv-role-signal .v { font-size: 1rem; font-weight: 800; color: var(--ink); }
+        .mv-role-takeaway { margin-top: 0.85rem; padding-left: 0.8rem; border-left: 3px solid var(--teal); color: var(--ink-dim); font-size: 0.9rem; line-height: 1.6; }
         .mv-chip { display: inline-flex; align-items: center; gap: 0.35rem; font-size: 0.78rem; padding: 0.2rem 0.6rem; border-radius: 8px; background: rgba(85,102,246,0.08); color: var(--ink); margin: 0.15rem; }
         .mv-chip .sw { width: 10px; height: 10px; border-radius: 50%; display: inline-block; }
         .mv-refresh { display: flex; align-items: center; gap: 0.8rem; flex-wrap: wrap; margin-top: 1rem; font-size: 0.85rem; color: var(--ink-dim); }
@@ -2625,6 +2678,20 @@
                         </tbody>
                     </table>
                 </div>
+                <div class="viz-explanation" style="margin-top:1.2rem;">
+                    <h4>Platform × Media Type</h4>
+                    <p>Each streaming platform gets its own breakdown, so film, series, docuseries, animation, reality, and talk-show patterns can be compared side by side. This is the cleaner way to read whether a problem is platform-wide or format-specific.</p>
+                </div>
+                <div class="data-table-wrap">
+                    <table class="data-table">
+                        <thead>
+                            <tr><th>Platform</th><th>Media Type</th><th>Diversity</th><th>Gender Parity</th><th>Avg Screen Time</th><th>Avg Sentiment</th><th>Lead Share</th><th>Sample</th></tr>
+                        </thead>
+                        <tbody id="platformMediaTableBody">
+                            <tr><td colspan="8">Loading…</td></tr>
+                        </tbody>
+                    </table>
+                </div>
             </div>
 
             <div class="viz-section">
@@ -2966,12 +3033,33 @@
             <!-- VIII. Bias Analysis -->
             <div class="mv-movement" id="mvBias">
                 <div class="mv-mhead"><span class="mv-mnum">08</span><h3>Bias in the Top 100</h3></div>
-                <p class="mv-lead">Who gets to dominate the charts? We measure gender representation, genre gatekeeping, collaboration patterns, language dominance, engagement disparities, and how attention concentrates &mdash; across <strong id="mvBiasTotalSongs">636</strong> real songs from 3 datasets. The point is not to moralize the chart; it is to show where the pressure comes from and which variables explain it best.</p>
+                <p class="mv-lead">Who gets to dominate the charts? We measure gender representation, genre gatekeeping, collaboration patterns, language dominance, engagement disparities, and how attention concentrates &mdash; across <strong id="mvBiasTotalSongs">636</strong> real songs from 3 public datasets. The point is not to moralize the chart; it is to show where the pressure comes from, which genre families dominate, and which variables explain the shape of the chart best.</p>
                 <div class="mv-panel">
                     <div class="mv-bias-grade" id="mvBiasGrade">
                         <div class="grade-letter" id="mvBiasGradeLetter">&mdash;</div>
                         <div class="grade-label">Overall Equity Grade</div>
                         <div class="grade-sub" id="mvBiasGradeSub">Compositing gender parity, views parity, genre diversity, and concentration</div>
+                    </div>
+                </div>
+                <div class="mv-panel" style="margin-top:1rem;">
+                    <div class="mv-role-shell">
+                        <div class="mv-mhead" style="margin-bottom:0;">
+                            <span class="mv-mnum">L</span><h3 style="font-size:1.05rem;">Role Lens</h3>
+                        </div>
+                        <p class="mv-role-headline">The same chart means something different depending on who is reading it. An artist wants a release strategy. A buyer wants repeatability. A consumer wants discovery. A researcher wants proof. Click a lens to change the framing without changing the facts.</p>
+                        <div class="mv-role-switch" id="mvRoleSwitch">
+                            <button class="active" data-role="artist" onclick="MusicViz.setRole('artist', this)">Artist</button>
+                            <button data-role="consumer" onclick="MusicViz.setRole('consumer', this)">Consumer</button>
+                            <button data-role="business" onclick="MusicViz.setRole('business', this)">Business</button>
+                            <button data-role="research" onclick="MusicViz.setRole('research', this)">Research</button>
+                        </div>
+                        <div class="mv-role-card" id="mvRoleCard">
+                            <div class="mv-role-kicker" id="mvRoleKicker">Artist lens</div>
+                            <h4 id="mvRoleTitle">How does a creator use this?</h4>
+                            <p id="mvRoleSummary">Loading role lens…</p>
+                            <div class="mv-role-signals" id="mvRoleSignals"></div>
+                            <div class="mv-role-takeaway" id="mvRoleTakeaway"></div>
+                        </div>
                     </div>
                 </div>
                 <div class="mv-grid-2" style="margin-top:1.2rem;">
@@ -2989,6 +3077,22 @@
                 <div class="mv-grid-2" style="margin-top:1rem;">
                     <div class="mv-panel"><div class="mv-chart" id="mvEngagementChart" style="min-height:260px;"></div></div>
                     <div class="mv-panel"><div class="mv-chart" id="mvCountryChart" style="min-height:260px;"></div></div>
+                </div>
+                <div class="mv-grid-2" style="margin-top:1rem;">
+                    <div class="mv-panel"><div class="mv-chart" id="mvTimelineChart" style="min-height:260px;"></div></div>
+                    <div class="mv-panel">
+                        <div class="mv-mhead" style="margin-bottom:0.8rem;"><span class="mv-mnum">G</span><h3 style="font-size:1.05rem;">Genre Breakdown</h3></div>
+                        <div class="mv-tablewrap" style="max-height:260px; overflow-y:auto;">
+                            <table class="mv-table">
+                                <thead><tr>
+                                    <th>Genre</th><th>Songs</th><th>View Share</th><th>Avg Views</th><th>Avg Dur.</th><th>Collab Share</th>
+                                </tr></thead>
+                                <tbody id="mvGenreBreakdownBody">
+                                    <tr><td colspan="6">Loading…</td></tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
                 </div>
                 <div class="mv-grid-2" style="margin-top:1rem;">
                     <div class="mv-panel">
@@ -3161,6 +3265,7 @@
                 this.loadExploreData();
                 this.loadGenreTable();
                 this.loadMediaTable();
+                this.loadPlatformMediaTable();
                 this.loadBiasTable();
                 this.loadInsightsTab();
                 this.loadLearnTab();
@@ -3206,19 +3311,33 @@
                 const grid = document.getElementById('biasGrid');
                 const count = document.getElementById('biasCount');
                 const { items, category, query } = this.biasState;
+                const tones = {
+                    gender: { accent: '#f0779f', soft: 'rgba(240,119,159,0.12)', note: 'people · casting · voice' },
+                    race: { accent: '#7c3aed', soft: 'rgba(124,58,237,0.12)', note: 'identity · access · framing' },
+                    age: { accent: '#f4a259', soft: 'rgba(244,162,89,0.14)', note: 'generations · visibility · power' },
+                    language: { accent: '#0fb6a8', soft: 'rgba(15,182,168,0.12)', note: 'culture · audience · translation' },
+                    body: { accent: '#5566f6', soft: 'rgba(85,102,246,0.12)', note: 'representation · norming · exposure' },
+                    disability: { accent: '#16a34a', soft: 'rgba(22,163,74,0.12)', note: 'access · friction · design' },
+                    intersectionality: { accent: '#8b5cf6', soft: 'rgba(139,92,246,0.12)', note: 'combined identity · compounding gaps' },
+                    other: { accent: '#64748b', soft: 'rgba(100,116,139,0.12)', note: 'structural pressure · signal hygiene' }
+                };
                 const filtered = items.filter(b =>
                     (!category || b.category === category) &&
                     (!query || (b.name + ' ' + b.definition + ' ' + b.example + ' ' + b.why_it_matters)
                         .toLowerCase().includes(query)));
                 if (count) count.textContent = `${filtered.length} of ${items.length} bias types shown`;
-                grid.innerHTML = filtered.map((b, i) => `<div class="bias-card" style="animation-delay:${Math.min(i * 0.03, 0.6)}s">
+                grid.innerHTML = filtered.map((b, i) => {
+                    const tone = tones[b.category] || tones.other;
+                    return `<div class="bias-card" style="--accent:${tone.accent};--accent-soft:${tone.soft};animation-delay:${Math.min(i * 0.03, 0.6)}s">
                     <span class="cat">${b.category}</span>
+                    <div class="meta">${tone.note}</div>
                     <h4>${b.name}</h4>
                     <p>${b.definition}</p>
                     <p><em>Example:</em> ${b.example}</p>
                     <p class="why">Why it matters: ${b.why_it_matters}</p>
                     ${b.measured_here ? '<span class="measured">● Measured live by Stream</span>' : ''}
-                </div>`).join('') || '<div class="bias-card"><p>No bias types match your search.</p></div>';
+                </div>`;
+                }).join('') || '<div class="bias-card"><p>No bias types match your search.</p></div>';
             },
 
             updateSliderReadout() {
@@ -3306,6 +3425,7 @@
                     this.loadExploreData();
                     this.loadGenreTable();
                     this.loadMediaTable();
+                    this.loadPlatformMediaTable();
                     this.loadBiasTable();
                     this.loadInsightsTab();
                 } catch (e) {
@@ -3438,6 +3558,32 @@
                     </tr>`).join('');
                 } catch (e) {
                     body.innerHTML = '<tr><td colspan="5">Live data requires the API server — run <code>python app.py</code>.</td></tr>';
+                }
+            },
+
+            async loadPlatformMediaTable() {
+                const body = document.getElementById('platformMediaTableBody');
+                if (!body) return;
+                try {
+                    const res = await fetch('/api/metrics/platform-media');
+                    if (!res.ok) throw new Error();
+                    const rows = await res.json();
+                    if (!rows.length) throw new Error();
+                    body.innerHTML = rows
+                        .slice()
+                        .sort((a, b) => (b.sample_size || 0) - (a.sample_size || 0))
+                        .map(m => `<tr>
+                            <td>${m.platform.replace('_', ' ')}</td>
+                            <td>${m.media_type.replace('_', ' ')}</td>
+                            <td>${m.diversity.toFixed(3)}</td>
+                            <td>${m.gender_parity.toFixed(3)}</td>
+                            <td>${m.avg_screen_time.toFixed(1)} min</td>
+                            <td>${m.avg_sentiment.toFixed(2)}</td>
+                            <td>${(m.lead_share * 100).toFixed(0)}%</td>
+                            <td>${m.sample_size.toLocaleString()}</td>
+                        </tr>`).join('');
+                } catch (e) {
+                    body.innerHTML = '<tr><td colspan="8">Live data requires the API server — run <code>python app.py</code>.</td></tr>';
                 }
             },
 
@@ -4434,10 +4580,17 @@
             _sortCol: 'view_count',
             _sortAsc: false,
             _official: 1,
+            _role: 'artist',
             _wiDebounce: null,
             _echartsInstances: [],
             _ARCH_COLORS: ['#5566f6','#0fb6a8','#f4a259','#f0779f','#7c3aed'],
             _COMM_COLORS: ['#5566f6','#0fb6a8','#f4a259','#f0779f','#7c3aed','#16a34a','#ef4444','#eab308'],
+            _ROLE_THEMES: {
+                artist: { accent: '#f0779f', soft: 'rgba(240,119,159,0.12)', title: 'How does a creator use this?' },
+                consumer: { accent: '#0fb6a8', soft: 'rgba(15,182,168,0.12)', title: 'What helps discovery feel real?' },
+                business: { accent: '#5566f6', soft: 'rgba(85,102,246,0.12)', title: 'What would a buyer care about?' },
+                research: { accent: '#7c3aed', soft: 'rgba(124,58,237,0.12)', title: 'What survives scrutiny?' }
+            },
 
             fmt(n) {
                 if (n >= 1e9) return (n/1e9).toFixed(2) + 'B';
@@ -4810,6 +4963,7 @@
             renderBias() {
                 const b = this._data.bias;
                 if (!b) return;
+                this._role = this._role || 'artist';
                 // Grade
                 document.getElementById('mvBiasGradeLetter').textContent = b.overall_grade;
                 document.getElementById('mvBiasParity').textContent = b.bias_scores.gender_parity;
@@ -4817,6 +4971,7 @@
                 document.getElementById('mvBiasGenreDiv').textContent = b.bias_scores.genre_diversity;
                 document.getElementById('mvBiasTop5').textContent = Math.round(b.concentration.top5_share * 100) + '%';
                 document.getElementById('mvBiasTakeaway').innerHTML = '<b>Takeaway:</b> ' + b.interpretation;
+                this.renderRoleLens();
                 // Gender donut (ECharts)
                 const genderEl = document.getElementById('mvGenderChart');
                 const genderEc = echarts.init(genderEl);
@@ -4957,6 +5112,45 @@
                         animation: true, animationDuration: 900
                     });
                 }
+                if (b.publication_timeline && b.publication_timeline.years && b.publication_timeline.years.length) {
+                    var tlEl = document.getElementById('mvTimelineChart');
+                    var tlEc = echarts.init(tlEl);
+                    this._echartsInstances.push(tlEc);
+                    var tl = b.publication_timeline;
+                    tlEc.setOption({
+                        title: { text: 'Publication Timeline', left: 'center', top: 8, textStyle: { fontSize: 13, fontWeight: 600, fontFamily: 'Inter' } },
+                        tooltip: { trigger: 'axis' },
+                        legend: { top: 30, data: ['Songs', 'Avg Views'], textStyle: { fontSize: 11 } },
+                        grid: { left: 65, right: 45, top: 70, bottom: 35 },
+                        xAxis: { type: 'category', data: tl.years.map(function(y) { return String(y); }), axisLabel: { fontSize: 10 } },
+                        yAxis: [
+                            { type: 'value', name: 'Songs', splitLine: { lineStyle: { color: 'rgba(40,46,86,0.06)' } } },
+                            { type: 'value', name: 'Avg views', axisLabel: { formatter: function(v) { return MusicViz.fmt(v); } }, splitLine: { show: false } }
+                        ],
+                        series: [
+                            {
+                                name: 'Songs',
+                                type: 'bar',
+                                data: tl.song_counts,
+                                itemStyle: { color: new echarts.graphic.LinearGradient(0,0,0,1,[{offset:0,color:'#5566f6'},{offset:1,color:'#9aa7ff'}]), borderRadius: [6,6,0,0] },
+                                barWidth: 22
+                            },
+                            {
+                                name: 'Avg Views',
+                                type: 'line',
+                                yAxisIndex: 1,
+                                smooth: true,
+                                data: tl.avg_views,
+                                symbol: 'circle',
+                                symbolSize: 8,
+                                lineStyle: { width: 3, color: '#f0779f' },
+                                itemStyle: { color: '#f0779f' },
+                                areaStyle: { color: 'rgba(240,119,159,0.12)' }
+                            }
+                        ],
+                        animation: true, animationDuration: 900
+                    });
+                }
                 // Extra metrics
                 if (b.language_bias) {
                     var engShareEl = document.getElementById('mvBiasEngShare');
@@ -4972,6 +5166,61 @@
                         var srcNames = { primary_top100: 'Top 100 (2025)', most_viewed_2026: 'Most Viewed (2026)', youtube_music_data: 'YouTube Music Data' };
                         srcEl.innerHTML = Object.entries(b.enriched_stats.sources).map(function(e) { return (srcNames[e[0]] || e[0]) + ': ' + e[1] + ' songs'; }).join('<br>');
                     }
+                }
+                if (b.genre_breakdown) {
+                    var genreBody = document.getElementById('mvGenreBreakdownBody');
+                    if (genreBody) {
+                        var breakdown = b.genre_breakdown.slice().sort(function(a, b) {
+                            return (b.view_share || 0) - (a.view_share || 0);
+                        });
+                        genreBody.innerHTML = breakdown.map(function(row) {
+                            return '<tr>' +
+                                '<td>' + row.genre + '</td>' +
+                                '<td>' + row.song_count.toLocaleString() + '</td>' +
+                                '<td>' + (row.view_share * 100).toFixed(1) + '%</td>' +
+                                '<td>' + MusicViz.fmt(row.avg_views) + '</td>' +
+                                '<td>' + row.avg_duration_min.toFixed(2) + ' min</td>' +
+                                '<td>' + (row.collab_share * 100).toFixed(0) + '%</td>' +
+                            '</tr>';
+                        }).join('');
+                    }
+                }
+            },
+
+            setRole(role, button) {
+                this._role = role;
+                document.querySelectorAll('#mvRoleSwitch button').forEach(b => b.classList.remove('active'));
+                if (button) button.classList.add('active');
+                this.renderRoleLens();
+            },
+
+            renderRoleLens() {
+                const b = this._data.bias;
+                if (!b || !b.role_perspectives) return;
+                const role = this._role || 'artist';
+                const theme = this._ROLE_THEMES[role] || this._ROLE_THEMES.artist;
+                const lens = b.role_perspectives[role] || b.role_perspectives.artist;
+                const card = document.getElementById('mvRoleCard');
+                if (card) {
+                    card.style.borderColor = theme.accent;
+                    card.style.background = 'linear-gradient(150deg, rgba(255,255,255,0.96), ' + theme.soft.replace('0.12', '0.06') + ')';
+                }
+                const kicker = document.getElementById('mvRoleKicker');
+                const title = document.getElementById('mvRoleTitle');
+                const summary = document.getElementById('mvRoleSummary');
+                const takeaway = document.getElementById('mvRoleTakeaway');
+                const signals = document.getElementById('mvRoleSignals');
+                if (kicker) kicker.textContent = theme.title;
+                if (title) title.textContent = lens.title || theme.title;
+                if (summary) summary.textContent = lens.summary || '';
+                if (takeaway) takeaway.textContent = lens.takeaway || '';
+                if (signals) {
+                    signals.innerHTML = (lens.signals || []).map(function(s) {
+                        return '<div class="mv-role-signal" style="background:' + theme.soft + '; border-color:' + theme.accent + '22;">' +
+                            '<span class="k">' + s.label + '</span>' +
+                            '<span class="v">' + s.value + '</span>' +
+                        '</div>';
+                    }).join('');
                 }
             },
 

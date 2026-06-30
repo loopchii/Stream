@@ -26,7 +26,7 @@
 
 > **Why this exists:** public research should be sharp, honest, and easy to verify. This repository keeps the method visible, the data boundary explicit, and the public story separate from any proprietary Loopchii internals.
 
-Stream is a Loopchii public research surface for media bias, representation, and attention analysis. It uses information theory, statistical testing, network analysis, and clearly bounded synthetic data to show how cultural pattern analysis can be made inspectable instead of rhetorical. The purpose of this repository is to publish methods, visual reasoning, and reproducible outputs while keeping proprietary runtime systems elsewhere in the Loopchii ecosystem.
+Stream is a Loopchii public research surface for media bias, representation, and attention analysis. It uses information theory, statistical testing, network analysis, and clearly bounded synthetic data to show how cultural pattern analysis can be made inspectable instead of rhetorical. The purpose of this repository is to publish methods, visual reasoning, and reproducible outputs while keeping proprietary runtime systems elsewhere in the Loopchii ecosystem. Platform analysis now separates film, series, docuseries, animation, reality, talk shows, and related formats by platform so the public surface can distinguish format-specific effects from broader platform effects.
 
 ## Start Here
 
@@ -81,11 +81,11 @@ Pick the quickest route in:
 
 ## What This Actually Does
 
-Stream models representation across streaming media from 2015 to 2026. Instead of stopping at demographic counts, it computes measurable signals: dialogue distribution, character-network clustering, role typecasting, screen-time and sentiment gaps, intersectional representation ratios, and temporal drift.
+Stream models representation across streaming media from 2015 to 2026. Instead of stopping at demographic counts, it computes measurable signals: dialogue distribution, character-network clustering, role typecasting, screen-time and sentiment gaps, intersectional representation ratios, platform-by-media differences, and temporal drift.
 
 **Honesty note:** the base entertainment dataset is synthetic — generated with a fixed random seed (`np.random.seed(42)`) and shaped to mirror patterns reported in media-representation research. It is good for learning, testing, and explaining the methods. It is not a claim about real catalogues or real studios.
 
-The interactive dashboard lets you inspect those patterns across seven tabs — Dashboard, Explore Data, Insights, Bias Library, Learn, Verdict, and **Music Virality** — with filtering by platform, genre, media type, and year.
+The interactive dashboard lets you inspect those patterns across seven tabs — Dashboard, Explore Data, Insights, Bias Library, Learn, Verdict, and **Music Virality** — with filtering by platform, genre, media type, and year. The music tab now adds role lenses for artists, consumers, business teams, and researchers so the same evidence can be framed for different readers without changing the underlying numbers.
 
 ## What This Repo Is Not
 
@@ -142,7 +142,7 @@ The newest module goes beyond synthetic data entirely. It analyses the **100 mos
 | **Tag co-occurrence network** | NetworkX graph of shared tags, greedy-modularity communities, density | Movement 05 — D3 force-directed graph |
 | **Predictability** | RandomForest + GradientBoosting ensemble, 5-fold cross-validated R² | Movement 06 — skill-vs-luck gauge + importances |
 | **What-If virality predictor** | Trained model maps hypothetical (duration, subscribers, tags, official) → percentile | Movement 07 — slider controls + grade gauge |
-| **Bias analysis** | Gender parity, genre concentration (Gini), collaboration patterns, duration bias, attention concentration | Movement 08 — equity grade + 6 charts |
+| **Bias analysis** | Gender parity, genre concentration (Gini), collaboration patterns, duration bias, attention concentration, per-genre breakdowns, and a publication timeline drawn from public upload dates | Movement 08 — equity grade + 7 charts + genre table |
 | **3D virality landscape** | Plotly 3D scatter of views × virality × subscribers, coloured by archetype cluster | Movement 09 — interactive 3D orbit |
 | **Real songs explorer** | Sortable, searchable table of all 100 tracks with computed features | Movement 10 — sortable table |
 
@@ -289,6 +289,7 @@ python streamlens_processor.py
 | `/api/metrics/bias` | GET | Bias detection: dialogue, age, racial dialogue, sentiment, screen time |
 | `/api/metrics/genres` | GET | Per-genre diversity, parity, lead share, dialogue gap |
 | `/api/metrics/media` | GET | Per-media-type (series, film, docuseries, animation…) metrics |
+| `/api/metrics/platform-media` | GET | Per-platform media-type breakdown (format-specific analysis) |
 | `/api/metrics/network` | GET | Interaction network homophily and density |
 | `/api/metrics/intersectionality` | GET | Most under/over-represented intersectional groups |
 | `/api/insights` | GET | Narrative findings generated from the data |
@@ -315,6 +316,8 @@ python streamlens_processor.py
 | `/api/music/songs` | GET | Real songs table (sortable, `?limit=` `?sort_by=`) |
 | `/api/music/simulate` | GET | What-If virality predictor (`?duration_min=` `?channel_follower_count=` `?tag_count=`) |
 | `/api/music/bias` | GET | Gender, genre, collaboration, duration, and concentration bias metrics |
+| `/api/music/genres` | GET | Per-genre breakdown with view share, duration, collaboration mix, and top track |
+| `/api/music/timeline` | GET | Publication timeline built from public upload dates and views |
 | `/api/music/status` | GET | Whether a YouTube API key is configured for live data |
 | `/api/music/refresh` | POST | Pull fresh data from YouTube Data API v3 (needs key) |
 
@@ -465,7 +468,7 @@ Stream/
 ├── media_liability_lab.py        # Public media-platform risk research harness
 ├── streamlens_processor.py       # Main processing pipeline
 ├── bias_library.py               # 57 documented bias types served at /api/bias-library
-├── music_pipeline.py             # Real-data music virality analysis (power-law, Gini, clustering, RF)
+├── music_pipeline.py             # Real-data music virality analysis (power-law, Gini, clustering, RF, role lenses)
 ├── music_ingest.py               # YouTube Data API v3 live extraction (key-optional)
 ├── data_sources/                 # Real CSV data (youtube-top-100-songs-2025.csv)
 ├── StreamLen_processors.ipynb    # Jupyter notebook with full analysis

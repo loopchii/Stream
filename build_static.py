@@ -47,6 +47,7 @@ def build_data() -> None:
         write_json(out / "overview.json", backend.overview())
         write_json(out / "genres.json", backend.genres())
         write_json(out / "media.json", backend.media_types())
+        write_json(out / "platform-media.json", backend.results().get("platform_media_analysis", []))
         write_json(out / "bias.json", backend.bias())
         write_json(out / "insights.json", backend.insights())
         write_json(out / "intersectionality.json", backend.intersectionality(limit=8))
@@ -77,6 +78,8 @@ def build_music() -> None:
     write_json(out / "predictability.json", report["predictability"])
     write_json(out / "songs.json", report["songs"])
     write_json(out / "bias.json", report["bias"])
+    write_json(out / "genres.json", report["bias"].get("genre_breakdown", []))
+    write_json(out / "timeline.json", report["bias"].get("publication_timeline", {}))
     write_json(out / "status.json", {"live_available": False, "source": "bundled_csv",
                                      "note": "Static build - committed real dataset."})
     write_json(out / "simulate.json", music_pipeline.simulate_grid())

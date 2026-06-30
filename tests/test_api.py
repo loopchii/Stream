@@ -73,6 +73,14 @@ def test_media_types(client):
     assert {'media_type', 'diversity', 'gender_parity', 'avg_sentiment', 'sample_size'} <= set(rows[0])
 
 
+def test_platform_media_types(client):
+    res = client.get('/api/metrics/platform-media')
+    assert res.status_code == 200
+    rows = res.json()
+    assert len(rows) > 0
+    assert {'platform', 'media_type', 'diversity', 'gender_parity', 'avg_screen_time', 'avg_sentiment', 'lead_share', 'sample_size'} <= set(rows[0])
+
+
 def test_characters_media_type_filter(client):
     res = client.get('/api/characters', params={'media_type': 'film', 'limit': 10})
     assert res.status_code == 200
