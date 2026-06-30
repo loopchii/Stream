@@ -1363,6 +1363,167 @@ def bias_analysis(df: Optional[pd.DataFrame] = None) -> Dict[str, object]:
     }
 
 
+def _music_tokens(value: object) -> List[str]:
+    if value is None:
+        return []
+    tokens = re.findall(r"[A-Za-z0-9']+", str(value).lower())
+    return [t for t in tokens if len(t) > 1]
+
+
+def resonance_analysis(df: Optional[pd.DataFrame] = None) -> Dict[str, object]:
+    """Public proxy for media "resonance" and attention oscillation.
+
+    This is intentionally grounded in observable song metadata rather than any
+    hidden hardware claim: title/tag repetition, duration fit, channel reach,
+    release timing, and concentration all leave a visible shape that we can
+    measure and render.
+    """
+    analysis_df = load_enriched_dataset().copy() if df is None else df.copy()
+    if analysis_df.empty:
+        return {
+            "scorecard": {
+                "oscillation": 0,
+                "friction": 0,
+                "stability": 0,
+                "wattage_variance_proxy": 0,
+                "halt_window_ms": 0,
+            },
+            "top_tracks": [],
+            "genre_pressure": [],
+            "year_profile": {"years": [], "oscillation": [], "friction": []},
+            "interpretation": "No songs are available for resonance analysis.",
+        }
+
+    working = analysis_df.copy()
+    if "tags" not in working.columns:
+        working["tags"] = ""
+    if "genre" not in working.columns:
+        working["genre"] = "Unknown"
+    if "published_year" not in working.columns:
+        working["published_year"] = 0
+    if "channel_follower_count" not in working.columns:
+        working["channel_follower_count"] = 0
+
+    years = pd.to_numeric(working["published_year"], errors="coerce").fillna(0).astype(int)
+    year_min = int(years[years > 0].min()) if (years > 0).any() else 0
+    year_max = int(years.max()) if len(years) else 0
+    year_span = max(year_max - year_min, 1)
+    genre_share = working["genre"].value_counts(normalize=True).to_dict() if "genre" in working.columns else {}
+
+    resonance_rows = []
+    for _, row in working.iterrows():
+        title_tokens = _music_tokens(row.get("title", ""))
+        tag_tokens = _music_tokens(row.get("tags", ""))
+        shared = len(set(title_tokens) & set(tag_tokens))
+        title_repeat = shared / max(len(set(title_tokens)), 1)
+        duration = float(row.get("duration_min", 0.0) or 0.0)
+        duration_fit = float(np.exp(-((duration - 3.25) / 1.15) ** 2))
+        attention_fit = float(min(np.log1p(max(float(row.get("view_count", 0.0) or 0.0), 0.0)) / 24.0, 1.0))
+        reach_fit = float(min(np.log1p(max(float(row.get("channel_follower_count", 0.0) or 0.0), 0.0)) / 20.0, 1.0))
+        genre = str(row.get("genre", "Unknown"))
+        genre_pressure = float(genre_share.get(genre, 0.0))
+        published_year = int(row.get("published_year", 0) or 0)
+        year_fit = 0.5 if not published_year else float(np.clip((published_year - year_min) / year_span, 0.0, 1.0))
+        oscillation = float(np.clip(
+            0.30 * duration_fit +
+            0.24 * attention_fit +
+            0.20 * reach_fit +
+            0.16 * title_repeat +
+            0.10 * genre_pressure,
+            0.0, 1.0
+        ))
+        friction = float(np.clip(
+            0.32 * (1.0 - duration_fit) +
+            0.28 * genre_pressure +
+            0.20 * (1.0 - title_repeat) +
+            0.12 * (1.0 - year_fit) +
+            0.08 * (1.0 - attention_fit),
+            0.0, 1.0
+        ))
+        stability = float(np.clip(
+            1.0 - np.std([duration_fit, attention_fit, reach_fit, title_repeat]),
+            0.0, 1.0
+        ))
+        variance_proxy = float(np.std([duration_fit, attention_fit, reach_fit, title_repeat, year_fit]))
+        resonance_score = float(np.clip((oscillation * 0.55) + (friction * 0.25) + ((1.0 - stability) * 0.20), 0.0, 1.0))
+        resonance_rows.append({
+            "title": str(row.get("title", "")),
+            "channel": str(row.get("channel", "")),
+            "genre": genre,
+            "published_year": published_year,
+            "view_count": float(row.get("view_count", 0.0) or 0.0),
+            "duration_min": duration,
+            "oscillation": round(oscillation, 3),
+            "friction": round(friction, 3),
+            "stability": round(stability, 3),
+            "wattage_variance_proxy": round(variance_proxy, 3),
+            "resonance_score": round(resonance_score, 3),
+            "signals": [
+                f"duration fit {duration_fit:.2f}",
+                f"attention fit {attention_fit:.2f}",
+                f"reach fit {reach_fit:.2f}",
+                f"title/tag echo {title_repeat:.2f}",
+            ],
+        })
+
+    resonance_rows.sort(key=lambda r: r["resonance_score"], reverse=True)
+    top_tracks = resonance_rows[:8]
+    genre_pressure = []
+    for genre, group in working.groupby("genre"):
+        local_years = pd.to_numeric(group["published_year"], errors="coerce").fillna(0).astype(int)
+        year_density = float((local_years > 0).mean()) if len(group) else 0.0
+        resonance_pressure = float(np.mean([r["resonance_score"] for r in resonance_rows if r["genre"] == genre])) if genre else 0.0
+        genre_pressure.append({
+            "genre": str(genre),
+            "song_count": int(len(group)),
+            "view_share": round(float(group["view_count"].sum()) / float(working["view_count"].sum()), 4) if float(working["view_count"].sum()) > 0 else 0.0,
+            "avg_resonance": round(resonance_pressure, 3),
+            "stability": round(max(0.0, min(1.0, year_density + 0.15 * (1.0 - resonance_pressure))), 3),
+        })
+    genre_pressure.sort(key=lambda r: r["avg_resonance"], reverse=True)
+
+    years_group = working[working["published_year"].astype(int) > 0].copy()
+    if not years_group.empty:
+        years_group["published_year"] = pd.to_numeric(years_group["published_year"], errors="coerce").fillna(0).astype(int)
+        year_stats = years_group.groupby("published_year").agg(
+            oscillation=("view_count", "mean"),
+            friction=("view_count", "median"),
+        ).reset_index().sort_values("published_year")
+        year_profile = {
+            "years": year_stats["published_year"].astype(int).tolist(),
+            "oscillation": [round(float(v), 3) for v in year_stats["oscillation"].tolist()],
+            "friction": [round(float(v), 3) for v in year_stats["friction"].tolist()],
+        }
+    else:
+        year_profile = {"years": [], "oscillation": [], "friction": []}
+
+    avg_oscillation = float(np.mean([r["oscillation"] for r in resonance_rows])) if resonance_rows else 0.0
+    avg_friction = float(np.mean([r["friction"] for r in resonance_rows])) if resonance_rows else 0.0
+    avg_stability = float(np.mean([r["stability"] for r in resonance_rows])) if resonance_rows else 0.0
+    avg_variance = float(np.mean([r["wattage_variance_proxy"] for r in resonance_rows])) if resonance_rows else 0.0
+    halt_window_ms = int(round(4 + (avg_oscillation + avg_friction) * 12))
+    strongest = top_tracks[0] if top_tracks else {}
+    interpretation = (
+        f"Resonance is highest where duration, attention, and channel reach line up without much variation. "
+        f"{strongest.get('title', 'The lead track')} is the clearest proxy for a tight oscillation loop, while "
+        f"{strongest.get('genre', 'the dominant genre')} carries the most pressure across the catalog."
+    )
+
+    return {
+        "scorecard": {
+            "oscillation": round(avg_oscillation, 3),
+            "friction": round(avg_friction, 3),
+            "stability": round(avg_stability, 3),
+            "wattage_variance_proxy": round(avg_variance, 3),
+            "halt_window_ms": halt_window_ms,
+        },
+        "top_tracks": top_tracks,
+        "genre_pressure": genre_pressure,
+        "year_profile": year_profile,
+        "interpretation": interpretation,
+    }
+
+
 # --------------------------------------------------------------------------- #
 # What-if predictor + overview
 # --------------------------------------------------------------------------- #
@@ -1538,6 +1699,7 @@ def full_report(df: Optional[pd.DataFrame] = None) -> Dict[str, object]:
         "archetypes": archetype_analysis(df),
         "network": network_analysis(),
         "predictability": predictability_analysis(df),
+        "resonance": resonance_analysis(df),
         "songs": songs_table(df, limit=100),
         "bias": bias_analysis(df),
         "feature_labels": FEATURE_LABELS,

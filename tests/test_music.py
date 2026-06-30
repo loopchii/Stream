@@ -22,6 +22,7 @@ from music_pipeline import (
     overview,
     power_law_analysis,
     predictability_analysis,
+    resonance_analysis,
     simulate_grid,
     simulate_virality,
     songs_table,
@@ -171,10 +172,19 @@ class TestPipeline:
         r = full_report(df)
         expected_keys = [
             "overview", "power_law", "inequality", "correlations",
-            "archetypes", "network", "predictability", "songs", "bias",
+            "archetypes", "network", "predictability", "resonance", "songs", "bias",
         ]
         for k in expected_keys:
             assert k in r
+
+    def test_resonance(self, df):
+        r = resonance_analysis(df)
+        assert "scorecard" in r
+        assert "top_tracks" in r
+        assert "genre_pressure" in r
+        assert "year_profile" in r
+        assert r["scorecard"]["oscillation"] >= 0.0
+        assert r["scorecard"]["stability"] >= 0.0
 
 
 # --------------------------------------------------------------------------- #
@@ -215,6 +225,13 @@ class TestMusicAPI:
         res = client.get("/api/music/predictability")
         assert res.status_code == 200
         assert "ensemble_r2" in res.json()
+
+    def test_resonance(self, client):
+        res = client.get("/api/music/resonance")
+        assert res.status_code == 200
+        body = res.json()
+        assert "scorecard" in body
+        assert "top_tracks" in body
 
     def test_songs(self, client):
         res = client.get("/api/music/songs?limit=5")

@@ -76,6 +76,7 @@ def build_music() -> None:
     write_json(out / "archetypes.json", report["archetypes"])
     write_json(out / "network.json", report["network"])
     write_json(out / "predictability.json", report["predictability"])
+    write_json(out / "resonance.json", report["resonance"])
     write_json(out / "songs.json", report["songs"])
     write_json(out / "bias.json", report["bias"])
     write_json(out / "genres.json", report["bias"].get("genre_breakdown", []))

@@ -26,7 +26,7 @@
 
 > **Why this exists:** public research should be sharp, honest, and easy to verify. This repository keeps the method visible, the data boundary explicit, and the public story separate from any proprietary Loopchii internals.
 
-Stream is a Loopchii public research surface for media bias, representation, and attention analysis. It uses information theory, statistical testing, network analysis, and clearly bounded synthetic data to show how cultural pattern analysis can be made inspectable instead of rhetorical. The purpose of this repository is to publish methods, visual reasoning, and reproducible outputs while keeping proprietary runtime systems elsewhere in the Loopchii ecosystem. Platform analysis now separates film, series, docuseries, animation, reality, talk shows, and related formats by platform so the public surface can distinguish format-specific effects from broader platform effects.
+Stream is a Loopchii public research surface for media bias, representation, and attention analysis. It uses information theory, statistical testing, network analysis, resonance mapping, and clearly bounded synthetic data to show how cultural pattern analysis can be made inspectable instead of rhetorical. The purpose of this repository is to publish methods, visual reasoning, and reproducible outputs while keeping proprietary runtime systems elsewhere in the Loopchii ecosystem. Platform analysis now separates film, series, docuseries, animation, reality, talk shows, and related formats by platform so the public surface can distinguish format-specific effects from broader platform effects.
 
 ## Start Here
 
@@ -142,9 +142,10 @@ The newest module goes beyond synthetic data entirely. It analyses the **100 mos
 | **Tag co-occurrence network** | NetworkX graph of shared tags, greedy-modularity communities, density | Movement 05 — D3 force-directed graph |
 | **Predictability** | RandomForest + GradientBoosting ensemble, 5-fold cross-validated R² | Movement 06 — skill-vs-luck gauge + importances |
 | **What-If virality predictor** | Trained model maps hypothetical (duration, subscribers, tags, official) → percentile | Movement 07 — slider controls + grade gauge |
-| **Bias analysis** | Gender parity, genre concentration (Gini), collaboration patterns, duration bias, attention concentration, per-genre breakdowns, and a publication timeline drawn from public upload dates | Movement 08 — equity grade + 7 charts + genre table |
-| **3D virality landscape** | Plotly 3D scatter of views × virality × subscribers, coloured by archetype cluster | Movement 09 — interactive 3D orbit |
-| **Real songs explorer** | Sortable, searchable table of all 100 tracks with computed features | Movement 10 — sortable table |
+| **Resonance mapper** | Public proxy for repetition, release pressure, and attention oscillation across the real music catalog | Movement 08 — 3D resonance core + clickable track list |
+| **Bias analysis** | Gender parity, genre concentration (Gini), collaboration patterns, duration bias, attention concentration, per-genre breakdowns, and a publication timeline drawn from public upload dates | Movement 09 — equity grade + 7 charts + genre table |
+| **3D virality landscape** | Plotly 3D scatter of views × virality × subscribers, coloured by archetype cluster | Movement 10 — interactive 3D orbit |
+| **Real songs explorer** | Sortable, searchable table of all 100 tracks with computed features | Movement 11 — sortable table |
 
 **Live data extraction (optional):** If you set a `YOUTUBE_API_KEY` environment variable, the built-in `music_ingest.py` module calls the YouTube Data API v3 to refresh view counts and pull additional tracks on demand — no code changes needed. Without a key, the app serves the committed real dataset.
 
