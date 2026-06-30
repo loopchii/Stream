@@ -1369,9 +1369,11 @@
      */
     (function () {
         var q = new URLSearchParams(location.search), f = q.get('static');
+        var isLocalStatic = /^(127\.0\.0\.1|localhost)$/.test(location.hostname) && location.port && location.port !== '8000';
+        var isPublicStaticHost = /\.github\.io$/.test(location.hostname) || location.hostname === 'htmlpreview.github.io';
         var STATIC = f === '1' ? true
             : f === '0' ? false
-            : (location.protocol === 'file:' || /\.github\.io$/.test(location.hostname));
+            : (location.protocol === 'file:' || isLocalStatic || isPublicStaticHost);
         window.STREAMLENS_STATIC = STATIC;
         if (!STATIC) return;
 
@@ -1661,6 +1663,548 @@
             .mv-wrap { padding: 1rem 0.9rem 3rem; }
         }
     </style>
+    <style>
+        :root {
+            --shell-glass: linear-gradient(155deg, rgba(16, 23, 50, 0.86), rgba(9, 13, 30, 0.84));
+            --shell-stroke: rgba(172, 180, 255, 0.22);
+            --shell-shadow: rgba(3, 6, 18, 0.34);
+            --shell-soft: rgba(238, 240, 251, 0.78);
+            --shell-faint: rgba(255, 255, 255, 0.04);
+        }
+
+        body {
+            background:
+                radial-gradient(64rem 42rem at 0% 0%, rgba(91, 85, 255, 0.22), transparent 55%),
+                radial-gradient(62rem 40rem at 100% 8%, rgba(255, 111, 159, 0.18), transparent 50%),
+                radial-gradient(54rem 36rem at 84% 96%, rgba(72, 201, 194, 0.12), transparent 52%),
+                linear-gradient(170deg, #060913 0%, #090f22 28%, #071023 66%, #050711 100%);
+            color: var(--primary-text);
+            position: relative;
+        }
+
+        body::before,
+        body::after {
+            content: "";
+            position: fixed;
+            width: 42vw;
+            height: 42vw;
+            border-radius: 50%;
+            filter: blur(88px);
+            pointer-events: none;
+            opacity: 0.24;
+            z-index: 0;
+        }
+
+        body::before {
+            top: -12vw;
+            left: -14vw;
+            background: radial-gradient(circle, rgba(91, 85, 255, 0.46), transparent 70%);
+        }
+
+        body::after {
+            right: -12vw;
+            bottom: -10vw;
+            background: radial-gradient(circle, rgba(255, 111, 159, 0.38), transparent 72%);
+        }
+
+        .loading-indicator,
+        .header,
+        .nav-tabs,
+        .story-strip,
+        .research-strip,
+        .entry-grid,
+        .visualization-container,
+        .author-citation,
+        .viz-section {
+            position: relative;
+            z-index: 1;
+        }
+
+        .header {
+            max-width: 1400px;
+            margin: 1rem auto 0;
+            padding: 2.4rem 2rem 2rem;
+            border-radius: 28px;
+            border: 1px solid var(--shell-stroke);
+            background: linear-gradient(145deg, rgba(13, 19, 42, 0.9), rgba(10, 14, 32, 0.84));
+            backdrop-filter: blur(18px);
+            box-shadow: 0 34px 88px var(--shell-shadow), inset 0 1px 0 rgba(255, 255, 255, 0.07);
+        }
+
+        .header::before {
+            content: "";
+            position: absolute;
+            inset: 1px;
+            border-radius: 27px;
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            pointer-events: none;
+            mix-blend-mode: screen;
+            background: linear-gradient(110deg, rgba(255,255,255,0.10), transparent 40%, rgba(255,255,255,0.03));
+        }
+
+        .header > * {
+            position: relative;
+            z-index: 1;
+        }
+
+        .theme-switcher {
+            top: 1.1rem;
+            right: 1.1rem;
+            gap: 0.45rem;
+        }
+
+        .theme-btn {
+            border: 1px solid rgba(255,255,255,0.14);
+            background: rgba(255,255,255,0.05);
+            color: var(--primary-text-dim);
+        }
+
+        .theme-btn:hover,
+        .theme-btn.active {
+            background: linear-gradient(120deg, rgba(91,85,255,0.18), rgba(255,111,159,0.14));
+            color: var(--primary-text);
+            border-color: rgba(91,85,255,0.48);
+            box-shadow: 0 14px 28px rgba(3, 6, 18, 0.24);
+        }
+
+        .header-content {
+            gap: 1.7rem;
+            align-items: stretch;
+        }
+
+        .hero-copy,
+        .hero-sidecard,
+        .research-card,
+        .entry-card,
+        .intro-section,
+        .controls,
+        .viz-section,
+        .bias-card,
+        .learn-card,
+        .insights-panel,
+        .methodology-note,
+        .grade-card,
+        .verdict-block,
+        .author-citation,
+        .hero-proof-item,
+        .control-instructions,
+        .viz-explanation,
+        .color-legend,
+        .insight-item,
+        .sim-split,
+        .sim-gauge {
+            background: var(--shell-glass);
+            border: 1px solid var(--shell-stroke);
+            box-shadow: 0 22px 48px rgba(4, 7, 20, 0.22);
+        }
+
+        h1 {
+            font-size: clamp(3.6rem, 8vw, 6.2rem);
+            line-height: 0.94;
+            letter-spacing: -0.04em;
+            background: linear-gradient(96deg, #f8f5ff 0%, #cfd0ff 34%, #98e6df 66%, #ffc1d4 100%);
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .subtitle,
+        .hero-sidecard p,
+        .hero-proof-item span,
+        .research-card p,
+        .entry-card p,
+        .intro-section p,
+        .intro-section ul,
+        .control-instructions p,
+        .viz-explanation p,
+        .viz-explanation ul,
+        .story-strip p,
+        .status-text,
+        .api-note,
+        .methodology-note,
+        .author-citation p,
+        .learn-card p,
+        .learn-card .try-it,
+        .bias-card p,
+        .verdict-block .lead,
+        .sim-verdict,
+        .effect-v {
+            color: var(--shell-soft);
+        }
+
+        .header-kicker {
+            background: rgba(255,255,255,0.06);
+            border-color: rgba(255,255,255,0.14);
+            color: rgba(244, 246, 255, 0.88);
+        }
+
+        .header-kicker::before {
+            box-shadow: 0 0 0 0.22rem rgba(91, 85, 255, 0.12);
+        }
+
+        .hero-chip {
+            background: rgba(255,255,255,0.06);
+            border: 1px solid rgba(255,255,255,0.12);
+            color: rgba(243, 246, 255, 0.92);
+        }
+
+        .hero-link,
+        .entry-link,
+        .theme-btn,
+        .nav-tab {
+            transition: transform 0.25s ease, box-shadow 0.25s ease, border-color 0.25s ease;
+        }
+
+        .hero-link {
+            min-height: 48px;
+            border-radius: 14px;
+            background: rgba(255,255,255,0.06);
+            border: 1px solid rgba(255,255,255,0.14);
+            color: var(--primary-text);
+        }
+
+        .hero-link.primary {
+            background: linear-gradient(120deg, rgba(91,85,255,0.96), rgba(255,111,159,0.9));
+            color: #121028;
+            border-color: transparent;
+        }
+
+        .hero-link:hover,
+        .entry-link:hover,
+        .nav-tab:hover,
+        .theme-btn:hover,
+        .theme-btn.active {
+            transform: translateY(-2px);
+        }
+
+        .hero-link:hover,
+        .entry-link:hover,
+        .nav-tab:hover {
+            box-shadow: 0 16px 34px rgba(4, 7, 20, 0.28);
+        }
+
+        .hero-sidecard {
+            border-radius: 24px;
+            overflow: hidden;
+        }
+
+        .hero-sidecard::after,
+        .entry-card::after,
+        .stat-card::after {
+            opacity: 0.85;
+        }
+
+        .hero-sidecard::after {
+            inset: auto -18% -34% auto;
+            width: 13rem;
+            height: 13rem;
+            background: radial-gradient(circle, rgba(72, 201, 194, 0.16), rgba(72, 201, 194, 0));
+        }
+
+        .research-strip,
+        .entry-grid,
+        .nav-tabs,
+        .story-strip,
+        .visualization-container,
+        .author-citation {
+            max-width: 1400px;
+        }
+
+        .research-card,
+        .entry-card {
+            border-radius: 22px;
+        }
+
+        .entry-card::after {
+            width: 9rem;
+            height: 9rem;
+            background: radial-gradient(circle, rgba(91,85,255,0.15), rgba(91,85,255,0));
+        }
+
+        .entry-kicker,
+        .research-card h4,
+        .story-strip .act,
+        .era-label,
+        .platform-name,
+        .cat,
+        .mv-mnum,
+        .mv-eyebrow {
+            color: #ffd68f;
+        }
+
+        .entry-link {
+            background: rgba(255,255,255,0.05);
+            border: 1px solid rgba(255,255,255,0.13);
+            color: var(--primary-text);
+        }
+
+        .nav-tabs {
+            position: sticky;
+            top: 0.7rem;
+            z-index: 12;
+            padding: 0.75rem 2rem 0;
+            background: linear-gradient(180deg, rgba(6, 9, 19, 0.92), rgba(6, 9, 19, 0.58), transparent);
+            backdrop-filter: blur(14px);
+        }
+
+        .nav-tab {
+            border: 1px solid rgba(255,255,255,0.1);
+            background: rgba(255,255,255,0.045);
+            color: var(--primary-text-dim);
+            border-radius: 999px;
+            padding: 0.85rem 1.35rem;
+        }
+
+        .nav-tab.active,
+        .nav-tab:hover {
+            background: linear-gradient(120deg, rgba(91,85,255,0.22), rgba(255,111,159,0.16));
+            color: var(--primary-text);
+            border-color: rgba(91,85,255,0.34);
+        }
+
+        .nav-real {
+            color: #101525;
+            background: linear-gradient(120deg, #ffd894, #74ddd0);
+            box-shadow: none;
+        }
+
+        .story-strip {
+            padding: 1.4rem 1.6rem;
+            border-radius: 22px;
+            background: linear-gradient(135deg, rgba(91,85,255,0.12), rgba(255,111,159,0.08));
+            border: 1px solid rgba(255,255,255,0.08);
+            box-shadow: 0 18px 40px rgba(4, 7, 20, 0.18);
+        }
+
+        .story-strip h3,
+        .viz-title,
+        .grade-overall,
+        .sim-parity,
+        .effect-head .name,
+        .subscore-head {
+            color: var(--primary-text);
+        }
+
+        .controls,
+        .intro-section {
+            border-radius: 26px;
+        }
+
+        .controls {
+            padding-top: 1.6rem;
+        }
+
+        label {
+            color: rgba(229, 231, 248, 0.82);
+        }
+
+        select,
+        input[type="range"] {
+            background: rgba(255,255,255,0.05);
+            border: 1px solid rgba(255,255,255,0.14);
+            color: var(--primary-text);
+        }
+
+        select option {
+            background: #10172f;
+            color: #f7f3ff;
+        }
+
+        input[type="range"] {
+            background: linear-gradient(to right, rgba(91,85,255,0.92) 0%, rgba(255,111,159,0.92) 100%);
+        }
+
+        input[type="range"]::-webkit-slider-thumb {
+            background: #f5f2ff;
+            box-shadow: 0 0 0 5px rgba(91,85,255,0.18);
+        }
+
+        .range-value,
+        .stat-value,
+        .grade-badge,
+        .sim-grade,
+        .mv-figure .k,
+        .mv-gauge .grade,
+        .mv-bias-grade .grade-letter {
+            background: linear-gradient(135deg, #f7f4ff 0%, #d6cbff 38%, #8fe2df 78%, #f6cf81 100%);
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+            color: #f7f4ff;
+        }
+
+        .visualization-container {
+            padding: 0 2rem;
+        }
+
+        .viz-section {
+            border-radius: 26px;
+            padding: 1.8rem;
+            background: linear-gradient(155deg, rgba(16, 22, 44, 0.9), rgba(9, 14, 31, 0.88));
+            box-shadow: 0 26px 64px rgba(4, 7, 20, 0.24);
+        }
+
+        .viz-section::before {
+            content: "";
+            position: absolute;
+            inset: 0 auto auto 0;
+            width: 42%;
+            height: 2px;
+            background: linear-gradient(90deg, transparent, rgba(91,85,255,0.72), rgba(255,111,159,0.52), transparent);
+            opacity: 0.8;
+        }
+
+        .viz-title::before {
+            width: 40px;
+            height: 2px;
+            border-radius: 999px;
+            background: linear-gradient(90deg, var(--primary-accent), var(--primary-secondary), var(--primary-tertiary));
+        }
+
+        .chart-container,
+        .data-table-wrap,
+        .mv-panel,
+        .mv-tablewrap,
+        .mv-figure,
+        .mv-gauge {
+            background: rgba(255,255,255,0.03);
+            border: 1px solid rgba(255,255,255,0.08);
+            box-shadow: inset 0 1px 0 rgba(255,255,255,0.04);
+        }
+
+        .stats-grid {
+            gap: 1rem;
+        }
+
+        .stat-card {
+            border-radius: 20px;
+            border: 1px solid rgba(255,255,255,0.08);
+            background: linear-gradient(145deg, rgba(17, 24, 54, 0.9), rgba(12, 16, 36, 0.86));
+        }
+
+        .stat-card:hover,
+        .bias-card:hover,
+        .learn-card:hover,
+        .grade-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 20px 44px rgba(4, 7, 20, 0.26);
+        }
+
+        .stat-label,
+        .stat-description,
+        .learn-card .learn-summary,
+        .grade-overall,
+        .subscore-head .g,
+        .mv-gauge .pct,
+        .mv-gauge .views,
+        .mv-corr-row .val,
+        .mv-controls label .rv,
+        .mv-source {
+            color: #f0c887;
+        }
+
+        .insight-item {
+            border-left: 2px solid rgba(72, 201, 194, 0.72);
+        }
+
+        .data-table th,
+        table.mv-table th {
+            background: rgba(255,255,255,0.05);
+            color: #f6f0ff;
+        }
+
+        .data-table td,
+        table.mv-table td {
+            color: var(--primary-text-dim);
+            border-top-color: rgba(255,255,255,0.06);
+            border-bottom-color: rgba(255,255,255,0.06);
+        }
+
+        .data-table tbody tr:hover,
+        table.mv-table tr:hover td {
+            background: rgba(91,85,255,0.06);
+        }
+
+        .methodology-note,
+        .author-citation {
+            max-width: 1400px;
+            border-radius: 26px;
+        }
+
+        .author-citation {
+            text-align: left;
+        }
+
+        #tab-music {
+            --ink: #f7f3ff;
+            --ink-dim: rgba(228, 223, 248, 0.74);
+            --paper: rgba(14, 19, 44, 0.84);
+            --line: rgba(255,255,255,0.08);
+            --teal: #78ddd0;
+            --indigo: #9b95ff;
+            --rose: #ff9bbb;
+            --amber: #f6c56a;
+        }
+
+        .mv-wrap {
+            background:
+                radial-gradient(900px 420px at 8% -4%, rgba(91,85,255,0.16), transparent 60%),
+                radial-gradient(860px 420px at 96% 0%, rgba(72,201,194,0.14), transparent 58%);
+        }
+
+        .mv-hero {
+            background:
+                radial-gradient(circle at top right, rgba(255,255,255,0.12), transparent 30%),
+                linear-gradient(135deg, rgba(17,23,51,0.96), rgba(13,34,62,0.92), rgba(24,18,52,0.96));
+            border: 1px solid rgba(255,255,255,0.08);
+            box-shadow: 0 34px 70px rgba(0,0,0,0.28);
+        }
+
+        .mv-statline {
+            background: rgba(255,255,255,0.08);
+        }
+
+        .mv-statline .cell,
+        .mv-source {
+            background: rgba(255,255,255,0.05);
+        }
+
+        @media (max-width: 880px) {
+            .header {
+                margin: 0.75rem 0.75rem 0;
+                padding: 4rem 1.2rem 1.4rem;
+                border-radius: 24px;
+            }
+
+            .nav-tabs,
+            .research-strip,
+            .entry-grid,
+            .visualization-container,
+            .author-citation {
+                padding-left: 0.9rem;
+                padding-right: 0.9rem;
+            }
+
+            .nav-tabs {
+                top: 0.25rem;
+                gap: 0.45rem;
+                padding-top: 0.6rem;
+            }
+
+            .nav-tab {
+                width: 100%;
+                justify-content: center;
+                border-radius: 16px;
+            }
+
+            .story-strip,
+            .intro-section,
+            .controls,
+            .viz-section {
+                border-radius: 22px;
+            }
+        }
+    </style>
 </head>
 <body>
     <div class="loading-indicator" id="loadingIndicator">Updating visualizations...</div>
@@ -1675,33 +2219,33 @@
             <div class="hero-copy">
                 <span class="header-kicker">Loopchii Research Surface</span>
                 <h1>Stream</h1>
-                <div class="subtitle">A public analysis surface for representation, attention, and measurable bias in streaming media. Built to be inspectable, reproducible, and honest about where the data is synthetic, where it is real, and where the claims stop.</div>
+                <div class="subtitle">A public Loopchii field for media, attention, and cultural pressure. Built to be inspectable, reproducible, and explicit about what is modeled, what is real, and where the claim boundary ends.</div>
                 <div class="hero-chip-row">
                     <span class="hero-chip">Synthetic base clearly labeled</span>
                     <span class="hero-chip">Real YouTube music module</span>
-                    <span class="hero-chip">Static dashboard + live API</span>
+                    <span class="hero-chip">Static preview + methods notebook</span>
                 </div>
                 <div class="hero-actions">
-                    <a class="hero-link primary" href="https://github.com/loopchii/Stream" target="_blank" rel="noopener noreferrer">Read the repository</a>
-                    <a class="hero-link" href="/docs" target="_blank" rel="noopener noreferrer">Inspect the API schema</a>
-                    <a class="hero-link" href="javascript:void(0)" onclick="showTab('music', document.querySelector('[data-tab=music]'));">Jump to real data</a>
+                    <a class="hero-link primary" href="https://github.com/loopchii/Stream" target="_blank" rel="noopener noreferrer">Open the repository</a>
+                    <a class="hero-link" href="./StreamLen_processors.html" target="_blank" rel="noopener noreferrer">Inspect the methods notebook</a>
+                    <a class="hero-link" href="javascript:void(0)" onclick="showTab('music', document.querySelector('[data-tab=music]'));">Enter the real-data lane</a>
                 </div>
             </div>
             <aside class="hero-sidecard">
-                <h3>What This Surface Proves</h3>
-                <p>Not a black-box dashboard. Not a hidden model. A public research instrument with bounded claims, visible methods, and enough structure for engineers, researchers, and skeptical readers to interrogate it properly.</p>
+                <h3>What To Do Here</h3>
+                <p>Use the public surface the way you would use a serious field note: inspect the route, test the method, follow the pressure point, and keep the claim smaller than the evidence.</p>
                 <div class="hero-proof-list">
                     <div class="hero-proof-item">
-                        <strong>Open methods</strong>
-                        <span>The statistical pipeline is in the repo and the dashboard points back to it.</span>
+                        <strong>Check the moving parts</strong>
+                        <span>The repository, preview, and methods notebook all stay close enough to compare.</span>
                     </div>
                     <div class="hero-proof-item">
-                        <strong>Claim boundary</strong>
-                        <span>The synthetic dataset is disclosed throughout, and the real music module is separated on purpose.</span>
+                        <strong>Stay clear on what is real</strong>
+                        <span>The synthetic base is labeled. The music layer is real and intentionally separated.</span>
                     </div>
                     <div class="hero-proof-item">
-                        <strong>Published posture</strong>
-                        <span>This is public work with a clear research voice, not a generic SaaS landing page.</span>
+                        <strong>Follow the strongest route</strong>
+                        <span>Engineers can start with the notebook, skeptics with music, and researchers with the processing walkthrough.</span>
                     </div>
                 </div>
             </aside>
@@ -1727,16 +2271,16 @@
 
     <div class="research-strip">
         <div class="research-card">
-            <h4>Published Intent</h4>
-            <p>This is a public Loopchii research surface. It is meant to teach, test, and provoke better questions about media representation without pretending a dashboard is the whole truth.</p>
+            <h4>Published Work</h4>
+            <p>Public research should feel testable, not ceremonial. Stream is here to be opened, challenged, and extended.</p>
         </div>
         <div class="research-card">
             <h4>Bounded Honesty</h4>
-            <p>The main representation dataset is synthetic and explicitly labeled. The music virality module is real and kept separate so readers can tell exactly what they are looking at.</p>
+            <p>The base representation dataset is synthetic and labeled throughout. The music virality lane is real and kept distinct on purpose.</p>
         </div>
         <div class="research-card">
             <h4>Useful Friction</h4>
-            <p>The point is not passive browsing. The point is to compare signals, challenge assumptions, and leave with a sharper sense of what media systems reward or erase.</p>
+            <p>The point is to compare signals, question assumptions, and leave with a sharper sense of what media systems reward, flatten, or repeat.</p>
         </div>
     </div>
 
@@ -1744,25 +2288,25 @@
         <div class="entry-card">
             <span class="entry-kicker">For Engineers</span>
             <h4>Inspect the moving parts</h4>
-            <p>Start with the live schema if you want the payloads, response shapes, public lens catalog, and media-lab endpoints before you look at the visuals.</p>
-            <a class="entry-link" href="/docs" target="_blank" rel="noopener noreferrer">Open API docs</a>
+            <p>Start with the notebook if you want payloads, response shapes, public lens routes, and media-lab endpoints before the visuals.</p>
+            <a class="entry-link" href="./StreamLen_processors.html" target="_blank" rel="noopener noreferrer">Open the methods notebook</a>
         </div>
         <div class="entry-card">
             <span class="entry-kicker">For Researchers</span>
             <h4>Check the methods first</h4>
-            <p>Read the notebook-style public walkthrough if you want the assumptions, processing path, and measurement posture before interpretation.</p>
+            <p>Use the public walkthrough when you want assumptions, processing path, and measurement posture before interpretation.</p>
             <a class="entry-link" href="https://htmlpreview.github.io/?https://github.com/loopchii/Stream/blob/main/StreamLen_processors.html" target="_blank" rel="noopener noreferrer">Read the walkthrough</a>
         </div>
         <div class="entry-card">
             <span class="entry-kicker">For Skeptics</span>
             <h4>Stress the risky paths</h4>
-            <p>The public repo now includes a media-liability lab and a real-data music module. Start there if you want attention loops, public risk logic, and the non-synthetic layer first.</p>
+            <p>Start in the real-data lane if you want attention loops, public risk logic, and the non-synthetic layer first.</p>
             <button class="entry-link" onclick="showTab('music', document.querySelector('[data-tab=music]'));">Jump to music virality</button>
         </div>
         <div class="entry-card">
             <span class="entry-kicker">For Contributors</span>
             <h4>Improve the public surface</h4>
-            <p>Help with clarity, reproducibility, visual quality, and source hygiene. The public repo should feel useful the first time someone lands here.</p>
+            <p>Help with clarity, reproducibility, source hygiene, and visual quality. The first landing should already feel worth staying for.</p>
             <a class="entry-link" href="https://github.com/loopchii/Stream/blob/main/contributing.md" target="_blank" rel="noopener noreferrer">Read contribution guide</a>
         </div>
     </div>
@@ -1770,16 +2314,16 @@
     <div id="tab-dashboard" class="tab-panel active">
 
     <div class="intro-section">
-        <h2>Published Research Surface</h2>
-        <p>Stream does not ask you to trust a conclusion because it sounds right. It exposes the measurable parts: distribution, parity, inequality, network structure, and long-range trend. The goal is not to flatten culture into a score. The goal is to make hidden asymmetries legible enough to interrogate.</p>
-        <p>The dashboard covers six major streaming platforms, six content genres, multiple media formats, and the full 2015-2026 period. Every tab pushes a different part of the question forward: the overview, the rows, the findings, the field knowledge, the methods, and the verdict layer where the numbers become a judgment.</p>
+        <h2>Read The Surface In Layers</h2>
+        <p>Stream does not ask for belief first. It starts with measurable parts: distribution, parity, inequality, network structure, and long-range trend. The aim is not to flatten culture into a number. The aim is to make pressure visible enough to inspect.</p>
+        <p>The tabs move from overview to rows, from findings to field knowledge, from methods to verdict, and from modeled representation to a separate real-data music lane. Each route exists so the reader can choose a stronger path instead of being trapped in one story.</p>
         
-        <h3 style="color: var(--primary-accent); margin-top: 1.5rem; margin-bottom: 1rem;">How To Read It</h3>
+        <h3 style="color: var(--primary-accent); margin-top: 1.5rem; margin-bottom: 1rem;">How To Use It</h3>
         <ul>
-            <li><strong>Year slider:</strong> move through the decade and watch the same system change rather than comparing disconnected snapshots.</li>
-            <li><strong>Platform and genre filters:</strong> ask whether the bias is universal or local to a production culture.</li>
-            <li><strong>Bias Library and Learn:</strong> use the field knowledge and the math together; neither is enough on its own.</li>
-            <li><strong>Music Virality:</strong> switch to the real-data module when you want the public, non-synthetic attention layer.</li>
+            <li><strong>Move the year:</strong> watch one system change instead of comparing disconnected screenshots of progress.</li>
+            <li><strong>Filter the field:</strong> ask whether a pattern is broad or tied to a platform, genre, or production culture.</li>
+            <li><strong>Use methods with findings:</strong> the field knowledge and the math are meant to correct each other.</li>
+            <li><strong>Switch to music virality:</strong> use the real-data lane when you want the public attention layer first.</li>
         </ul>
     </div>
 
@@ -1868,7 +2412,7 @@
                     <!-- Dynamically populated -->
                 </div>
                 
-                <p><strong>Pattern Analysis:</strong> Look for clustering by color family (platform bias) or by shade intensity (genre bias). Bubbles in the upper-right quadrant represent best practices.</p>
+                <p><strong>Pattern Analysis:</strong> Look for clustering by color family (platform bias) or by shade intensity (genre bias). Before you call a point biased, compare it against year, platform, genre, media type, and sample size. Bubbles in the upper-right quadrant represent the stronger cases after those checks.</p>
             </div>
             
             <div class="chart-container">
@@ -1908,7 +2452,7 @@
 
             <div class="viz-explanation">
                 <h4>Three Dimensions of Equity</h4>
-                <p>Drag to rotate, scroll to zoom. Each point is a platform-genre combination positioned by female lead share (x), diversity index (y), and dialogue equity (z). Marker size grows with overall equality.</p>
+                <p>Drag to rotate, scroll to zoom. Each point is a platform-genre combination positioned by female lead share (x), diversity index (y), and dialogue equity (z). Marker size grows with overall equality, so you can tell whether a gap is broad, isolated, or only visible after another variable is removed from the frame.</p>
             </div>
 
             <div class="chart-container" style="height: 550px;">
@@ -1921,8 +2465,8 @@
             
             <div class="viz-explanation">
                 <h4>Network Topology Analysis</h4>
-                <p>This force-directed graph reveals demographic clustering in character interactions. Node size = screen time, color = gender (cyan/magenta/gold), links = interaction frequency.</p>
-                <p><strong>Key Pattern:</strong> Strong homophily (similar characters interact more) indicates limited cross-demographic storytelling.</p>
+                <p>This force-directed graph reveals demographic clustering in character interactions. Node size = screen time, color = gender (cyan/magenta/gold), links = interaction frequency. It helps answer whether the same groups keep being centered together, or whether the clustering changes once you slice by platform or genre.</p>
+                <p><strong>Key Pattern:</strong> Strong homophily (similar characters interact more) can mean limited cross-demographic storytelling, but we still check whether it survives after sample-size and genre differences are accounted for.</p>
             </div>
             
             <div class="network-container" id="networkGraph"></div>
@@ -1951,7 +2495,7 @@
             
             <div class="viz-explanation">
                 <h4>Decade-Long Trends</h4>
-                <p>Track four key metrics from 2015 to your selected year. Diverging trajectories reveal uneven progress - gender parity improves steadily while age representation declines.</p>
+                <p>Track four key metrics from 2015 to your selected year. Diverging trajectories reveal uneven progress - gender parity may improve while age representation stalls or declines, which is why we read trends alongside concentration and intersectional checks instead of treating one line as the whole story.</p>
             </div>
             
             <div class="chart-container">
@@ -1964,7 +2508,7 @@
             
             <div class="viz-explanation">
                 <h4>Character Archetype Analysis</h4>
-                <p>Radar chart reveals typecasting patterns. Male characters dominate protagonist/antagonist roles, females overrepresented as romantic interests, non-binary characters severely underrepresented across all categories.</p>
+                <p>Radar chart reveals typecasting patterns. Male characters dominate protagonist/antagonist roles, females are overrepresented as romantic interests, and non-binary characters remain underrepresented across categories. The radar helps show whether a platform has one weak spot or a full pattern of narrow casting.</p>
             </div>
             
             <div class="chart-container">
@@ -1974,7 +2518,7 @@
 
         <div class="methodology-note">
             <h3 style="color: var(--primary-accent); margin-bottom: 1rem;">Technical Implementation — What Actually Runs</h3>
-            <p>Metrics are computed live by the Python backend: Shannon entropy for diversity, a distance-from-parity index for gender balance, chi-square statistics for dialogue / age / racial bias, intersectional representation ratios against a uniform baseline, and assortativity coefficients on character interaction graphs (NetworkX). Visualizations use a real D3.js force simulation (charge, spring, and collision forces), Chart.js canvas rendering, and Plotly.js including WebGL-accelerated 3D. The demo dataset is synthetic, generated by a seeded, documented statistical model — see the Learn tab for the honesty note.</p>
+            <p>Metrics are computed live by the Python backend: Shannon entropy for diversity, a distance-from-parity index for gender balance, chi-square statistics for dialogue / age / racial bias, intersectional representation ratios against a uniform baseline, and assortativity coefficients on character interaction graphs (NetworkX). Before a claim lands, the app also checks whether the same signal survives when you slice the data by year, platform, genre, and media type. Visualizations use a real D3.js force simulation (charge, spring, and collision forces), Chart.js canvas rendering, and Plotly.js including WebGL-accelerated 3D. The demo dataset is synthetic, generated by a seeded, documented statistical model — see the Learn tab for the honesty note.</p>
         </div>
     </div>
 
@@ -2059,7 +2603,7 @@
                     </table>
                 </div>
                 <p class="api-note" id="exploreCount"></p>
-                <p class="api-note">Power users: the full REST API is documented at <a href="/docs" target="_blank">/docs</a>.</p>
+                <p class="api-note">Power users: the full walkthrough is in <a href="./StreamLen_processors.html" target="_blank" rel="noopener noreferrer">StreamLen_processors.html</a>.</p>
             </div>
 
             <div class="viz-section">
@@ -2109,7 +2653,7 @@
                 <h2 class="viz-title">Generated Insights</h2>
                 <div class="viz-explanation">
                     <h4>Computed From Live Data</h4>
-                    <p>These findings are generated by the analysis pipeline from the current dataset — re-run the analysis to regenerate them.</p>
+                    <p>These findings are generated by the analysis pipeline from the current dataset — re-run the analysis to regenerate them. The page does not stop at a single score; it compares platform, genre, media type, year, and concentration so the conclusion has a reason behind it.</p>
                 </div>
                 <div id="liveInsightsList">
                     <div class="insight-item">Loading insights…</div>
@@ -2119,7 +2663,7 @@
                 <h2 class="viz-title">Bias Breakdown</h2>
                 <div class="viz-explanation">
                     <h4>Four Bias Dimensions</h4>
-                    <p>Sentiment, screen time, age, and racial dialogue bias — each computed live with the methods described in the Learn tab.</p>
+                    <p>Sentiment, screen time, age, and racial dialogue bias — each computed live with the methods described in the Learn tab. We use more than one lens so a “biased” label is not just a vibe; it is checked against effect size, sample size, and whether the gap still appears after slicing the data a different way.</p>
                 </div>
                 <div class="data-table-wrap">
                     <table class="data-table">
@@ -2135,7 +2679,7 @@
                 <h2 class="viz-title">Intersectional Representation</h2>
                 <div class="viz-explanation">
                     <h4>Ratio vs Population Baseline</h4>
-                    <p>Groups with a ratio below 1.0 are underrepresented relative to a uniform baseline. The gaps below only appear when gender, race, and age are analyzed together.</p>
+                    <p>Groups with a ratio below 1.0 are underrepresented relative to a uniform baseline. The gaps below only appear when gender, race, and age are analyzed together, which is why the dashboard treats intersectionality as a separate check instead of a footnote.</p>
                 </div>
                 <div class="data-table-wrap">
                     <table class="data-table">
@@ -2155,7 +2699,7 @@
                 <h2 class="viz-title">The Bias Library</h2>
                 <div class="viz-explanation">
                     <h4>50+ Named Biases, Explained</h4>
-                    <p>Every entry is a documented bias pattern studied in media-representation research — what it is, what it looks like, and why it matters. Entries marked <strong style="color:#1b9e77;">measured here</strong> are quantified live by the Stream pipeline; the rest are field knowledge to sharpen what you look for. Filter by category or search.</p>
+                    <p>Every entry is a documented bias pattern studied in media-representation research — what it is, what it looks like, which assumptions it can distort, and why it matters. Entries marked <strong style="color:#1b9e77;">measured here</strong> are quantified live by the Stream pipeline; the rest are field knowledge to sharpen what you look for. Filter by category or search.</p>
                 </div>
                 <div class="chip-row" id="biasChips"></div>
                 <div class="control-group" style="grid-template-columns: 1fr; margin-bottom: 0.5rem;">
@@ -2178,7 +2722,7 @@
                 <h2 class="viz-title">Learn the Methods</h2>
                 <div class="viz-explanation">
                     <h4>Understand Every Metric</h4>
-                    <p>Each card explains one of the statistical methods used by Stream, with a hands-on way to see it in action.</p>
+                    <p>Each card explains one of the statistical methods used by Stream, with a hands-on way to see it in action. The point is not just to read the answer, but to understand what the metric is sensitive to, what it ignores, and why that matters.</p>
                 </div>
                 <div class="learn-grid" id="learnGrid">
                     <div class="learn-card"><p>Loading content…</p></div>
@@ -2193,7 +2737,7 @@
                 <h2 class="viz-title">The Verdict</h2>
                 <div class="viz-explanation">
                     <h4>From numbers to a grade you can act on</h4>
-                    <p>This is where the analysis becomes a decision. Every platform is graded A&ndash;F across four representation dimensions, the concentration of screen time is measured with a real inequality curve, each bias is sized (not just flagged), and the decade-long trend is fitted with a regression line. Then you can rewrite the cast yourself in the What-If simulator. Every figure is computed live from the labeled synthetic dataset.</p>
+                    <p>This is where the analysis becomes a decision. Every platform is graded A&ndash;F across four representation dimensions, but only after the app checks whether the same signal persists across year, genre, media type, and concentration. The concentration of screen time is measured with a real inequality curve, each bias is sized (not just flagged), and the decade-long trend is fitted with a regression line. Then you can rewrite the cast yourself in the What-If simulator. Every figure is computed live from the labeled synthetic dataset.</p>
                 </div>
 
                 <h3 style="color: var(--primary-accent); margin: 1.5rem 0 0.25rem;">Platform Report Card</h3>
@@ -2202,7 +2746,7 @@
 
                 <div class="verdict-block">
                     <h3>What-If: rewrite the cast</h3>
-                    <p class="lead">Gender parity is <code>1 &minus; |0.5 &minus; female_share| &times; 2</code>. Drag the slider to set a hypothetical female lead share and watch the parity index and grade recompute &mdash; the value is returned by the backend, exactly like the live metrics.</p>
+                    <p class="lead">Gender parity is <code>1 &minus; |0.5 &minus; female_share| &times; 2</code>. Drag the slider to set a hypothetical female lead share and watch the parity index and grade recompute &mdash; the value is returned by the backend, exactly like the live metrics. It is a simple example on purpose: you can see how the decision changes when just one variable changes, then compare that with the larger pattern above.</p>
                     <div class="verdict-two-col">
                         <div>
                             <label for="simRatio" style="font-weight:600;">Female lead share: <strong id="simRatioLabel">50%</strong></label>
@@ -2278,7 +2822,7 @@
             <div class="mv-hero">
                 <div class="mv-eyebrow"><span class="dot"></span> Real YouTube Data</div>
                 <h2>Music Virality</h2>
-                <p class="lede">A deep statistical read of the 100 most-watched music videos on YouTube in 2025 &mdash; real view counts, real channels, real durations. Every number below is computed from the actual dataset, not synthesised.</p>
+                <p class="lede">A deep statistical read of the 100 most-watched music videos on YouTube in 2025 &mdash; real view counts, real channels, real durations. We look at more than the headline view number: channel size, duration, collaboration, language mix, and tag structure all help explain why a track rose or stalled. Every number below is computed from the actual dataset, not synthesised.</p>
                 <div class="mv-statline">
                     <div class="cell"><div class="num" id="mvSongs">--</div><div class="cap">Songs</div></div>
                     <div class="cell"><div class="num" id="mvViews">--</div><div class="cap">Total Views</div></div>
@@ -2291,7 +2835,7 @@
             <!-- I. Power Law -->
             <div class="mv-movement" id="mvPowerLaw">
                 <div class="mv-mhead"><span class="mv-mnum">01</span><h3>The Power Law of Attention</h3></div>
-                <p class="mv-lead">View counts are not normally distributed &mdash; they follow a power law where a tiny elite captures most of the attention. The complementary cumulative distribution (CCDF) on log-log axes reveals the heavy tail: a straight line means pure power-law behaviour.</p>
+                <p class="mv-lead">View counts are not normally distributed &mdash; they follow a power law where a tiny elite captures most of the attention. The complementary cumulative distribution (CCDF) on log-log axes reveals the heavy tail: a straight line means pure power-law behaviour. We care because discovery systems, ad revenue, and cultural memory all behave differently when attention is this concentrated.</p>
                 <div class="mv-grid-2">
                     <div class="mv-panel"><div class="mv-chart" id="mvPowerChart"></div></div>
                     <div>
@@ -2309,7 +2853,7 @@
             <!-- II. Inequality -->
             <div class="mv-movement" id="mvInequality">
                 <div class="mv-mhead"><span class="mv-mnum">02</span><h3>The Inequality of Attention</h3></div>
-                <p class="mv-lead">A Lorenz curve shows how unevenly views are distributed across channels. The diagonal is perfect equality; the deeper the bow, the more a few mega-channels dominate. Gini (0 = equal, 1 = one takes all) and the Theil index quantify the gap.</p>
+                <p class="mv-lead">A Lorenz curve shows how unevenly views are distributed across channels. The diagonal is perfect equality; the deeper the bow, the more a few mega-channels dominate. Gini (0 = equal, 1 = one takes all) and the Theil index quantify the gap, which matters because a supposedly “open” music field can still be governed by a very small set of accounts.</p>
                 <div class="mv-grid-2">
                     <div class="mv-panel"><div class="mv-chart" id="mvLorenzChart"></div></div>
                     <div>
@@ -2328,7 +2872,7 @@
             <!-- III. Correlation Architecture -->
             <div class="mv-movement" id="mvCorrelation">
                 <div class="mv-mhead"><span class="mv-mnum">03</span><h3>Correlation Architecture</h3></div>
-                <p class="mv-lead">What actually correlates with more views? Spearman rank correlations show raw associations; partial correlations strip out the effect of channel size so you can see what matters <em>independently</em> of how big the channel already is.</p>
+                <p class="mv-lead">What actually correlates with more views? Spearman rank correlations show raw associations; partial correlations strip out the effect of channel size so you can see what matters <em>independently</em> of how big the channel already is. That helps separate reach from structure, which is the difference between “popular because it is everywhere” and “popular because something about it travels.”</p>
                 <div class="mv-toggle" id="mvCorrToggle">
                     <button class="active" onclick="MusicViz.toggleCorr('raw',this)">Raw Spearman</button>
                     <button onclick="MusicViz.toggleCorr('partial',this)">Partial (|channel size)</button>
@@ -2342,7 +2886,7 @@
             <!-- IV. Archetypes -->
             <div class="mv-movement" id="mvArchetypes">
                 <div class="mv-mhead"><span class="mv-mnum">04</span><h3>Viral Archetypes</h3></div>
-                <p class="mv-lead">K-means clustering on views, virality (views-per-subscriber), channel size and duration groups the 100 songs into five distinct strategies for capturing attention.</p>
+                <p class="mv-lead">K-means clustering on views, virality (views-per-subscriber), channel size and duration groups the 100 songs into five distinct strategies for capturing attention. It is useful because it turns a noisy leaderboard into a few recognizable release patterns you can compare.</p>
                 <div class="mv-archlegend" id="mvArchLegend"></div>
                 <div class="mv-panel"><div class="mv-chart tall" id="mvArchChart"></div></div>
             </div>
@@ -2350,7 +2894,7 @@
             <!-- V. Tag Network -->
             <div class="mv-movement" id="mvNetwork">
                 <div class="mv-mhead"><span class="mv-mnum">05</span><h3>The Tag Universe</h3></div>
-                <p class="mv-lead">When two tags appear on the same video they share an edge. The resulting co-occurrence graph reveals genre neighbourhoods, cross-over bridges, and the tags that sit at the centre of the music ecosystem.</p>
+                <p class="mv-lead">When two tags appear on the same video they share an edge. The resulting co-occurrence graph reveals genre neighbourhoods, cross-over bridges, and the tags that sit at the centre of the music ecosystem. That makes it easier to see whether discovery is actually broad or just moving inside a small loop of familiar labels.</p>
                 <div class="mv-grid-net">
                     <div class="mv-panel"><div class="mv-chart tall" id="mvNetworkChart"></div></div>
                     <div>
@@ -2368,7 +2912,7 @@
             <!-- VI. Predictability -->
             <div class="mv-movement" id="mvPredictability">
                 <div class="mv-mhead"><span class="mv-mnum">06</span><h3>How Predictable Is Virality?</h3></div>
-                <p class="mv-lead">An ensemble of RandomForest and GradientBoosting regressors, cross-validated on real data, tries to predict (log) view counts from pre-publication features alone. The honest R&sup2; shows how much is skill versus timing and luck.</p>
+                <p class="mv-lead">An ensemble of RandomForest and GradientBoosting regressors, cross-validated on real data, tries to predict (log) view counts from pre-publication features alone. The honest R&sup2; shows how much is skill versus timing and luck, and the feature importances show which levers still mattered after the rest of the context was held constant.</p>
                 <div class="mv-grid-2">
                     <div class="mv-panel"><div class="mv-chart" id="mvPredChart"></div></div>
                     <div>
@@ -2384,7 +2928,7 @@
             <!-- VII. What-If Predictor -->
             <div class="mv-movement" id="mvWhatIf">
                 <div class="mv-mhead"><span class="mv-mnum">07</span><h3>What-If Virality Predictor</h3></div>
-                <p class="mv-lead">Set the parameters of a hypothetical music upload and the trained model predicts where it would rank among the real top 100. All predictions use the same RandomForest model trained on actual YouTube data.</p>
+                <p class="mv-lead">Set the parameters of a hypothetical music upload and the trained model predicts where it would rank among the real top 100. All predictions use the same RandomForest model trained on actual YouTube data, so you can see how a change in one variable shifts the whole ranking story.</p>
                 <div class="mv-panel">
                     <div class="mv-whatif">
                         <div class="mv-controls">
@@ -2422,7 +2966,7 @@
             <!-- VIII. Bias Analysis -->
             <div class="mv-movement" id="mvBias">
                 <div class="mv-mhead"><span class="mv-mnum">08</span><h3>Bias in the Top 100</h3></div>
-                <p class="mv-lead">Who gets to dominate the charts? We measure gender representation, genre gatekeeping, collaboration patterns, language dominance, engagement disparities, and how attention concentrates &mdash; across <strong id="mvBiasTotalSongs">636</strong> real songs from 3 datasets.</p>
+                <p class="mv-lead">Who gets to dominate the charts? We measure gender representation, genre gatekeeping, collaboration patterns, language dominance, engagement disparities, and how attention concentrates &mdash; across <strong id="mvBiasTotalSongs">636</strong> real songs from 3 datasets. The point is not to moralize the chart; it is to show where the pressure comes from and which variables explain it best.</p>
                 <div class="mv-panel">
                     <div class="mv-bias-grade" id="mvBiasGrade">
                         <div class="grade-letter" id="mvBiasGradeLetter">&mdash;</div>
@@ -2470,14 +3014,14 @@
             <!-- IX. 3D Archetype Landscape -->
             <div class="mv-movement" id="mv3DLandscape">
                 <div class="mv-mhead"><span class="mv-mnum">09</span><h3>3D Virality Landscape</h3></div>
-                <p class="mv-lead">The same archetype clusters rendered in three dimensions &mdash; views, virality, and channel size form the axes. Drag to rotate, scroll to zoom. Each sphere is a real song; colour encodes the cluster.</p>
+                <p class="mv-lead">The same archetype clusters rendered in three dimensions &mdash; views, virality, and channel size form the axes. Drag to rotate, scroll to zoom. Each sphere is a real song; colour encodes the cluster. This helps distinguish a true strategy from a one-off spike.</p>
                 <div class="mv-panel"><div class="mv-chart tall" id="mv3DScatter" style="min-height:480px;"></div></div>
             </div>
 
             <!-- X. Songs Explorer -->
             <div class="mv-movement" id="mvSongsExplorer">
                 <div class="mv-mhead"><span class="mv-mnum">10</span><h3>Real Songs Explorer</h3></div>
-                <p class="mv-lead">The raw dataset behind every chart above. Search, sort by any column, and verify the numbers for yourself.</p>
+                <p class="mv-lead">The raw dataset behind every chart above. Search, sort by any column, and verify the numbers for yourself. If a summary feels too clean, this is where you test it against the source rows.</p>
                 <input type="text" class="mv-search" id="mvSongSearch" placeholder="Search songs or channels&hellip;">
                 <div class="mv-tablewrap" style="max-height:520px; overflow-y:auto;">
                     <table class="mv-table" id="mvSongTable">
@@ -3741,19 +4285,19 @@
         // ==================== TAB NAVIGATION ====================
         const STORY = {
             dashboard: ['Act I — The Question', 'Who gets to be the story?',
-                'Streaming reaches billions of hours of attention every day. The faces, voices, and lives on screen quietly teach us who counts as a hero, an expert, a love interest — or background. Use the controls below to interrogate a decade of patterns yourself.'],
+                'Streaming reaches billions of hours of attention every day. The faces, voices, and lives on screen quietly teach us who counts as a hero, an expert, a love interest — or background. Before we call anything biased, we check year, genre, platform, media type, screen time, dialogue share, and network structure.'],
             explore: ['Act II — The Evidence', 'Every metric starts as a row of data.',
-                'No summary should be taken on faith. This is the character-level dataset behind every number in the app — filter it by platform, genre, media type, and year, and check the aggregates against the raw records yourself.'],
+                'No summary should be taken on faith. This is the character-level dataset behind every number in the app — filter it by platform, genre, media type, and year, and check whether the pattern survives once the context changes.'],
             insights: ['Act III — The Findings', 'What the numbers actually say.',
-                'These findings are generated by the analysis pipeline from the current dataset — not written in advance. They quantify where representation is improving, where it stalls, and which gaps only appear when you look at intersections.'],
+                'These findings are generated by the analysis pipeline from the current dataset — not written in advance. They combine parity, concentration, trend lines, and intersectional checks so a conclusion has more than one path into it.'],
             library: ['Act IV — The Patterns', 'Bias has names. Learn to spot them.',
-                'Over fifty documented bias patterns from media research, each explained in plain language: what it is, what it looks like on screen, and why it matters. The ones Stream can quantify are marked; the rest train your eye.'],
+                'Over fifty documented bias patterns from media research, each explained in plain language: what it is, what it looks like on screen, what it tends to distort, and why it matters. The ones Stream can quantify are marked; the rest train your eye.'],
             learn: ['Act V — The Methods', 'Trust the math because you understand it.',
-                'Every metric in this app is explained here — Shannon entropy, chi-square, homophily, intersectional ratios — with pointers into the actual source code so you can verify that what is claimed is what is computed.'],
+                'Every metric in this app is explained here — Shannon entropy, chi-square, homophily, intersectional ratios — with pointers into the actual source code so you can verify that what is claimed is what is computed, and what each metric leaves out.'],
             scorecard: ['Act VI — The Verdict', 'Put a grade on it.',
-                'Understanding is not the finish line — judgement is. Here the decade of evidence collapses into a letter grade for every platform, a measured inequality curve, the size of each bias, a fitted trend, and a simulator that lets you test what a fairer cast would score.'],
+                'Understanding is not the finish line — judgement is. Here the decade of evidence collapses into a letter grade for every platform, but only after the app checks whether the gap still appears across year, genre, media type, and concentration. The simulator then lets you test what a fairer cast would score.'],
             music: ['Real Data — Music Virality', '10.59 billion views, one dataset, zero fabrication.',
-                'This module analyses the 100 most-watched YouTube music videos of 2025 using real view counts, real channel sizes, and real metadata. Power-law fits, inequality curves, partial correlations, archetype clustering, tag networks, and a trained virality predictor — all from the actual numbers.']
+                'This module analyses the 100 most-watched YouTube music videos of 2025 using real view counts, real channel sizes, and real metadata. We do not treat views as the whole story: the module also checks duration, collaboration, language mix, tags, channel reach, and the concentration of attention before calling a pattern meaningful.']
         };
 
         function showTab(tab, button) {
@@ -3819,30 +4363,30 @@
                 return chip;
             }
             const VIZ_TIPS = {
-                'Multi-Dimensional Bias Analysis': 'Bubble chart. X-axis = share of female leads, Y-axis = diversity index, bubble size = overall equality score. One bubble per platform\u00d7genre, colored by platform. Use the filters above to isolate a service or genre.',
-                '3D Representation Landscape': 'A rotatable 3-D view of three dimensions at once \u2014 female-lead share, diversity, and equality \u2014 so clusters that overlap in 2-D separate in depth. Drag to rotate, scroll to zoom.',
-                'Character Interaction Networks': 'A force-directed graph: nodes are character groups, links are shared scenes. Tight clusters of one color signal homophily \u2014 like grouping with like.',
-                'Temporal Evolution Analysis': 'Line chart of how each metric moves year over year across 2015\u20132026, so you can tell a genuine trend from year-to-year noise.',
-                'Role Distribution Patterns': 'Radar chart comparing several representation dimensions at once for the current selection \u2014 the further the shape reaches on an axis, the stronger that dimension.',
-                'Character Data Explorer': 'The raw, character-level dataset behind every number in the app. Filter by platform, genre, media type, and year; each row is one synthetic character with its measured attributes.',
-                'Media Type Analysis': 'Breaks representation down by format (film, series, anime, stand-up, kids, sports docs and more) so you can see which media types skew most.',
-                'Genre Analysis': 'Per-genre representation metrics computed by the pipeline, ranked so the most and least balanced genres are obvious.',
-                'Generated Insights': 'Plain-language findings the pipeline derives from the current dataset at runtime \u2014 not written in advance \u2014 each tied to a specific measured gap.',
-                'Bias Breakdown': 'Chi-square tests for whether dialogue, screen time and roles differ by gender more than chance, paired with Cram\u00e9r\u2019s V to show how large each effect is.',
-                'Intersectional Representation': 'Representation at the intersection of identities (e.g. gender \u00d7 ethnicity), compared against a uniform baseline to reveal gaps that single-axis views hide.',
-                'The Bias Library': 'A reference of 57 documented bias patterns from media research, filterable by category \u2014 what each bias is, how it shows up on screen, and why it matters.',
-                'Learn the Methods': 'Every statistic in the app explained from scratch \u2014 Shannon entropy, chi-square, homophily, Gini, intersectional ratios \u2014 with pointers into the source code.',
-                'The Verdict': 'The decade of evidence collapsed into a letter grade per platform, an inequality (Lorenz) curve, effect sizes, a fitted trend, and a what-if cast simulator.',
-                'The Power Law of Attention': 'Complementary CDF (CCDF) of view counts on log-log axes. A straight line means pure power-law behaviour; the fitted exponent \u03b1 and Kolmogorov-Smirnov distance tell you how heavy the tail is. Computed by maximum-likelihood estimation (Clauset method) with a bootstrap 95% CI.',
-                'The Inequality of Attention': 'Lorenz curve + Gini + Theil index measuring how unevenly views concentrate across channels. A Gini near 1 means one channel takes everything; the top-k shares show the concrete concentration.',
-                'Correlation Architecture': 'Spearman rank correlations (non-parametric) of each feature with view count, plus partial correlations that strip out channel size. Toggle between raw and partial to see what matters independently of reach.',
-                'Viral Archetypes': 'K-means clustering (k=5) on log-views, log-virality, log-followers and duration. Points are real songs, colours are cluster assignments. Hover for titles and channels.',
-                'The Tag Universe': 'A force-directed co-occurrence graph where nodes are tags and edges form when two tags appear on the same video. Node size = degree (how connected); colour = community (greedy modularity). Drag nodes to explore.',
-                'How Predictable Is Virality?': 'Cross-validated ensemble of RandomForest + GradientBoosting predicting log(views) from pre-publication features only (no target leakage). The R\u00b2 is the honest out-of-fold score; the importance bars are from the fitted RandomForest.',
-                'What-If Virality Predictor': 'Set hypothetical upload parameters and the trained RandomForest model predicts where the video would rank among the real top 100. On the static site this snaps to a precomputed grid; on the live API it is continuous.',
-                'Real Songs Explorer': 'The raw dataset behind every chart \u2014 100 real YouTube music videos with actual view counts, durations, and virality coefficients. Click any column header to sort; type in the search box to filter.',
-                'Bias in the Top 100': 'Gender representation, genre concentration, collaboration patterns, duration bias, and attention concentration \u2014 measuring the structural biases baked into music virality. The equity grade composites gender parity, views parity, genre diversity, and top-5 concentration.',
-                '3D Virality Landscape': 'A Plotly 3D scatter of views \u00d7 virality \u00d7 subscribers with archetype clusters. Drag to rotate, scroll to zoom. Each sphere is a real song coloured by its K-means cluster assignment.'
+                'Multi-Dimensional Bias Analysis': 'Bubble chart. X-axis = share of female leads, Y-axis = diversity index, bubble size = overall equality score. One bubble per platform\u00d7genre, colored by platform. The point is not just to name an imbalance, but to check whether it still appears after you split by year, genre, media type, and sample size.',
+                '3D Representation Landscape': 'A rotatable 3-D view of three dimensions at once \u2014 female-lead share, diversity, and equality \u2014 so clusters that overlap in 2-D separate in depth. Drag to rotate, scroll to zoom, and use the shape to see whether the gap is broad or only visible from one angle.',
+                'Character Interaction Networks': 'A force-directed graph: nodes are character groups, links are shared scenes. Tight clusters of one color signal homophily \u2014 but the more useful question is whether that clustering survives once you slice by platform or genre.',
+                'Temporal Evolution Analysis': 'Line chart of how each metric moves year over year across 2015\u20132026, so you can tell a genuine trend from year-to-year noise and see whether a gap is shrinking, stalling, or just moving elsewhere.',
+                'Role Distribution Patterns': 'Radar chart comparing several representation dimensions at once for the current selection \u2014 the further the shape reaches on an axis, the stronger that dimension, and the easier it is to see whether a platform is weak in one place or across several.',
+                'Character Data Explorer': 'The raw, character-level dataset behind every number in the app. Filter by platform, genre, media type, and year; each row is one synthetic character with its measured attributes, so you can inspect the source of the summary.',
+                'Media Type Analysis': 'Breaks representation down by format (film, series, anime, stand-up, kids, sports docs and more) so you can see which media types skew most and whether the pattern is format-specific or broader.',
+                'Genre Analysis': 'Per-genre representation metrics computed by the pipeline, ranked so the most and least balanced genres are obvious and you can compare the pattern against different production cultures.',
+                'Generated Insights': 'Plain-language findings the pipeline derives from the current dataset at runtime \u2014 not written in advance \u2014 each tied to a specific measured gap, with enough context to show why the result matters.',
+                'Bias Breakdown': 'Chi-square tests for whether dialogue, screen time and roles differ by gender more than chance, paired with Cram\u00e9r\u2019s V to show how large each effect is. This helps separate real pattern from big sample.',
+                'Intersectional Representation': 'Representation at the intersection of identities (e.g. gender \u00d7 ethnicity), compared against a uniform baseline to reveal gaps that single-axis views hide. A platform can look balanced on one axis and still fail when identities combine.',
+                'The Bias Library': 'A reference of 57 documented bias patterns from media research, filterable by category \u2014 what each bias is, how it shows up on screen, what it tends to distort, and why it matters in practice.',
+                'Learn the Methods': 'Every statistic in the app explained from scratch \u2014 Shannon entropy, chi-square, homophily, Gini, intersectional ratios \u2014 with pointers into the source code and notes on what the metric leaves out.',
+                'The Verdict': 'The decade of evidence collapsed into a letter grade per platform, an inequality (Lorenz) curve, effect sizes, a fitted trend, and a what-if cast simulator. The grade only lands after the app checks whether the same signal survives across year, genre, media type, and concentration.',
+                'The Power Law of Attention': 'Complementary CDF (CCDF) of view counts on log-log axes. A straight line means pure power-law behaviour; the fitted exponent \u03b1 and Kolmogorov-Smirnov distance tell you how heavy the tail is. Computed by maximum-likelihood estimation (Clauset method) with a bootstrap 95% CI, then read alongside the channel mix because attention concentration changes what the curve means.',
+                'The Inequality of Attention': 'Lorenz curve + Gini + Theil index measuring how unevenly views concentrate across channels. A Gini near 1 means one channel takes everything; the top-k shares show the concrete concentration and why discovery can feel narrow.',
+                'Correlation Architecture': 'Spearman rank correlations (non-parametric) of each feature with view count, plus partial correlations that strip out channel size. Toggle between raw and partial to see what matters independently of reach and what was only riding on reach.',
+                'Viral Archetypes': 'K-means clustering (k=5) on log-views, log-virality, log-followers and duration. Points are real songs, colours are cluster assignments. Hover for titles and channels, then ask whether the cluster is a release style, a scale effect, or both.',
+                'The Tag Universe': 'A force-directed co-occurrence graph where nodes are tags and edges form when two tags appear on the same video. Node size = degree (how connected); colour = community (greedy modularity). Drag nodes to explore which tags act as bridges, not just labels.',
+                'How Predictable Is Virality?': 'Cross-validated ensemble of RandomForest + GradientBoosting predicting log(views) from pre-publication features only (no target leakage). The R\u00b2 is the honest out-of-fold score; the importance bars show which features still mattered after the rest were held constant.',
+                'What-If Virality Predictor': 'Set hypothetical upload parameters and the trained RandomForest model predicts where the video would rank among the real top 100. On the static site this snaps to a precomputed grid; on the live API it is continuous, but still grounded in the same feature set.',
+                'Real Songs Explorer': 'The raw dataset behind every chart \u2014 100 real YouTube music videos with actual view counts, durations, and virality coefficients. Click any column header to sort; type in the search box to filter; use the rows to test whether the summary matches the source.',
+                'Bias in the Top 100': 'Gender representation, genre concentration, collaboration patterns, duration bias, and attention concentration \u2014 measuring the structural biases baked into music virality. The equity grade composites gender parity, views parity, genre diversity, and top-5 concentration after checking the surrounding variables.',
+                '3D Virality Landscape': 'A Plotly 3D scatter of views \u00d7 virality \u00d7 subscribers with archetype clusters. Drag to rotate, scroll to zoom. Each sphere is a real song coloured by its K-means cluster assignment, which makes it easier to see whether a cluster is truly different or just larger.'
             };
             document.querySelectorAll('.viz-title').forEach(h => {
                 if (h.querySelector('.sl-info')) return;

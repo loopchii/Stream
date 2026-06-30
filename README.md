@@ -1,55 +1,32 @@
 # Stream
 
-<div align="center">
+<p align="center">
+  <strong>Loopchii Stream</strong> is a public research surface for media bias, representation, and attention analysis.
+</p>
 
-[![Loopchii Research Surface](https://img.shields.io/badge/Loopchii-Public%20Research%20Surface-FFE4E1?style=for-the-badge)](https://github.com/loopchii/Stream)
-[![Media Analysis](https://img.shields.io/badge/Media%20Analysis-Representation%20%26%20Attention-E6E6FA?style=for-the-badge)](https://github.com/loopchii/Stream)
-[![Inspectable Dashboard](https://img.shields.io/badge/Interactive%20Dashboard-Open%20Methods-F0F8FF?style=for-the-badge)](https://github.com/loopchii/Stream)
-[![CI](https://img.shields.io/github/actions/workflow/status/loopchii/Stream/ci.yml?branch=main&style=for-the-badge&label=CI)](https://github.com/loopchii/Stream/actions/workflows/ci.yml)
-[![License](https://img.shields.io/github/license/loopchii/Stream?style=for-the-badge)](LICENSE)
+<p align="center">
+  It is designed to be readable, falsifiable, and useful without exposing private Loopchii runtime systems.
+</p>
 
-</div>
+<p align="center">
+  <a href="https://htmlpreview.github.io/?https://github.com/loopchii/Stream/blob/main/index.html">Launch the dashboard preview</a>
+  ·
+  <a href="https://htmlpreview.github.io/?https://github.com/loopchii/Stream/blob/main/StreamLen_processors.html">Open the methods notebook</a>
+  ·
+  <a href="https://github.com/loopchii/Stream/actions/workflows/ci.yml">View CI</a>
+</p>
 
-<div align="center">
+<p align="center">
+  <img src="https://img.shields.io/badge/Loopchii-Public%20Research%20Surface-5B55FF?style=for-the-badge" alt="Loopchii public research surface">
+  <img src="https://img.shields.io/badge/Media%20Analysis-Representation%20%26%20Attention-FF6F9F?style=for-the-badge" alt="Media analysis">
+  <img src="https://img.shields.io/badge/Inspectable-Dashboard%20%26%20Methods-48C9C2?style=for-the-badge" alt="Inspectable dashboard and methods">
+  <img src="https://img.shields.io/github/actions/workflow/status/loopchii/Stream/ci.yml?branch=main&style=for-the-badge&label=CI" alt="CI status">
+  <img src="https://img.shields.io/github/license/loopchii/Stream?style=for-the-badge" alt="License">
+</p>
 
-### [▶ Launch the Dashboard Preview](https://htmlpreview.github.io/?https://github.com/loopchii/Stream/blob/main/index.html)
+> **Why this exists:** public research should be sharp, honest, and easy to verify. This repository keeps the method visible, the data boundary explicit, and the public story separate from any proprietary Loopchii internals.
 
-[![Open Dashboard](https://img.shields.io/badge/Public%20Preview-Open%20Stream%20in%20your%20browser-FFB6C1?style=for-the-badge)](https://htmlpreview.github.io/?https://github.com/loopchii/Stream/blob/main/index.html)
-
-<sub>The public dashboard runs entirely in the browser. It keeps the methods visible, the claims bounded, and the data provenance explicit. Every number is pre-computed by the same Python pipeline in this repository.</sub>
-
-</div>
-
-<div align="center">
-  
-<div align="center">
-  
- [streaming-bias-index.html](https://htmlpreview.github.io/?https://github.com/loopchii/Stream/blob/main/streaming-bias-index.html)  
-<sub>A legacy static view of the representation index and its explanatory framing</sub>
-</div>
-
-
-<div align="center">
-  
- [StreamLen_processors.html](https://htmlpreview.github.io/?https://github.com/loopchii/Stream/blob/main/StreamLen_processors.html)  
-<sub>A notebook-style public view into the processing and measurement workflow</sub>
-</div>
-
-<div align="center">
-
-
-
-![separator](https://img.shields.io/badge/-FFE4E1?style=flat-square&color=FFE4E1)
-![separator](https://img.shields.io/badge/-E6E6FA?style=flat-square&color=E6E6FA)
-![separator](https://img.shields.io/badge/-F0F8FF?style=flat-square&color=F0F8FF)
-![separator](https://img.shields.io/badge/-FFF0F5?style=flat-square&color=FFF0F5)
-![separator](https://img.shields.io/badge/-FAFAD2?style=flat-square&color=FAFAD2)
-
-</div>
-
-> **Why this exists:** public research should be readable, falsifiable, and useful without pretending to expose every internal system behind it.
-
-Stream is a Loopchii public research surface for media bias, representation, and attention analysis. It uses information theory, statistical testing, network analysis, and clearly bounded synthetic data to show how cultural pattern analysis can be made inspectable instead of rhetorical. The purpose of this repository is to publish methods, visual reasoning, and reproducible outputs without exposing proprietary runtime systems that belong elsewhere in the Loopchii ecosystem.
+Stream is a Loopchii public research surface for media bias, representation, and attention analysis. It uses information theory, statistical testing, network analysis, and clearly bounded synthetic data to show how cultural pattern analysis can be made inspectable instead of rhetorical. The purpose of this repository is to publish methods, visual reasoning, and reproducible outputs while keeping proprietary runtime systems elsewhere in the Loopchii ecosystem.
 
 ## Start Here
 
@@ -57,11 +34,11 @@ Pick the quickest route in:
 
 | If you want to... | Go here | What you get |
 |---|---|---|
-| Explore the public interface first | [Dashboard Preview](https://htmlpreview.github.io/?https://github.com/loopchii/Stream/blob/main/index.html) | The full browser surface with charts, story flow, and the real-data music module |
-| Inspect the live schema | `http://localhost:8000/docs` | FastAPI endpoints, request shapes, and response payloads |
+| Explore the public interface first | [Dashboard Preview](https://htmlpreview.github.io/?https://github.com/loopchii/Stream/blob/main/index.html) | The browser surface with charts, story flow, and the real-data music module |
+| Inspect the methods first | [`StreamLen_processors.html`](https://htmlpreview.github.io/?https://github.com/loopchii/Stream/blob/main/StreamLen_processors.html) | A notebook-style walkthrough of the processing logic and measurement choices |
 | See something useful in under 10 seconds | `python lens_visualizer.py` | A terminal-first stream demo with public lens findings and instant visual feedback |
-| Understand the methods before the visuals | [`StreamLen_processors.html`](https://htmlpreview.github.io/?https://github.com/loopchii/Stream/blob/main/StreamLen_processors.html) | A notebook-style walkthrough of the processing logic |
-| Contribute or extend the work | [contributing.md](contributing.md) | Clean setup steps, contribution lanes, and review expectations |
+| Review the developer setup | [contributing.md](contributing.md) | Clean setup steps, contribution lanes, and review expectations |
+| Read the current contract | [What This Actually Does](#what-this-actually-does) | The fastest path to the repo’s scope, boundaries, and public artifacts |
 
 ## Navigation
 
@@ -81,7 +58,7 @@ Pick the quickest route in:
 ## Why Engineers Trust This Repo
 
 - The claim boundary is explicit. Synthetic representation data is labeled throughout, and the real-data music module is separated on purpose.
-- The public artifacts are inspectable. The dashboard, API, notebook-style walkthrough, and exported results all point back to code in this repository.
+- The public artifacts are inspectable. The dashboard, notebook-style walkthrough, and exported results all point back to code in this repository.
 - The surface is reproducible. Local runs, static artifacts, and API responses come from the same Python pipeline.
 - The repo is tested continuously. CI runs linting and tests across supported Python versions on every push to `main`.
 
