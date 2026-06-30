@@ -31,7 +31,8 @@ def build_runtime_snapshot(
         music_index=payloads["music_index"],
         data_engineering=payloads["data_engineering"],
         frontend_state=frontend_state,
-        orchestration=payloads["orchestration"],
-        comparatives=payloads["comparatives"],
+        critical_spine=payloads.get("critical_spine", {}),
+        orchestration=payloads.get("orchestration", {}),
+        comparatives=payloads.get("comparatives", {}),
         artifacts=artifacts,
     )

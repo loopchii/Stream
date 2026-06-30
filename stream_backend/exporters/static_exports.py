@@ -14,8 +14,10 @@ def write_runtime_json_exports(base_dir: Path, snapshot_payload: Mapping[str, An
     system_dir = base_dir / "data" / "system"
     outputs = {
         system_dir / "frontend-state.json": snapshot_payload["frontend_state"],
+        system_dir / "critical-spine.json": snapshot_payload["critical_spine"],
         system_dir / "comparatives.json": snapshot_payload["comparatives"],
-        system_dir / "runtime.json": snapshot_payload["orchestration"],
+        system_dir / "runtime.json": snapshot_payload,
+        system_dir / "orchestration.json": snapshot_payload["orchestration"],
         system_dir / "contracts.json": snapshot_payload["data_engineering"],
     }
     written: list[Path] = []

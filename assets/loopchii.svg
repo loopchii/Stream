@@ -1,0 +1,18 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100">
+  <defs>
+    <linearGradient id="a" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#818CF8"/><stop offset="50%" stop-color="#a5b4fc"/><stop offset="100%" stop-color="#67e8f9"/>
+    </linearGradient>
+    <linearGradient id="b" x1="0%" y1="100%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#67e8f9"/><stop offset="50%" stop-color="#6ee7b7"/><stop offset="100%" stop-color="#34d399"/>
+    </linearGradient>
+    <linearGradient id="c" x1="100%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#c4b5fd"/><stop offset="50%" stop-color="#a78bfa"/><stop offset="100%" stop-color="#818CF8"/>
+    </linearGradient>
+  </defs>
+  <ellipse cx="50" cy="50" rx="40" ry="18" fill="none" stroke="url(#a)" stroke-width="3" stroke-linecap="round" stroke-dasharray="170 80" transform="rotate(-25 50 50)" opacity="0.92"/>
+  <ellipse cx="50" cy="50" rx="34" ry="16" fill="none" stroke="url(#b)" stroke-width="2.8" stroke-linecap="round" stroke-dasharray="145 65" transform="rotate(35 50 50)" opacity="0.88"/>
+  <ellipse cx="50" cy="50" rx="28" ry="13" fill="none" stroke="url(#c)" stroke-width="2.5" stroke-linecap="round" stroke-dasharray="115 55" transform="rotate(90 50 50)" opacity="0.82"/>
+  <circle cx="50" cy="50" r="4" fill="#a5b4fc" opacity="0.6"/>
+  <circle cx="82" cy="34" r="6" fill="#FBBF24" opacity="0.95"/>
+</svg>

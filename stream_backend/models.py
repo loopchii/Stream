@@ -27,6 +27,7 @@ class RuntimeSnapshot:
     music_index: Mapping[str, Any]
     data_engineering: Mapping[str, Any]
     frontend_state: Mapping[str, Any]
+    critical_spine: Mapping[str, Any]
     orchestration: Mapping[str, Any]
     comparatives: Mapping[str, Any]
     artifacts: List[RuntimeArtifact] = field(default_factory=list)
@@ -45,6 +46,7 @@ class FrontendStateEnvelope:
     roles: Mapping[str, Any]
     narratives: Mapping[str, Any]
     comparatives: Mapping[str, Any]
+    critical_spine: Mapping[str, Any]
     note_signals: Mapping[str, Any]
     governance: Mapping[str, Any]
     freshness: Mapping[str, Any]

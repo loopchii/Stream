@@ -2,6 +2,7 @@
 
 from .comparative import build_comparative_surface
 from .contracts import build_backend_contract_surface
+from .critical_spine import build_critical_spine
 from .frontend_state import build_frontend_state
 from .governance import build_governance_surface
 from .hero import build_hero_surface
@@ -15,6 +16,7 @@ from .timeline import build_freshness_surface
 __all__ = [
     "build_backend_contract_surface",
     "build_comparative_surface",
+    "build_critical_spine",
     "build_frontend_state",
     "build_freshness_surface",
     "build_governance_surface",

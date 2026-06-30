@@ -1,0 +1,17 @@
+{
+  "name": "LOOPCHii Stream",
+  "short_name": "Stream",
+  "description": "Public research surface for media bias, music virality, cultural attention, and inspectable analysis.",
+  "start_url": "./?static=1",
+  "display": "standalone",
+  "background_color": "#0d1023",
+  "theme_color": "#5b55ff",
+  "icons": [
+    {
+      "src": "assets/loopchii.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ]
+}

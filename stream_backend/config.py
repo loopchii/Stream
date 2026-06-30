@@ -17,7 +17,7 @@ class RuntimeConfig:
     db_subdir: str = "runtime"
     report_filename: str = "runtime_surface.md"
     timezone_label: str = "UTC"
-    owner_label: str = "Loopchii Stream"
+    owner_label: str = "LOOPCHii Stream"
     dataset_family: str = "public_research_surface"
     music_lane_label: str = "public_music_lane"
     synthetic_lane_label: str = "synthetic_representation_lane"

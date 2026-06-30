@@ -6,6 +6,7 @@ from stream_backend.config import RuntimeConfig
 def build_runtime_catalog(config: RuntimeConfig) -> dict:
     return {
         "runtime": "stream_backend",
+        "brand": "LOOPCHii Stream",
         "languages": ["Python", "SQLite", "JavaScript", "HTML", "Rust"],
         "modules": [
             "analytics",
@@ -14,6 +15,18 @@ def build_runtime_catalog(config: RuntimeConfig) -> dict:
             "exporters",
             "services",
             "cli",
+        ],
+        "entrypoints": [
+            {"name": "API runtime", "path": "app.py", "purpose": "Serve live JSON and the browser surface."},
+            {"name": "Static build", "path": "build_static.py", "purpose": "Bake API-equivalent artifacts for offline/static use."},
+            {"name": "Runtime materializer", "path": "stream_backend/cli/materialize.py", "purpose": "Persist runtime snapshots and exports."},
+            {"name": "Validation CLI", "path": "stream_backend/cli/validate.py", "purpose": "Check runtime shape and export integrity."},
+        ],
+        "public_assets": [
+            "index.html",
+            "manifest.webmanifest",
+            "service-worker.js",
+            "openapi.stream.json",
         ],
         "sqlite_path": str(config.sqlite_path.relative_to(config.base_dir)),
     }

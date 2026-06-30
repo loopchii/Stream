@@ -2,6 +2,7 @@ from __future__ import annotations
 
 from typing import Any, Mapping
 
+from .critical_spine import build_critical_spine
 from stream_backend.models import FrontendStateEnvelope
 from stream_backend.utils import stable_hash
 
@@ -23,6 +24,14 @@ def build_frontend_state(
     music_index: Mapping[str, Any],
     data_engineering: Mapping[str, Any],
 ) -> dict[str, Any]:
+    critical_spine = build_critical_spine(
+        generated_at=generated_at,
+        sample_size=sample_size,
+        representation=representation,
+        music_report=music_report,
+        music_index=music_index,
+        data_engineering=data_engineering,
+    )
     envelope = FrontendStateEnvelope(
         generated_at=generated_at,
         sample_size=sample_size,
@@ -33,6 +42,7 @@ def build_frontend_state(
         },
         narratives=build_narrative_surface(representation, music_report),
         comparatives=build_comparative_surface(representation, music_report, music_index),
+        critical_spine=critical_spine,
         note_signals=build_note_signal_surface(music_index),
         governance=build_governance_surface(data_engineering, representation),
         freshness=build_freshness_surface(generated_at, representation, music_report, music_index),

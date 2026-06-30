@@ -44,6 +44,7 @@ def build_data() -> None:
     write_json(DATA / "system" / "bias-propagation.json", backend.bias_propagation())
     write_json(DATA / "system" / "trojan-horse.json", backend.trojan_horse_surface())
     write_json(DATA / "system" / "catalog.json", backend.system_catalog())
+    write_json(BASE / "openapi.stream.json", backend.app.openapi())
 
     for n in SIZES:
         print(f"Running pipeline at n_samples={n} ...")
@@ -62,6 +63,7 @@ def build_data() -> None:
         if n == DEFAULT_SIZE:
             write_json(out / "results.json", backend.results())
             write_json(DATA / "system" / "frontend-state.json", backend.system_frontend_state(sample_size=n))
+            write_json(DATA / "system" / "critical-spine.json", backend.system_critical_spine(sample_size=n))
             write_json(DATA / "system" / "comparatives.json", backend.system_comparatives(sample_size=n))
             write_json(DATA / "system" / "runtime.json", backend.system_runtime(sample_size=n))
 

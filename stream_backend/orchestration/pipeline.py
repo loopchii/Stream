@@ -8,6 +8,7 @@ from stream_backend.analytics import (
     build_backend_contract_surface,
     build_comparative_surface,
     build_frontend_state,
+    build_runtime_quality_surface,
 )
 from stream_backend.config import RuntimeConfig
 from stream_backend.orchestration.runtime import build_orchestration_surface
@@ -46,15 +47,22 @@ class StreamPipeline:
             music_index=music_index,
             data_engineering=data_engineering,
         )
+        critical_spine = dict(frontend_state.get("critical_spine") or {})
         comparatives = build_comparative_surface(representation, music_report, music_index)
         contracts = build_backend_contract_surface(self.config)
         orchestration["contract_surface"] = contracts
+        orchestration["quality_surface"] = build_runtime_quality_surface(
+            representation=representation,
+            music_report=music_report,
+            data_engineering=data_engineering,
+        )
         return {
             "representation": representation,
             "music": music_report,
             "music_index": music_index,
             "data_engineering": data_engineering,
             "frontend_state": frontend_state,
+            "critical_spine": critical_spine,
             "orchestration": orchestration,
             "comparatives": comparatives,
         }

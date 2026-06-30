@@ -3,25 +3,27 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Stream | Loopchii Research Surface for Media Bias and Attention Analysis</title>
-    <meta name="description" content="Stream is Loopchii’s public research surface for media bias, music virality, cultural attention, and data-quality-aware analysis. Inspect the methods, audit the data, and contribute publicly.">
-    <meta name="keywords" content="Loopchii Stream, media bias analysis, music virality analysis, cultural analytics, public research, ethical programming, YouTube music analysis, data quality, data engineering">
-    <meta name="author" content="Cazandra Aporbo">
+    <title>Stream | LOOPCHii Research Surface for Media Bias and Attention Analysis</title>
+    <meta name="description" content="Stream is LOOPCHii’s public research surface for media bias, music virality, cultural attention, and data-quality-aware analysis. Inspect the methods, audit the data, and contribute publicly.">
+    <meta name="keywords" content="LOOPCHii Stream, media bias analysis, music virality analysis, cultural analytics, public research, ethical programming, YouTube music analysis, data quality, data engineering">
+    <meta name="author" content="Cazandra Aporbo · LOOPCHii">
     <meta name="robots" content="index,follow,max-image-preview:large">
     <meta name="theme-color" content="#5b55ff">
-    <meta property="og:title" content="Stream | Loopchii Public Research Surface">
-    <meta property="og:description" content="A public Loopchii research surface for media bias, music virality, cultural pressure, and inspectable analysis.">
+    <meta property="og:title" content="Stream | LOOPCHii Public Research Surface">
+    <meta property="og:description" content="A public LOOPCHii research surface for media bias, music virality, cultural pressure, and inspectable analysis.">
     <meta property="og:type" content="website">
-    <meta property="og:site_name" content="Loopchii Stream">
+    <meta property="og:site_name" content="LOOPCHii Stream">
     <meta property="og:url" content="https://github.com/loopchii/Stream">
     <meta property="twitter:card" content="summary_large_image">
-    <meta property="twitter:title" content="Stream | Loopchii Public Research Surface">
-    <meta property="twitter:description" content="Inspect media bias, music virality, and data quality with a public Loopchii research surface built for contribution.">
+    <meta property="twitter:title" content="Stream | LOOPCHii Public Research Surface">
+    <meta property="twitter:description" content="Inspect media bias, music virality, and data quality with a public LOOPCHii research surface built for contribution.">
+    <link rel="icon" type="image/svg+xml" href="./assets/loopchii.svg">
+    <link rel="manifest" href="./manifest.webmanifest">
     <script type="application/ld+json">
         {
             "@context": "https://schema.org",
             "@type": "SoftwareSourceCode",
-            "name": "Loopchii Stream",
+            "name": "LOOPCHii Stream",
             "description": "A public research surface for media bias, music virality, cultural pressure, and data-quality-aware analysis.",
             "codeRepository": "https://github.com/loopchii/Stream",
             "author": {
@@ -2347,20 +2349,24 @@
 
         .author-citation {
             background:
-                radial-gradient(circle at top right, rgba(91,85,255,0.12), transparent 34%),
-                linear-gradient(160deg, rgba(14,18,36,0.94), rgba(18,24,44,0.9));
-            padding: 2rem;
+                radial-gradient(circle at top right, rgba(91,85,255,0.18), transparent 34%),
+                radial-gradient(circle at bottom left, rgba(240,119,159,0.12), transparent 34%),
+                linear-gradient(160deg, rgba(14,18,36,0.96), rgba(18,24,44,0.92));
+            padding: 2.15rem;
             margin: 3rem auto 2rem;
             max-width: 1400px;
-            border-radius: 20px;
-            text-align: center;
+            border-radius: 24px;
             border: 1px solid rgba(255,255,255,0.08);
-            box-shadow: 0 18px 42px rgba(53, 60, 122, 0.08);
+            box-shadow: 0 24px 58px rgba(20, 22, 52, 0.26);
+            display: grid;
+            grid-template-columns: minmax(0, 1.35fr) minmax(16rem, 0.85fr);
+            gap: 1.4rem;
+            align-items: start;
         }
 
         .author-citation h3 {
             color: #f8f4ff;
-            margin-bottom: 1rem;
+            margin-bottom: 0.8rem;
             background: linear-gradient(102deg, var(--title-citrine) 0%, var(--title-peony) 30%, var(--title-lilac) 64%, var(--title-teal) 100%);
             background-size: 220% 220%;
             -webkit-background-clip: text;
@@ -2370,15 +2376,235 @@
         }
 
         .author-citation p {
-            color: var(--primary-text-dim);
+            color: rgba(236, 233, 255, 0.76);
             line-height: 1.8;
         }
 
         .author-citation .author-name {
-            color: var(--primary-secondary);
-            font-weight: bold;
-            font-size: 1.2rem;
+            color: #ffd79d;
+            font-weight: 700;
+            font-size: 0.92rem;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+            margin-top: 0.95rem;
+        }
+
+        .footer-brand {
+            display: flex;
+            align-items: flex-start;
+            gap: 1rem;
+            text-align: left;
+        }
+
+        .footer-brandmark {
+            width: 58px;
+            height: 58px;
+            flex: 0 0 58px;
+            border-radius: 18px;
+            padding: 0.55rem;
+            background:
+                radial-gradient(circle at 18% 20%, rgba(255,255,255,0.2), transparent 34%),
+                linear-gradient(145deg, rgba(255,255,255,0.1), rgba(255,255,255,0.04));
+            border: 1px solid rgba(255,255,255,0.1);
+            box-shadow: 0 14px 28px rgba(13, 17, 39, 0.24);
+        }
+
+        .footer-brandmark img {
+            width: 100%;
+            height: 100%;
+            display: block;
+        }
+
+        .footer-brand-copy {
+            min-width: 0;
+        }
+
+        .footer-brand-copy .eyebrow {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.45rem;
+            margin-bottom: 0.55rem;
+            font-size: 0.72rem;
+            letter-spacing: 0.18em;
+            text-transform: uppercase;
+            color: rgba(255, 215, 157, 0.88);
+            font-weight: 700;
+        }
+
+        .footer-brand-copy .eyebrow::before {
+            content: '';
+            width: 0.55rem;
+            height: 0.55rem;
+            border-radius: 999px;
+            background: linear-gradient(135deg, var(--title-citrine), var(--title-peony), var(--title-lilac), var(--title-teal));
+            box-shadow: 0 0 18px rgba(217, 204, 255, 0.45);
+        }
+
+        .footer-brand-copy h3 {
+            margin: 0;
+            font-size: clamp(1.32rem, 2vw, 1.74rem);
+            text-align: left;
+        }
+
+        .footer-support {
+            display: grid;
+            gap: 0.9rem;
+        }
+
+        .footer-support-card {
+            padding: 0.95rem 1rem;
+            border-radius: 18px;
+            background:
+                linear-gradient(145deg, rgba(255,255,255,0.08), rgba(255,255,255,0.04));
+            border: 1px solid rgba(255,255,255,0.08);
+            text-align: left;
+        }
+
+        .footer-support-card .k {
+            display: block;
+            font-size: 0.72rem;
+            letter-spacing: 0.14em;
+            text-transform: uppercase;
+            color: rgba(255, 215, 157, 0.88);
+            margin-bottom: 0.3rem;
+            font-weight: 700;
+        }
+
+        .footer-support-card .v {
+            color: #f7f3ff;
+            font-weight: 600;
+            line-height: 1.55;
+        }
+
+        .footer-link-row {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.7rem;
             margin-top: 1rem;
+        }
+
+        .footer-link-row a {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.4rem;
+            padding: 0.72rem 0.95rem;
+            border-radius: 999px;
+            text-decoration: none;
+            color: #f7f3ff;
+            background:
+                linear-gradient(135deg, rgba(255,255,255,0.08), rgba(255,255,255,0.03));
+            border: 1px solid rgba(255,255,255,0.1);
+            transition: transform 0.25s ease, border-color 0.25s ease, box-shadow 0.25s ease;
+        }
+
+        .footer-link-row a:hover {
+            transform: translateY(-2px);
+            border-color: rgba(217, 204, 255, 0.26);
+            box-shadow: 0 16px 30px rgba(13, 17, 39, 0.24);
+        }
+
+        .footer-credit {
+            margin-top: 1rem;
+            color: rgba(236, 233, 255, 0.68);
+            font-size: 0.92rem;
+            text-align: left;
+        }
+
+        .guide-panel {
+            margin-top: 1rem;
+            border-radius: 20px;
+            border: 1px solid rgba(146, 154, 255, 0.16);
+            background:
+                radial-gradient(circle at top right, rgba(217, 204, 255, 0.14), transparent 30%),
+                linear-gradient(145deg, rgba(13, 18, 39, 0.9), rgba(17, 23, 46, 0.86));
+            box-shadow: 0 18px 34px rgba(17, 23, 46, 0.16);
+            overflow: hidden;
+        }
+
+        .guide-panel[open] {
+            border-color: rgba(163, 157, 255, 0.22);
+        }
+
+        .guide-panel summary {
+            list-style: none;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 1rem;
+            padding: 1rem 1.05rem;
+            color: #f7f3ff;
+        }
+
+        .guide-panel summary::-webkit-details-marker {
+            display: none;
+        }
+
+        .guide-summary-main {
+            display: grid;
+            gap: 0.3rem;
+        }
+
+        .guide-summary-main .k {
+            font-size: 0.72rem;
+            letter-spacing: 0.14em;
+            text-transform: uppercase;
+            color: rgba(255, 215, 157, 0.88);
+            font-weight: 700;
+        }
+
+        .guide-summary-main .v {
+            font-size: 1.02rem;
+            font-weight: 700;
+            line-height: 1.45;
+        }
+
+        .guide-summary-toggle {
+            font-size: 0.76rem;
+            letter-spacing: 0.12em;
+            text-transform: uppercase;
+            color: rgba(217, 204, 255, 0.78);
+            white-space: nowrap;
+        }
+
+        .guide-panel[open] .guide-summary-toggle::after {
+            content: '  –';
+        }
+
+        .guide-panel:not([open]) .guide-summary-toggle::after {
+            content: '  +';
+        }
+
+        .guide-grid {
+            display: grid;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            gap: 0.8rem;
+            padding: 0 1.05rem 1.05rem;
+        }
+
+        .guide-card {
+            padding: 0.85rem 0.9rem;
+            border-radius: 16px;
+            background:
+                linear-gradient(145deg, rgba(255,255,255,0.06), rgba(255,255,255,0.03));
+            border: 1px solid rgba(255,255,255,0.08);
+        }
+
+        .guide-card .k {
+            display: block;
+            margin-bottom: 0.32rem;
+            font-size: 0.7rem;
+            letter-spacing: 0.14em;
+            text-transform: uppercase;
+            color: rgba(159, 232, 223, 0.9);
+            font-weight: 700;
+        }
+
+        .guide-card .v {
+            color: rgba(246, 242, 255, 0.86);
+            font-size: 0.93rem;
+            line-height: 1.65;
         }
 
         .analysis-atlas {
@@ -5262,6 +5488,11 @@
             if (path === '/api/system/data-engineering') return load('system/data-engineering.json').then(J);
             if (path === '/api/system/bias-propagation') return load('system/bias-propagation.json').then(J);
             if (path === '/api/system/trojan-horse') return load('system/trojan-horse.json').then(J);
+            if (path === '/api/system/catalog') return load('system/catalog.json').then(J);
+            if (path === '/api/system/frontend-state') return load('system/frontend-state.json').then(J);
+            if (path === '/api/system/critical-spine') return load('system/critical-spine.json').then(J);
+            if (path === '/api/system/comparatives') return load('system/comparatives.json').then(J);
+            if (path === '/api/system/runtime' || path === '/api/system/runtime/latest') return load('system/runtime.json').then(J);
             if (path === '/api/bias-library') {
                 return load('bias-library.json').then(function (d) {
                     if (qs.category) {
@@ -6277,10 +6508,10 @@
             opacity: 0.66;
             pointer-events: none;
         }
-        .mv-grid-2 { display: grid; grid-template-columns: 1.5fr 1fr; gap: 1.4rem; align-items: stretch; }
-        .mv-grid-net { display: grid; grid-template-columns: 1.6fr 1fr; gap: 1.4rem; align-items: stretch; }
-        .mv-chart { width: 100%; min-height: 340px; }
-        .mv-chart.tall { min-height: 420px; }
+        .mv-grid-2 { display: grid; grid-template-columns: 1.5fr 1fr; gap: 1.4rem; align-items: start; }
+        .mv-grid-net { display: grid; grid-template-columns: 1.6fr 1fr; gap: 1.4rem; align-items: start; }
+        .mv-chart { width: 100%; min-height: clamp(250px, 34vw, 340px); }
+        .mv-chart.tall { min-height: clamp(320px, 42vw, 420px); }
 
         .mv-figures { display: grid; grid-template-columns: 1fr 1fr; gap: 0.9rem; }
         .mv-figure { background: var(--paper); border: 1px solid var(--line); border-radius: 16px; padding: 1.1rem 1.2rem; }
@@ -6318,7 +6549,7 @@
         .mv-toggle button.active { background: var(--paper); color: var(--ink); box-shadow: 0 4px 12px -6px rgba(40,46,86,0.5); }
 
         /* What-if predictor */
-        .mv-whatif { display: grid; grid-template-columns: 1.1fr 0.9fr; gap: 1.6rem; align-items: center; }
+        .mv-whatif { display: grid; grid-template-columns: 1.1fr 0.9fr; gap: 1.6rem; align-items: start; }
         .mv-controls .field { margin-bottom: 1.3rem; }
         .mv-controls label { display: flex; justify-content: space-between; align-items: baseline; font-size: 0.86rem; font-weight: 600; color: var(--ink); margin-bottom: 0.45rem; }
         .mv-controls label .rv { font-family: 'Space Grotesk', monospace; color: var(--indigo); font-weight: 600; }
@@ -6340,7 +6571,7 @@
         .mv-meter > span { display: block; height: 100%; border-radius: 999px; background: linear-gradient(90deg, var(--indigo), var(--teal)); transition: width 0.7s cubic-bezier(0.2,0.8,0.2,1); }
 
         /* Resonance mapper */
-        .mv-resonance-shell { display: grid; grid-template-columns: 1.15fr 0.85fr; gap: 1rem; align-items: stretch; }
+        .mv-resonance-shell { display: grid; grid-template-columns: 1.15fr 0.85fr; gap: 1rem; align-items: start; }
         .mv-resonance-stage {
             display: flex; flex-direction: column; gap: 0.9rem;
             background: linear-gradient(180deg, rgba(8,14,26,0.98), rgba(18,22,44,0.96));
@@ -6374,7 +6605,7 @@
         .mv-resonance-scene {
             position: relative;
             width: 100%;
-            min-height: 400px;
+            min-height: clamp(280px, 36vw, 400px);
             border-radius: 20px;
             overflow: hidden;
             background:
@@ -7929,6 +8160,31 @@
                 min-height: 300px !important;
             }
         }
+
+        @media (max-width: 980px) {
+            .author-citation {
+                grid-template-columns: 1fr;
+            }
+
+            .footer-brand {
+                flex-direction: column;
+            }
+
+            .guide-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        @media (max-width: 640px) {
+            .guide-panel summary {
+                align-items: flex-start;
+                flex-direction: column;
+            }
+
+            .footer-link-row a {
+                flex: 1 1 calc(50% - 0.4rem);
+            }
+        }
     </style>
 </head>
 <body>
@@ -7942,7 +8198,7 @@
         </div>
         <div class="header-content">
             <div class="hero-copy">
-                <span class="header-kicker">Loopchii Research Surface</span>
+                <span class="header-kicker">LOOPCHii Research Surface</span>
                 <div class="hero-title-cluster">
                     <div class="hero-title-band">
                         <h1>Stream</h1>
@@ -8378,7 +8634,7 @@
                         </div>
                         <div class="trojan-pane governed">
                             <div class="trojan-pane-head">
-                                <span class="eyebrow">Loopchii Lite</span>
+                                <span class="eyebrow">LOOPCHii Lite</span>
                                 <h3>Risk is frozen before the fragment resolves</h3>
                             </div>
                             <div class="trojan-stream">
@@ -8401,7 +8657,7 @@
                     </div>
                     <div class="trojan-lab-footer">
                         <p id="trojanReasonLine">The comparison surface will explain what was blocked, why it mattered, and what safer path stayed available.</p>
-                        <p>This browser lane is public and deterministic on purpose. It is here to prove usefulness fast, invite contribution, and lower adoption friction without narrating private Loopchii internals.</p>
+                        <p>This browser lane is public and deterministic on purpose. It is here to prove usefulness fast, invite contribution, and lower adoption friction without narrating private LOOPCHii internals.</p>
                         <div class="trojan-footer-tags">
                             <span class="trojan-footer-tag" id="trojanCategoryPill"><strong>Mode</strong> Waiting for a prompt</span>
                             <span class="trojan-footer-tag" id="trojanMatchedTerms"><strong>Signals</strong> No matched terms yet</span>
@@ -8547,7 +8803,7 @@
     </div>
 
     <div class="visualization-container">
-        <div class="viz-section" id="dashFieldMap" style="animation-delay: 0.1s;">
+        <div class="viz-section" id="dashFieldMap" data-guide-key="dashFieldMap" style="animation-delay: 0.1s;">
             <h2 class="viz-title">Multi-Dimensional Bias Analysis</h2>
             
             <div class="viz-explanation">
@@ -8600,7 +8856,7 @@
             </div>
         </div>
 
-        <div class="viz-section" id="dashLandscape" style="animation-delay: 0.15s;">
+        <div class="viz-section" id="dashLandscape" data-guide-key="dashLandscape" style="animation-delay: 0.15s;">
             <h2 class="viz-title">3D Representation Landscape</h2>
 
             <div class="viz-explanation">
@@ -8617,7 +8873,7 @@
             </div>
         </div>
 
-        <div class="viz-section" id="dashNetwork" style="animation-delay: 0.2s;">
+        <div class="viz-section" id="dashNetwork" data-guide-key="dashNetwork" style="animation-delay: 0.2s;">
             <h2 class="viz-title">Character Interaction Networks</h2>
             
             <div class="viz-explanation">
@@ -8695,7 +8951,7 @@
             </div>
         </div>
 
-        <div class="viz-section" id="dashTimeline" style="animation-delay: 0.3s;">
+        <div class="viz-section" id="dashTimeline" data-guide-key="dashTimeline" style="animation-delay: 0.3s;">
             <h2 class="viz-title">Temporal Evolution Analysis</h2>
             
             <div class="viz-explanation">
@@ -8712,7 +8968,7 @@
             </div>
         </div>
 
-        <div class="viz-section" id="dashRoles" style="animation-delay: 0.4s;">
+        <div class="viz-section" id="dashRoles" data-guide-key="dashRoles" style="animation-delay: 0.4s;">
             <h2 class="viz-title">Role Distribution Patterns</h2>
             
             <div class="viz-explanation">
@@ -8750,7 +9006,7 @@
                     <button class="analysis-atlas-step" data-target="exploreGenre" style="--atlas-wash:rgba(240,119,159,0.18)" onclick="StreamLensApp.jumpToViz('exploreGenre', this)"><span class="n">03</span><span class="t">Genre pressure</span><span class="s">Only then decide whether the signal is structural or genre-shaped.</span></button>
                 </div>
             </div>
-            <div class="viz-section" id="exploreRows">
+            <div class="viz-section" id="exploreRows" data-guide-key="exploreRows">
                 <h2 class="viz-title">Character Data Explorer</h2>
                 <div class="viz-explanation">
                     <h4>Live Dataset</h4>
@@ -8830,7 +9086,7 @@
                 <p class="api-note">Power users: the full walkthrough is in <a href="./StreamLen_processors.html" target="_blank" rel="noopener noreferrer">StreamLen_processors.html</a>.</p>
             </div>
 
-            <div class="viz-section" id="exploreMedia">
+            <div class="viz-section" id="exploreMedia" data-guide-key="exploreMedia">
                 <h2 class="viz-title">Media Type Analysis</h2>
                 <div class="viz-explanation">
                     <h4>Diversity Across Formats</h4>
@@ -8865,7 +9121,7 @@
                 </div>
             </div>
 
-            <div class="viz-section" id="exploreGenre">
+            <div class="viz-section" id="exploreGenre" data-guide-key="exploreGenre">
                 <h2 class="viz-title">Genre Analysis</h2>
                 <div class="viz-explanation">
                     <h4>Computed Per-Genre Metrics</h4>
@@ -8898,7 +9154,7 @@
                     <button class="analysis-atlas-step" data-target="insightsIntersection" style="--atlas-wash:rgba(240,119,159,0.18)" onclick="StreamLensApp.jumpToViz('insightsIntersection', this)"><span class="n">03</span><span class="t">Combined lens</span><span class="s">Where top-line progress often gives way.</span></button>
                 </div>
             </div>
-            <div class="viz-section" id="insightsSignals">
+            <div class="viz-section" id="insightsSignals" data-guide-key="insightsSignals">
                 <h2 class="viz-title">Generated Insights</h2>
                 <div class="viz-explanation">
                     <h4>Computed From Live Data</h4>
@@ -9034,7 +9290,7 @@
                         <p>The library is strongest when it sharpens human review, not when it encourages people to flatten every judgement into one score.</p>
                     </div>
                 </div>
-                <div class="viz-section" id="libraryPropagationStudio" style="animation-delay:0.14s;">
+                <div class="viz-section" id="libraryPropagationStudio" data-guide-key="libraryPropagationStudio" style="animation-delay:0.14s;">
                     <h2 class="viz-title">Bias Harmonics</h2>
                     <div class="viz-explanation">
                         <h4>Where a pattern enters, how it spreads, what someone can do</h4>
@@ -9174,7 +9430,7 @@
                         <p>The best use of a metric is to improve the next review, the next procurement question, or the next design decision.</p>
                     </div>
                 </div>
-                <div class="viz-section" id="learnDataSystem" style="animation-delay:0.12s;">
+                <div class="viz-section" id="learnDataSystem" data-guide-key="learnDataSystem" style="animation-delay:0.12s;">
                     <h2 class="viz-title">Working Data Platform</h2>
                     <div class="viz-explanation">
                         <h4>Contracts, lineage, and claim discipline</h4>
@@ -9267,7 +9523,7 @@
                     <button class="analysis-atlas-step" data-target="scorecardTrendFit" style="--atlas-wash:rgba(240,119,159,0.18)" onclick="StreamLensApp.jumpToViz('scorecardTrendFit', this)"><span class="n">03</span><span class="t">Trend fit</span><span class="s">Stress-test the story against time, not just one run.</span></button>
                 </div>
             </div>
-            <div class="viz-section" id="scorecardVerdict">
+            <div class="viz-section" id="scorecardVerdict" data-guide-key="scorecardVerdict">
                 <h2 class="viz-title">The Verdict</h2>
                 <div class="viz-explanation">
                     <h4>From numbers to a grade you can act on</h4>
@@ -9466,7 +9722,7 @@
             </div>
 
             <!-- I. Power Law -->
-            <div class="mv-movement" id="mvPowerLaw">
+            <div class="mv-movement" id="mvPowerLaw" data-guide-key="mvPowerLaw">
                 <div class="mv-mhead"><span class="mv-mnum">01</span><h3>The Power Law of Attention</h3></div>
                 <p class="mv-lead">View counts are not normally distributed &mdash; they follow a power law where a tiny elite captures most of the attention. The complementary cumulative distribution (CCDF) on log-log axes reveals the heavy tail: a straight line means pure power-law behaviour. We care because discovery systems, ad revenue, and cultural memory all behave differently when attention is this concentrated.</p>
                 <div class="mv-grid-2">
@@ -9484,7 +9740,7 @@
             </div>
 
             <!-- II. Inequality -->
-            <div class="mv-movement" id="mvInequality">
+            <div class="mv-movement" id="mvInequality" data-guide-key="mvInequality">
                 <div class="mv-mhead"><span class="mv-mnum">02</span><h3>The Inequality of Attention</h3></div>
                 <p class="mv-lead">A Lorenz curve shows how unevenly views are distributed across channels. The diagonal is perfect equality; the deeper the bow, the more a few mega-channels dominate. Gini (0 = equal, 1 = one takes all) and the Theil index quantify the gap, which matters because a supposedly “open” music field can still be governed by a very small set of accounts.</p>
                 <div class="mv-grid-2">
@@ -9503,7 +9759,7 @@
             </div>
 
             <!-- III. Correlation Architecture -->
-            <div class="mv-movement" id="mvCorrelation">
+            <div class="mv-movement" id="mvCorrelation" data-guide-key="mvCorrelation">
                 <div class="mv-mhead"><span class="mv-mnum">03</span><h3>Correlation Architecture</h3></div>
                 <p class="mv-lead">What actually correlates with more views? Spearman rank correlations show raw associations; partial correlations strip out the effect of channel size so you can see what matters <em>independently</em> of how big the channel already is. That helps separate reach from structure, which is the difference between “popular because it is everywhere” and “popular because something about it travels.”</p>
                 <div class="mv-toggle" id="mvCorrToggle">
@@ -9517,7 +9773,7 @@
             </div>
 
             <!-- IV. Archetypes -->
-            <div class="mv-movement" id="mvArchetypes">
+            <div class="mv-movement" id="mvArchetypes" data-guide-key="mvArchetypes">
                 <div class="mv-mhead"><span class="mv-mnum">04</span><h3>Viral Archetypes</h3></div>
                 <p class="mv-lead">K-means clustering on views, virality (views-per-subscriber), channel size and duration groups the 100 songs into five distinct strategies for capturing attention. It is useful because it turns a noisy leaderboard into a few recognizable release patterns you can compare.</p>
                 <div class="mv-archlegend" id="mvArchLegend"></div>
@@ -9525,7 +9781,7 @@
             </div>
 
             <!-- V. Tag Network -->
-            <div class="mv-movement" id="mvNetwork">
+            <div class="mv-movement" id="mvNetwork" data-guide-key="mvNetwork">
                 <div class="mv-mhead"><span class="mv-mnum">05</span><h3>The Tag Universe</h3></div>
                 <p class="mv-lead">When two tags appear on the same video they share an edge. The resulting co-occurrence graph reveals genre neighbourhoods, cross-over bridges, and the tags that sit at the centre of the music ecosystem. That makes it easier to see whether discovery is actually broad or just moving inside a small loop of familiar labels.</p>
                 <div class="mv-grid-net">
@@ -9543,7 +9799,7 @@
             </div>
 
             <!-- VI. Predictability -->
-            <div class="mv-movement" id="mvPredictability">
+            <div class="mv-movement" id="mvPredictability" data-guide-key="mvPredictability">
                 <div class="mv-mhead"><span class="mv-mnum">06</span><h3>How Predictable Is Virality?</h3></div>
                 <p class="mv-lead">An ensemble of RandomForest and GradientBoosting regressors, cross-validated on real data, tries to predict (log) view counts from pre-publication features alone. The honest R&sup2; shows how much is skill versus timing and luck, and the feature importances show which levers still mattered after the rest of the context was held constant.</p>
                 <div class="mv-grid-2">
@@ -9559,7 +9815,7 @@
             </div>
 
             <!-- VII. Tensor Resonance Mapper -->
-            <div class="mv-movement" id="mvResonance">
+            <div class="mv-movement" id="mvResonance" data-guide-key="mvResonance">
                 <div class="mv-mhead"><span class="mv-mnum">07</span><h3>Tensor Resonance Mapper</h3></div>
                 <p class="mv-lead">This panel treats repeating attention as a public proxy for oscillation. It does not inspect audio waveforms or private hardware traces. It looks at the visible shape of the catalog - duration fit, attention concentration, release timing, and tag/title echo - and turns that into a live resonance map you can click through.</p>
                 <div class="mv-resonance-shell">
@@ -9585,7 +9841,7 @@
             </div>
 
             <!-- VIII. What-If Predictor -->
-            <div class="mv-movement" id="mvWhatIf">
+            <div class="mv-movement" id="mvWhatIf" data-guide-key="mvWhatIf">
                 <div class="mv-mhead"><span class="mv-mnum">08</span><h3>What-If Virality Predictor</h3></div>
                 <p class="mv-lead">Set the parameters of a hypothetical music upload and the trained model predicts where it would rank among the real top 100. All predictions use the same RandomForest model trained on actual YouTube data, so you can see how a change in one variable shifts the whole ranking story.</p>
                 <div class="mv-panel">
@@ -9623,7 +9879,7 @@
             </div>
 
             <!-- IX. Bias Analysis -->
-            <div class="mv-movement" id="mvBias">
+            <div class="mv-movement" id="mvBias" data-guide-key="mvBias">
                 <div class="mv-mhead"><span class="mv-mnum">09</span><h3>Bias in the Top 100</h3></div>
                 <p class="mv-lead">Who accumulates the front row, and by what pattern? We measure gender representation, genre gatekeeping, collaboration patterns, language dominance, engagement disparities, and attention concentration across <strong id="mvBiasTotalSongs">636</strong> real songs from 3 public datasets. This section is less interested in blame than structure: where exposure gathers, which genre families keep inheriting the advantage, and which variables still tilt the field after the surface story changes.</p>
                 <div class="mv-panel">
@@ -9743,14 +9999,14 @@
             </div>
 
             <!-- X. 3D Archetype Landscape -->
-            <div class="mv-movement" id="mv3DLandscape">
+            <div class="mv-movement" id="mv3DLandscape" data-guide-key="mv3DLandscape">
                 <div class="mv-mhead"><span class="mv-mnum">10</span><h3>3D Virality Landscape</h3></div>
                 <p class="mv-lead">The same archetype clusters rendered in three dimensions &mdash; views, virality, and channel size form the axes. Drag to rotate, scroll to zoom. Each sphere is a real song; colour encodes the cluster. This helps distinguish a true strategy from a one-off spike.</p>
                 <div class="mv-panel"><div class="mv-chart tall" id="mv3DScatter" style="min-height:480px;"></div></div>
             </div>
 
             <!-- XI. Songs Explorer -->
-            <div class="mv-movement" id="mvSongsExplorer">
+            <div class="mv-movement" id="mvSongsExplorer" data-guide-key="mvSongsExplorer">
                 <div class="mv-mhead"><span class="mv-mnum">11</span><h3>Real Songs Explorer</h3></div>
                 <p class="mv-lead">This is the public row layer behind the music lane. It now carries the broader structural context as well as the core leaderboard, so you can search, sort, page through the evidence, and decide whether a neat summary still feels earned.</p>
                 <div class="mv-score-layer">
@@ -9821,10 +10077,38 @@
     </div>
 
     <div class="author-citation">
-        <h3>About This Published Surface</h3>
-        <p>Stream is a public Loopchii research surface for measuring representation asymmetries, attention concentration, and the social shape of media systems. The representation dashboard runs on a clearly labeled synthetic dataset so the math stays reproducible. The Music Virality module is separate because it is built on real YouTube data and should be read differently.</p>
-        <p class="author-name">Created by Cazandra Aporbo, MS</p>
-        <p style="font-size: 0.9rem; margin-top: 0.5rem;">Mathematical framework development: September 10, 2024 - present</p>
+        <div class="footer-brand">
+            <div class="footer-brandmark" aria-hidden="true">
+                <img src="./assets/loopchii.svg" alt="">
+            </div>
+            <div class="footer-brand-copy">
+                <span class="eyebrow">LOOPCHii public research lane</span>
+                <h3>Built to be inspected, challenged, and extended.</h3>
+                <p>Stream is a public LOOPCHii surface for representation asymmetries, attention concentration, media bias, and music-market structure. The synthetic representation lane stays clearly labeled. The music lane stays separate because it is built from public source data and should be read with a different quality posture.</p>
+                <div class="footer-link-row">
+                    <a href="https://github.com/loopchii/Stream" target="_blank" rel="noopener noreferrer">Repository</a>
+                    <a href="./contributing.md" target="_blank" rel="noopener noreferrer">Contributing</a>
+                    <a href="./openapi.stream.json" target="_blank" rel="noopener noreferrer">OpenAPI</a>
+                    <a href="./StreamLen_processors.html" target="_blank" rel="noopener noreferrer">Methods Notebook</a>
+                </div>
+                <p class="author-name">Created by Cazandra Aporbo, MS</p>
+                <p class="footer-credit">Mathematical framework development: September 10, 2024 to present. Public repository stewardship under LOOPCHii.</p>
+            </div>
+        </div>
+        <div class="footer-support">
+            <div class="footer-support-card">
+                <span class="k">What contributors should expect</span>
+                <span class="v">Working code, visible assumptions, and a clear claim boundary between public research and private LOOPCHii runtime work.</span>
+            </div>
+            <div class="footer-support-card">
+                <span class="k">Where to start</span>
+                <span class="v">Open the methods notebook, inspect the API surface, or go straight to the row explorers and music audit before changing a visual or metric.</span>
+            </div>
+            <div class="footer-support-card">
+                <span class="k">Why this exists</span>
+                <span class="v">To help people study how attention, bias, and virality take shape in the open without pretending public research is the same thing as private enforcement.</span>
+            </div>
+        </div>
     </div>
 
     <script>
@@ -13825,10 +14109,80 @@
             });
         }
 
+        function escapeGuideHtml(value) {
+            return String(value == null ? '' : value)
+                .replace(/&/g, '&amp;')
+                .replace(/</g, '&lt;')
+                .replace(/>/g, '&gt;')
+                .replace(/"/g, '&quot;')
+                .replace(/'/g, '&#39;');
+        }
+
+        function renderGuidePanel(section, key, guide, index) {
+            if (!section || !guide || section.querySelector('.guide-panel')) return;
+            const details = document.createElement('details');
+            details.className = 'guide-panel';
+            if (index < 2 || key === 'mvBias' || key === 'learnDataSystem') {
+                details.open = true;
+            }
+            details.innerHTML = ''
+                + '<summary>'
+                +   '<div class="guide-summary-main">'
+                +     '<span class="k">How to read this visual</span>'
+                +     '<span class="v">' + escapeGuideHtml(guide.title || 'Critical reading guide') + '</span>'
+                +   '</div>'
+                +   '<span class="guide-summary-toggle">Open guide</span>'
+                + '</summary>'
+                + '<div class="guide-grid">'
+                +   '<div class="guide-card"><span class="k">Purpose</span><span class="v">' + escapeGuideHtml(guide.purpose || '') + '</span></div>'
+                +   '<div class="guide-card"><span class="k">What we learn</span><span class="v">' + escapeGuideHtml(guide.learn || '') + '</span></div>'
+                +   '<div class="guide-card"><span class="k">If it changes</span><span class="v">' + escapeGuideHtml(guide.if_changes || '') + '</span></div>'
+                +   '<div class="guide-card"><span class="k">How to improve it</span><span class="v">' + escapeGuideHtml(guide.improve || '') + '</span></div>'
+                +   '<div class="guide-card"><span class="k">Limits</span><span class="v">' + escapeGuideHtml(guide.limits || '') + '</span></div>'
+                +   '<div class="guide-card"><span class="k">How it scales</span><span class="v">' + escapeGuideHtml(guide.scale || '') + '</span></div>'
+                + '</div>';
+            const anchor = section.querySelector('.mv-lead')
+                || section.querySelector('.viz-copy-stack')
+                || section.querySelector('.viz-copy')
+                || section.querySelector('p');
+            if (anchor && anchor.parentNode) {
+                anchor.insertAdjacentElement('afterend', details);
+            } else {
+                section.insertBefore(details, section.firstChild);
+            }
+        }
+
+        async function bootstrapPublicGuides() {
+            try {
+                const response = await fetch('/api/system/critical-spine');
+                if (!response.ok) return;
+                const payload = await response.json();
+                const visuals = payload.visuals || {};
+                Object.entries(visuals).forEach(([key, guide], index) => {
+                    renderGuidePanel(document.querySelector('[data-guide-key="' + key + '"]'), key, guide, index);
+                });
+                const footerCredit = document.querySelector('.footer-credit');
+                if (footerCredit && payload.generated_at) {
+                    footerCredit.textContent += ' Runtime guide updated ' + payload.generated_at + '.';
+                }
+            } catch (error) {
+                console.warn('critical spine unavailable', error);
+            }
+        }
+
+        function registerStreamServiceWorker() {
+            if (!('serviceWorker' in navigator) || location.protocol === 'file:') return;
+            navigator.serviceWorker.register('./service-worker.js').catch((error) => {
+                console.warn('service worker registration failed', error);
+            });
+        }
+
         // ==================== INITIALIZE ON LOAD ====================
         window.addEventListener('DOMContentLoaded', () => {
             StreamLensApp.init();
             injectInfoChips();
+            bootstrapPublicGuides();
+            registerStreamServiceWorker();
         });
 
         // Handle window resize (debounced)

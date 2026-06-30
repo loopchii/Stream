@@ -12,6 +12,7 @@ def test_runtime_materializes_json_sqlite_and_markdown(tmp_path):
     assert "comparatives" in payload
     assert runtime.config.sqlite_path.exists()
     assert (tmp_path / "data" / "system" / "frontend-state.json").exists()
+    assert (tmp_path / "data" / "system" / "critical-spine.json").exists()
     assert (tmp_path / "data" / "system" / "comparatives.json").exists()
     assert (tmp_path / "data" / "system" / "runtime.json").exists()
     assert (tmp_path / "data" / "system" / "contracts.json").exists()
@@ -27,3 +28,4 @@ def test_runtime_latest_snapshot_round_trips(tmp_path):
     assert latest["run_id"] == payload["run_id"]
     assert latest["sample_size"] == 5000
     assert "frontend_state" in latest
+    assert "critical_spine" in latest

@@ -1,0 +1,715 @@
+{
+  "runtime": "stream_backend",
+  "generated_at": "2026-06-30T15:59:59+00:00",
+  "sample_size": 5000,
+  "languages": [
+    "python",
+    "sqlite",
+    "analytics",
+    "music",
+    "governance"
+  ],
+  "targets": [
+    "api",
+    "static",
+    "sqlite"
+  ],
+  "sqlite_path": "data/system/runtime/stream_runtime.sqlite3",
+  "connectivity": {
+    "api": "/api/*",
+    "swagger": "/docs",
+    "openapi": "/openapi.json",
+    "static_bundle": "data/system/*.json",
+    "offline_shell": "manifest.webmanifest + service-worker.js"
+  },
+  "jobs": [
+    {
+      "name": "representation",
+      "description": "Synthetic representation analysis and export.",
+      "output_name": "analysis_results.json",
+      "depends_on": [
+        "DataProcessor.generate_synthetic_data",
+        "streamlens_processor.process_data"
+      ]
+    },
+    {
+      "name": "music",
+      "description": "Public music analysis and quality reporting.",
+      "output_name": "data/music/*.json",
+      "depends_on": [
+        "music_pipeline.load_enriched_dataset",
+        "music_pipeline.full_report"
+      ]
+    },
+    {
+      "name": "music_intelligence",
+      "description": "Catalog + notation harvest for deeper note-level reasoning.",
+      "output_name": "music_index.json",
+      "depends_on": [
+        "music_intelligence.build_music_data_package"
+      ]
+    },
+    {
+      "name": "frontend_state",
+      "description": "Generated runtime payload for the browser surface.",
+      "output_name": "data/system/frontend-state.json",
+      "depends_on": [
+        "stream_backend.analytics",
+        "data_engineering.build_data_engineering_snapshot"
+      ]
+    },
+    {
+      "name": "critical_spine",
+      "description": "Per-visual purpose, limitation, and improvement guidance.",
+      "output_name": "data/system/critical-spine.json",
+      "depends_on": [
+        "stream_backend.analytics.build_critical_spine"
+      ]
+    },
+    {
+      "name": "openapi_export",
+      "description": "Static OpenAPI contract for contributors and offline readers.",
+      "output_name": "openapi.stream.json",
+      "depends_on": [
+        "FastAPI.app.openapi"
+      ]
+    }
+  ],
+  "contract_surface": {
+    "runtime": "stream_backend",
+    "brand": "LOOPCHii Stream",
+    "languages": [
+      "Python",
+      "HTML",
+      "JavaScript",
+      "Rust",
+      "WASM"
+    ],
+    "targets": [
+      "api",
+      "static",
+      "sqlite"
+    ],
+    "sqlite_path": "data/system/runtime/stream_runtime.sqlite3",
+    "sample_sizes": [
+      1000,
+      5000,
+      10000,
+      25000
+    ],
+    "latest_run_id": null,
+    "offline_assets": [
+      "data/system/frontend-state.json",
+      "data/system/critical-spine.json",
+      "data/system/comparatives.json",
+      "data/system/runtime.json"
+    ],
+    "developer_entrypoints": [
+      "app.py",
+      "build_static.py",
+      "stream_backend/cli/materialize.py",
+      "stream_backend/cli/validate.py"
+    ],
+    "api_docs": {
+      "live_swagger": "/docs",
+      "live_openapi": "/openapi.json",
+      "static_openapi_export": "openapi.stream.json"
+    },
+    "notes": [
+      "Synthetic and public lanes stay separated.",
+      "Static exports and API responses should originate from the same runtime package.",
+      "SQLite snapshots are for inspectable persistence, not for hiding logic."
+    ]
+  },
+  "quality_surface": {
+    "representation_checks": [],
+    "music_checks": [],
+    "music_quality": {
+      "generated_at": "2026-06-30",
+      "cohorts": {
+        "core_top_100": {
+          "songs": 100,
+          "channels": 65,
+          "purpose": "Used for the core view, inequality, correlation, archetype, network, and prediction charts."
+        },
+        "enriched_context": {
+          "songs": 636,
+          "sources": {
+            "most_viewed_2026": 398,
+            "youtube_music_data": 138,
+            "primary_top100": 100
+          },
+          "purpose": "Used where broader structural checks matter: bias, language mix, publication timing, and resonance context."
+        }
+      },
+      "source_audit": [
+        {
+          "source": "Top 100 (2025)",
+          "file": "youtube-top-100-songs-2025.csv",
+          "raw_rows": 100,
+          "admitted_rows": 100,
+          "duplicates_removed": 0,
+          "missing_views_dropped": 0,
+          "missing_duration_imputed": 0,
+          "missing_followers_imputed": 0,
+          "rows_with_year_hints": 45,
+          "notes": "Primary cohort used for the core charts and leaderboard surfaces."
+        },
+        {
+          "source": "Most Viewed (2026)",
+          "file": "most-viewed-yt-videos-2026.csv",
+          "raw_rows": 1000,
+          "music_rows_after_filter": 400,
+          "admitted_rows": 398,
+          "duplicates_removed": 2,
+          "missing_views_dropped": 0,
+          "missing_language_labels": 0,
+          "notes": "Filtered to music videos before deduplication against the primary cohort."
+        },
+        {
+          "source": "YouTube Music Data",
+          "file": "youtube-music-data.csv",
+          "raw_rows": 157,
+          "admitted_rows": 138,
+          "duplicates_removed": 19,
+          "missing_views_dropped": 0,
+          "missing_duration_imputed": 0,
+          "missing_followers_imputed": 0,
+          "rows_with_publication_dates": 142,
+          "notes": "Adds duration, engagement, subscriber, and publication timing context where available."
+        }
+      ],
+      "cleaning_steps": [
+        "Coerce view counts to numeric and drop rows that still cannot be measured.",
+        "Normalize title strings before cross-source deduplication so the same song is not counted twice.",
+        "Convert durations to minutes and fill missing durations with the source median rather than inventing a default.",
+        "Fill missing subscriber counts with the source median so reach-adjusted comparisons remain stable.",
+        "Map channel countries only when a public lookup exists; otherwise keep the value as Unknown instead of guessing.",
+        "Carry publication years directly from public date fields, and only infer a year from free text when a single recent year or copyright marker is unambiguous.",
+        "Keep the top-100 cohort separate from the enriched context so broad structural claims do not overwrite the core leaderboard."
+      ],
+      "guardrails": [
+        "Virality coefficient is excluded from the predictor set because it is derived from views and would leak the target.",
+        "All prediction scores are reported out-of-fold with 5-fold cross-validation, not in-sample fit.",
+        "Power-law confidence intervals use 500 bootstrap resamples over the fitted tail only.",
+        "Correlation rows include partial Spearman checks so raw associations are not mistaken for independent effects.",
+        "Publication timelines are shown only for rows with explicit public dates or conservative text-resolved year hints; missing years are not backfilled.",
+        "Years inferred from description text are marked separately from explicit upload dates so time claims stay auditable."
+      ],
+      "model_rigor": {
+        "target": "log1p(view_count)",
+        "cv_folds": 5,
+        "bootstrap_power_law": 500,
+        "bootstrap_correlations": 400,
+        "predictor_features": [
+          "Duration (minutes)",
+          "Channel reach (subscribers)",
+          "Title length (words)",
+          "Title length (characters)",
+          "Tag count",
+          "Description length (characters)",
+          "Official video"
+        ],
+        "blocked_from_prediction": [
+          "Virality (views per subscriber)"
+        ]
+      },
+      "coverage": {
+        "known_languages": 5,
+        "countries_mapped": 6,
+        "publication_year_min": 2009,
+        "publication_year_max": 2025,
+        "publication_year_explicit_rows": 123,
+        "publication_year_inferred_rows": 45,
+        "publication_year_explicit_share": 0.193,
+        "publication_year_inferred_share": 0.071,
+        "duplicate_titles_removed": 21
+      },
+      "feature_manifest": [
+        {
+          "feature": "duration_min",
+          "label": "Duration (minutes)",
+          "description": "Track length in minutes. The data peaks near the 3-minute radio-single norm.",
+          "used_for_prediction": true,
+          "descriptive_only": false
+        },
+        {
+          "feature": "channel_follower_count",
+          "label": "Channel reach (subscribers)",
+          "description": "How many subscribers the uploading channel has - a proxy for built-in reach.",
+          "used_for_prediction": true,
+          "descriptive_only": false
+        },
+        {
+          "feature": "virality_coefficient",
+          "label": "Virality (views per subscriber)",
+          "description": "Views divided by subscribers: how far a song travelled beyond its channel's base.",
+          "used_for_prediction": false,
+          "descriptive_only": true
+        },
+        {
+          "feature": "title_word_count",
+          "label": "Title length (words)",
+          "description": "Number of words in the video title.",
+          "used_for_prediction": true,
+          "descriptive_only": false
+        },
+        {
+          "feature": "title_char_count",
+          "label": "Title length (characters)",
+          "description": "Number of characters in the video title.",
+          "used_for_prediction": true,
+          "descriptive_only": false
+        },
+        {
+          "feature": "tag_count",
+          "label": "Tag count",
+          "description": "How many YouTube tags the upload declared.",
+          "used_for_prediction": true,
+          "descriptive_only": false
+        },
+        {
+          "feature": "description_len",
+          "label": "Description length (characters)",
+          "description": "Character length of the video description.",
+          "used_for_prediction": true,
+          "descriptive_only": false
+        },
+        {
+          "feature": "is_official",
+          "label": "Official video",
+          "description": "1 if the title/tags mark it an official video, else 0.",
+          "used_for_prediction": true,
+          "descriptive_only": false
+        }
+      ]
+    },
+    "representation_scorecard": {
+      "inequality": {
+        "screen_time": {
+          "gini": 0.23851392108127167,
+          "theil": 0.08895040136296423,
+          "lorenz": [
+            {
+              "p": 0.0,
+              "l": 0.0
+            },
+            {
+              "p": 0.05,
+              "l": 0.009610816248100054
+            },
+            {
+              "p": 0.1,
+              "l": 0.030363654545782676
+            },
+            {
+              "p": 0.15,
+              "l": 0.05657782693503192
+            },
+            {
+              "p": 0.2,
+              "l": 0.0868360719215635
+            },
+            {
+              "p": 0.25,
+              "l": 0.12049770292270134
+            },
+            {
+              "p": 0.3,
+              "l": 0.15719625458230793
+            },
+            {
+              "p": 0.35,
+              "l": 0.19662940025845488
+            },
+            {
+              "p": 0.4,
+              "l": 0.23876265108886735
+            },
+            {
+              "p": 0.45,
+              "l": 0.2837714905704345
+            },
+            {
+              "p": 0.5,
+              "l": 0.3314344225496487
+            },
+            {
+              "p": 0.55,
+              "l": 0.38173185838455914
+            },
+            {
+              "p": 0.6,
+              "l": 0.4347103583541236
+            },
+            {
+              "p": 0.65,
+              "l": 0.49047372462233846
+            },
+            {
+              "p": 0.7,
+              "l": 0.5490723208238896
+            },
+            {
+              "p": 0.75,
+              "l": 0.610837896619951
+            },
+            {
+              "p": 0.8,
+              "l": 0.676387258155978
+            },
+            {
+              "p": 0.85,
+              "l": 0.7459335845895679
+            },
+            {
+              "p": 0.9,
+              "l": 0.8206791181490575
+            },
+            {
+              "p": 0.95,
+              "l": 0.9029419379910063
+            },
+            {
+              "p": 1.0,
+              "l": 1.0000000000000016
+            }
+          ]
+        },
+        "dialogue": {
+          "gini": 0.24428112031978277,
+          "theil": 0.09377615720916098,
+          "lorenz": [
+            {
+              "p": 0.0,
+              "l": 0.0
+            },
+            {
+              "p": 0.05,
+              "l": 0.008487613065340578
+            },
+            {
+              "p": 0.1,
+              "l": 0.028224638961468564
+            },
+            {
+              "p": 0.15,
+              "l": 0.05377239683998897
+            },
+            {
+              "p": 0.2,
+              "l": 0.08376848762046567
+            },
+            {
+              "p": 0.25,
+              "l": 0.1170836223312824
+            },
+            {
+              "p": 0.3,
+              "l": 0.1535612841850887
+            },
+            {
+              "p": 0.35,
+              "l": 0.192804815980845
+            },
+            {
+              "p": 0.4,
+              "l": 0.23483364356095301
+            },
+            {
+              "p": 0.45,
+              "l": 0.2796921688509022
+            },
+            {
+              "p": 0.5,
+              "l": 0.32741831849538156
+            },
+            {
+              "p": 0.55,
+              "l": 0.377923288643412
+            },
+            {
+              "p": 0.6,
+              "l": 0.4309661988492131
+            },
+            {
+              "p": 0.65,
+              "l": 0.4868467621098389
+            },
+            {
+              "p": 0.7,
+              "l": 0.545617890719831
+            },
+            {
+              "p": 0.75,
+              "l": 0.6077187937254899
+            },
+            {
+              "p": 0.8,
+              "l": 0.6736678636069053
+            },
+            {
+              "p": 0.85,
+              "l": 0.7437002455611488
+            },
+            {
+              "p": 0.9,
+              "l": 0.819168718251467
+            },
+            {
+              "p": 0.95,
+              "l": 0.9017957063708067
+            },
+            {
+              "p": 1.0,
+              "l": 1.0
+            }
+          ]
+        }
+      },
+      "diversity_detail": {
+        "race_shannon": 0.7127884439424652,
+        "race_simpson": 0.5839820800000001,
+        "gender_simpson": 0.49319448,
+        "age_simpson": 0.6068600799999999
+      },
+      "effect_sizes": {
+        "gender_dialogue": {
+          "chi_square": 3584510.15519657,
+          "cramers_v": 0.5758311978265818,
+          "magnitude": "large"
+        },
+        "age_dialogue": {
+          "chi_square": 973478.9276790688,
+          "cramers_v": 0.30008449786547364,
+          "magnitude": "medium"
+        },
+        "racial_dialogue": {
+          "chi_square": 5887735.838839141,
+          "cramers_v": 0.5218424970097814,
+          "magnitude": "large"
+        }
+      },
+      "trend": {
+        "gender_parity": {
+          "slope": 0.00577495235250107,
+          "intercept": -10.92449709048734,
+          "r_squared": 0.24036380560567183
+        },
+        "diversity": {
+          "slope": 0.0013135065712689964,
+          "intercept": -1.943202957373202,
+          "r_squared": 0.10391754034555822
+        },
+        "series": [
+          {
+            "year": 2015,
+            "diversity": 0.689110631757241,
+            "gender_parity": 0.6681715575620768,
+            "avg_sentiment": 0.5697874592181922
+          },
+          {
+            "year": 2016,
+            "diversity": 0.7222845656160927,
+            "gender_parity": 0.7669172932330827,
+            "avg_sentiment": 0.5554927291160559
+          },
+          {
+            "year": 2017,
+            "diversity": 0.7051314375525228,
+            "gender_parity": 0.6903553299492385,
+            "avg_sentiment": 0.5613717181293777
+          },
+          {
+            "year": 2018,
+            "diversity": 0.7046436420109018,
+            "gender_parity": 0.7852193995381063,
+            "avg_sentiment": 0.5609544330653152
+          },
+          {
+            "year": 2019,
+            "diversity": 0.7110568936525024,
+            "gender_parity": 0.7540229885057471,
+            "avg_sentiment": 0.5610943116543271
+          },
+          {
+            "year": 2020,
+            "diversity": 0.7029091616069149,
+            "gender_parity": 0.6814814814814815,
+            "avg_sentiment": 0.573517788666615
+          },
+          {
+            "year": 2021,
+            "diversity": 0.7393616890303186,
+            "gender_parity": 0.7719298245614035,
+            "avg_sentiment": 0.5573745967200202
+          },
+          {
+            "year": 2022,
+            "diversity": 0.6862677910664226,
+            "gender_parity": 0.7233009708737864,
+            "avg_sentiment": 0.566031655170363
+          },
+          {
+            "year": 2023,
+            "diversity": 0.7123371014743244,
+            "gender_parity": 0.7777777777777778,
+            "avg_sentiment": 0.5707875986864814
+          },
+          {
+            "year": 2024,
+            "diversity": 0.7189751485711936,
+            "gender_parity": 0.7531172069825436,
+            "avg_sentiment": 0.5720537993522172
+          },
+          {
+            "year": 2025,
+            "diversity": 0.7227260563694744,
+            "gender_parity": 0.7911111111111111,
+            "avg_sentiment": 0.5641964054810713
+          },
+          {
+            "year": 2026,
+            "diversity": 0.7140407198017398,
+            "gender_parity": 0.7621247113163973,
+            "avg_sentiment": 0.5711386359398956
+          }
+        ]
+      },
+      "confidence": {
+        "gender_parity": {
+          "point": 0.744,
+          "low": 0.71678,
+          "high": 0.7668
+        },
+        "diversity": {
+          "point": 0.7127884439424652,
+          "low": 0.6968174118486581,
+          "high": 0.7254324796664244
+        }
+      },
+      "scorecard": {
+        "dimensions": [
+          "diversity",
+          "parity",
+          "dialogue_equity",
+          "screen_equity"
+        ],
+        "platforms": [
+          {
+            "diversity": 0.728,
+            "parity": 0.752,
+            "dialogue_equity": 0.782,
+            "screen_equity": 0.766,
+            "overall": 0.757,
+            "grade": "B",
+            "grades": {
+              "diversity": "B-",
+              "parity": "B",
+              "dialogue_equity": "B",
+              "screen_equity": "B"
+            },
+            "sample_size": 851,
+            "platform": "hbo_max"
+          },
+          {
+            "diversity": 0.726,
+            "parity": 0.82,
+            "dialogue_equity": 0.71,
+            "screen_equity": 0.76,
+            "overall": 0.754,
+            "grade": "B",
+            "grades": {
+              "diversity": "B-",
+              "parity": "B+",
+              "dialogue_equity": "B-",
+              "screen_equity": "B"
+            },
+            "sample_size": 854,
+            "platform": "disney_plus"
+          },
+          {
+            "diversity": 0.735,
+            "parity": 0.747,
+            "dialogue_equity": 0.722,
+            "screen_equity": 0.761,
+            "overall": 0.741,
+            "grade": "B-",
+            "grades": {
+              "diversity": "B-",
+              "parity": "B-",
+              "dialogue_equity": "B-",
+              "screen_equity": "B"
+            },
+            "sample_size": 801,
+            "platform": "amazon_prime"
+          },
+          {
+            "diversity": 0.696,
+            "parity": 0.742,
+            "dialogue_equity": 0.734,
+            "screen_equity": 0.762,
+            "overall": 0.734,
+            "grade": "B-",
+            "grades": {
+              "diversity": "C+",
+              "parity": "B-",
+              "dialogue_equity": "B-",
+              "screen_equity": "B"
+            },
+            "sample_size": 811,
+            "platform": "hulu"
+          },
+          {
+            "diversity": 0.689,
+            "parity": 0.727,
+            "dialogue_equity": 0.75,
+            "screen_equity": 0.754,
+            "overall": 0.73,
+            "grade": "B-",
+            "grades": {
+              "diversity": "C+",
+              "parity": "B-",
+              "dialogue_equity": "B",
+              "screen_equity": "B"
+            },
+            "sample_size": 858,
+            "platform": "apple_tv"
+          },
+          {
+            "diversity": 0.695,
+            "parity": 0.674,
+            "dialogue_equity": 0.768,
+            "screen_equity": 0.767,
+            "overall": 0.726,
+            "grade": "B-",
+            "grades": {
+              "diversity": "C+",
+              "parity": "C+",
+              "dialogue_equity": "B",
+              "screen_equity": "B"
+            },
+            "sample_size": 825,
+            "platform": "netflix"
+          }
+        ],
+        "industry": {
+          "diversity": 0.713,
+          "parity": 0.744,
+          "dialogue_equity": 0.743,
+          "screen_equity": 0.761,
+          "overall": 0.74,
+          "grade": "B-",
+          "grades": {
+            "diversity": "B-",
+            "parity": "B-",
+            "dialogue_equity": "B-",
+            "screen_equity": "B"
+          },
+          "sample_size": 5000,
+          "platform": "industry"
+        }
+      }
+    }
+  }
+}

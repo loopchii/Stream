@@ -1,7 +1,7 @@
 # Stream
 
 <p align="center">
-  <strong>Loopchii Stream</strong> is a public research repository for media bias, music virality, cultural attention, and inspectable analysis.
+  <strong>LOOPCHii Stream</strong> is a public research repository for media bias, music virality, cultural attention, and inspectable analysis.
 </p>
 
 <p align="center">
@@ -17,7 +17,7 @@
 </p>
 
 <p align="center">
-  <img src="https://img.shields.io/badge/Loopchii-Public%20Research%20Surface-5B55FF?style=for-the-badge" alt="Loopchii public research surface">
+  <img src="https://img.shields.io/badge/LOOPCHii-Public%20Research%20Surface-5B55FF?style=for-the-badge" alt="LOOPCHii public research surface">
   <img src="https://img.shields.io/badge/Media%20Analysis-Representation%20%26%20Attention-FF6F9F?style=for-the-badge" alt="Media analysis">
   <img src="https://img.shields.io/badge/Inspectable-Dashboard%20%26%20Methods-48C9C2?style=for-the-badge" alt="Inspectable dashboard and methods">
   <img src="https://img.shields.io/github/actions/workflow/status/loopchii/Stream/ci.yml?branch=main&style=for-the-badge&label=CI" alt="CI status">
@@ -26,7 +26,7 @@
 
 > **Why this exists:** public work should not ask for trust before it shows its inputs, boundaries, and tradeoffs. Stream exists to make the work visible enough to inspect, challenge, and improve.
 
-Stream is where Loopchii publishes a bounded public surface: reproducible methods, readable visual reasoning, and a contribution path that does not depend on private infrastructure. Some lanes are synthetic and clearly labeled because they are here to teach the method. Some lanes are built from public music data because they are here to test what the method can actually hold when the inputs are real. The repo separates those two jobs on purpose.
+Stream is where LOOPCHii publishes a bounded public surface: reproducible methods, readable visual reasoning, and a contribution path that does not depend on private infrastructure. Some lanes are synthetic and clearly labeled because they are here to teach the method. Some lanes are built from public music data because they are here to test what the method can actually hold when the inputs are real. The repo separates those two jobs on purpose.
 
 ## Start Here
 
@@ -84,6 +84,13 @@ The repo is no longer just a front-end shell with a Python API bolted on. The pu
 - persists run metadata and artifacts into a local SQLite database for replay and inspection
 - keeps the live API, static build, and exported research artifacts aligned from the same code path
 
+Recent additions make that spine easier to verify:
+
+- `data/system/critical-spine.json` explains what each major visual is for, what could weaken its conclusion, and how to improve the analysis
+- `openapi.stream.json` mirrors the live FastAPI schema for contributors who want an offline contract
+- `manifest.webmanifest` and `service-worker.js` keep the static surface usable as a lightweight offline shell
+- `Dockerfile` bakes the static exports first, then serves the live API from the same repository state
+
 The result is intentionally polyglot but still bounded: Python drives the analysis and orchestration, JavaScript renders the public browser surface, and the repo's existing Rust/WASM lane remains available for lighter-weight public demos. The public value is in the connective tissue between those layers, not in any one language by itself.
 
 ## Choose Your Path
@@ -113,7 +120,7 @@ The interactive dashboard lets you inspect those patterns across seven tabs — 
 
 ## What This Repo Is Not
 
-- It is not a hidden proprietary Loopchii runtime.
+- It is not a hidden proprietary LOOPCHii runtime.
 - It is not a claim about private studio catalogues, internal platform data, or undisclosed production systems.
 - It is not a generic “AI for media” wrapper. The value here is in clear methods, bounded interpretation, and visible public artifacts.
 
@@ -127,7 +134,7 @@ What it gives you immediately:
 - a tiny public wrapper surface in [`packages/loopchii-lite`](packages/loopchii-lite) for contributors who want something they can inspect and adapt in minutes
 - a deterministic set of nuisance cases that map to ordinary engineering headaches: direct identifiers, leaked secrets, protected text, and unsafe retention prompts
 
-The playground is intentionally public and bounded. It does **not** claim private runtime enforcement, hardware binding, or proprietary Loopchii internals. Its job is adoption: prove usefulness quickly, invite contribution honestly, and give engineers something concrete to extend.
+The playground is intentionally public and bounded. It does **not** claim private runtime enforcement, hardware binding, or proprietary LOOPCHii internals. Its job is adoption: prove usefulness quickly, invite contribution honestly, and give engineers something concrete to extend.
 
 Minimal public example:
 
@@ -151,7 +158,7 @@ return result.allowed ? result.standardResponse : result.safeResponse;
 - `/api/lenses/catalog` publishes the active public lenses.
 - `/api/lenses/demo-stream` evaluates the cached grouped stream through the same public registry.
 
-This is intentionally scoped. It gives contributors a truthful place to add assessors, heuristics, and public reasoning layers without opening private Loopchii architecture.
+This is intentionally scoped. It gives contributors a truthful place to add assessors, heuristics, and public reasoning layers without opening private LOOPCHii architecture.
 
 ## Media Liability Lab
 
@@ -372,6 +379,7 @@ python build_static.py
 | `/api/system/runtime` | GET | Fresh materialized runtime snapshot spanning synthetic, music, and orchestration surfaces |
 | `/api/system/runtime/latest` | GET | Latest persisted runtime snapshot from the local SQLite-backed run history |
 | `/api/system/frontend-state` | GET | Browser-ready payload generated by the backend instead of hand-authored view math |
+| `/api/system/critical-spine` | GET | Per-visual purpose, limits, and improvement guidance generated from the backend runtime |
 | `/api/system/comparatives` | GET | Comparative framing surface for role-aware reading across the same evidence |
 | `/api/system/materialize` | POST | Force a runtime materialization pass and write updated public artifacts |
 | `/api/metrics/advanced` | GET | Inequality (Gini/Theil/Lorenz), Simpson/Theil diversity, Cramér's V effect sizes, bootstrap CIs, fitted year trend |
@@ -707,7 +715,7 @@ If you use Stream in research:
 
 ```bibtex
 @software{streamlens2025,
-  title = {Stream: Loopchii Public Research Surface for Media Bias and Attention Analysis},
+  title = {Stream: LOOPCHii Public Research Surface for Media Bias and Attention Analysis},
   author = {Aporbo, Cazandra},
   year = {2025},
   url = {https://github.com/loopchii/Stream}

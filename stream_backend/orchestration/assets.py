@@ -23,6 +23,14 @@ def build_runtime_artifacts(
             note="Generated UI state for the public dashboard.",
         ),
         RuntimeArtifact(
+            name="critical_spine",
+            kind="json",
+            path=str((system_dir / "critical-spine.json").relative_to(base_dir)),
+            freshness_label=frontend_state.get("generated_at", ""),
+            row_count=0,
+            note="Per-visual guidance explaining purpose, limits, and next checks.",
+        ),
+        RuntimeArtifact(
             name="runtime_surface",
             kind="markdown",
             path=str((system_dir / "runtime_surface.md").relative_to(base_dir)),

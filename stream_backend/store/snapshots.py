@@ -13,6 +13,7 @@ PAYLOAD_ORDER = (
     "music_index",
     "data_engineering",
     "frontend_state",
+    "critical_spine",
     "orchestration",
     "comparatives",
 )
