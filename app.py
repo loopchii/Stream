@@ -627,7 +627,7 @@ def music_index(
                 ]
             ).lower()
         ]
-    window = items[offset : offset + limit]
+    window = items[offset:offset + limit]
     return {
         "total": len(items),
         "offset": offset,

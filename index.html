@@ -41,11 +41,11 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600&family=Inter:wght@400;500;600;700&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/d3/7.8.5/d3.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/plotly.js/2.27.0/plotly.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.0/chart.umd.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/echarts/5.4.3/echarts.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script defer src="https://cdnjs.cloudflare.com/ajax/libs/d3/7.8.5/d3.min.js"></script>
+    <script defer src="https://cdnjs.cloudflare.com/ajax/libs/plotly.js/2.27.0/plotly.min.js"></script>
+    <script defer src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.0/chart.umd.js"></script>
+    <script defer src="https://cdnjs.cloudflare.com/ajax/libs/echarts/5.4.3/echarts.min.js"></script>
+    <script defer src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
     <style>
         :root {
             /* Primary Theme — Aurora (light, airy) */
@@ -890,6 +890,13 @@
             overflow: hidden;
             opacity: 0;
             animation: fadeInUp 0.8s forwards;
+            content-visibility: auto;
+            contain: layout style paint;
+            contain-intrinsic-size: 720px;
+            --tone-a: #fff0be;
+            --tone-b: #ded0ff;
+            --tone-c: #95e9df;
+            --tone-d: #ffc6d9;
         }
 
         @keyframes fadeInUp {
@@ -926,12 +933,37 @@
             line-height: 1.08;
             letter-spacing: -0.02em;
             text-shadow: 0 16px 34px rgba(91, 85, 255, 0.18);
-            background: linear-gradient(102deg, var(--title-citrine) 0%, var(--title-peony) 28%, var(--title-lilac) 62%, var(--title-teal) 100%);
+            background: linear-gradient(102deg, var(--tone-a) 0%, var(--tone-b) 28%, var(--tone-c) 62%, var(--tone-d) 100%);
             background-size: 220% 220%;
             -webkit-background-clip: text;
             background-clip: text;
             -webkit-text-fill-color: transparent;
             animation: gradient 10s ease infinite;
+        }
+
+        .viz-section:nth-of-type(4n + 1) {
+            --tone-a: #ffe7b2;
+            --tone-b: #ffd4e4;
+            --tone-c: #d8d0ff;
+            --tone-d: #90e8df;
+        }
+        .viz-section:nth-of-type(4n + 2) {
+            --tone-a: #ffd5e8;
+            --tone-b: #ffe1ad;
+            --tone-c: #d2d7ff;
+            --tone-d: #8fe3dc;
+        }
+        .viz-section:nth-of-type(4n + 3) {
+            --tone-a: #dff3ff;
+            --tone-b: #d8cbff;
+            --tone-c: #ffc9c7;
+            --tone-d: #9ce9d9;
+        }
+        .viz-section:nth-of-type(4n + 4) {
+            --tone-a: #fff1c8;
+            --tone-b: #e5d3ff;
+            --tone-c: #ffc6df;
+            --tone-d: #95eadf;
         }
 
         .viz-title::before {
@@ -940,6 +972,35 @@
             height: 30px;
             background: linear-gradient(to bottom, var(--primary-accent), var(--primary-secondary));
             border-radius: 2px;
+        }
+
+        .story-strip h3,
+        .research-card h4,
+        .entry-card h4,
+        .bias-card h4,
+        .learn-card h3,
+        .ops-stage-card h4,
+        .ops-quality-card h4,
+        .ops-control-card h4,
+        .ops-contract-card h4,
+        .decision-path-card .v,
+        .hero-sidecard h3,
+        .trojan-pane-head h3,
+        .mv-audit-copy h3,
+        .mv-fieldnote-main h4,
+        .mv-resonance-header h4,
+        .mv-chart-fallback-head h4,
+        .mv-role-card h4,
+        .control-instructions h3,
+        .section-subtitle,
+        .intro-section h2 {
+            background: linear-gradient(102deg, var(--tone-a, var(--title-citrine)) 0%, var(--tone-b, var(--title-peony)) 30%, var(--tone-c, var(--title-lilac)) 64%, var(--tone-d, var(--title-teal)) 100%);
+            background-size: 220% 220%;
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+            color: #f8f4ff;
+            filter: drop-shadow(0 10px 24px rgba(85, 102, 246, 0.16));
         }
 
         /* Info chip + hover tooltip: explains, in plain language, what a chart or
@@ -3456,8 +3517,15 @@
             text-transform: uppercase;
         }
 
-        .tab-panel { display: none; }
-        .tab-panel.active { display: block; }
+        .tab-panel {
+            display: none;
+            contain: layout style paint;
+        }
+        .tab-panel.active {
+            display: block;
+            content-visibility: auto;
+            contain-intrinsic-size: 1200px;
+        }
 
         .action-bar {
             display: flex;
@@ -5269,8 +5337,39 @@
             opacity: 0;
             transform: translateY(32px);
             transition: opacity 0.7s cubic-bezier(0.16,1,0.3,1), transform 0.7s cubic-bezier(0.16,1,0.3,1);
+            content-visibility: auto;
+            contain: layout style paint;
+            contain-intrinsic-size: 760px;
+            --tone-a: #fff0be;
+            --tone-b: #ded0ff;
+            --tone-c: #95e9df;
+            --tone-d: #ffc6d9;
         }
         .mv-movement.mv-visible { opacity: 1; transform: translateY(0); }
+        .mv-movement:nth-of-type(4n + 1) {
+            --tone-a: #ffe4ad;
+            --tone-b: #ffd1df;
+            --tone-c: #d8cfff;
+            --tone-d: #91e8df;
+        }
+        .mv-movement:nth-of-type(4n + 2) {
+            --tone-a: #ffd5e5;
+            --tone-b: #ffe1ad;
+            --tone-c: #cfd4ff;
+            --tone-d: #8ce5de;
+        }
+        .mv-movement:nth-of-type(4n + 3) {
+            --tone-a: #daf3ff;
+            --tone-b: #d8cbff;
+            --tone-c: #ffcdbd;
+            --tone-d: #9ae9d8;
+        }
+        .mv-movement:nth-of-type(4n + 4) {
+            --tone-a: #fff2c9;
+            --tone-b: #e3d2ff;
+            --tone-c: #ffc7df;
+            --tone-d: #9be7df;
+        }
         .mv-movement::before {
             content: '';
             position: absolute;
@@ -5292,9 +5391,29 @@
             background: linear-gradient(180deg, rgba(85,102,246,0.34), rgba(240,119,159,0.16), transparent 88%);
         }
         .mv-movement:last-of-type::after { display: none; }
-        .mv-panel { transition: box-shadow 0.3s ease, transform 0.3s ease; }
-        .mv-panel:hover { transform: translateY(-2px); box-shadow: 0 22px 48px -24px rgba(40,46,86,0.55); }
-        .mv-mhead { display: flex; align-items: baseline; gap: 0.9rem; flex-wrap: wrap; border-bottom: 1px solid var(--line); padding-bottom: 0.8rem; }
+        .mv-panel { transition: box-shadow 0.3s ease, transform 0.3s ease, border-color 0.3s ease; }
+        .mv-panel:hover { transform: translateY(-2px); box-shadow: 0 22px 48px -24px rgba(40,46,86,0.55); border-color: rgba(167, 157, 255, 0.22); }
+        .mv-mhead {
+            position: relative;
+            display: flex;
+            align-items: baseline;
+            gap: 0.9rem;
+            flex-wrap: wrap;
+            border-bottom: 1px solid var(--line);
+            padding-bottom: 0.8rem;
+        }
+        .mv-mhead::after {
+            content: '';
+            position: absolute;
+            left: 1.85rem;
+            bottom: -1px;
+            width: min(12rem, 58%);
+            height: 2px;
+            border-radius: 999px;
+            background: linear-gradient(90deg, var(--tone-a), var(--tone-b), var(--tone-c), var(--tone-d));
+            box-shadow: 0 0 18px rgba(145, 231, 223, 0.18);
+            opacity: 0.92;
+        }
         .mv-mnum { font-family: 'Space Grotesk', monospace; font-size: 0.8rem; font-weight: 600; color: var(--teal); letter-spacing: 0.16em; }
         .mv-mhead h3 {
             font-family: 'Fraunces', Georgia, serif;
@@ -5302,7 +5421,7 @@
             font-size: clamp(1.4rem, 2.8vw, 2rem);
             letter-spacing: -0.01em;
             text-shadow: 0 12px 30px rgba(91,85,255,0.18);
-            background: linear-gradient(96deg, #fff2c9 0%, #ddd0ff 34%, #8fe5dd 72%, #ffc2d1 100%);
+            background: linear-gradient(96deg, var(--tone-a) 0%, var(--tone-b) 34%, var(--tone-c) 72%, var(--tone-d) 100%);
             -webkit-background-clip: text;
             background-clip: text;
             -webkit-text-fill-color: transparent;
@@ -5352,7 +5471,25 @@
             font-size: 0.84rem;
         }
 
-        .mv-panel { background: var(--paper); border: 1px solid var(--line); border-radius: 20px; padding: 1.4rem; box-shadow: 0 18px 40px -28px rgba(40,46,86,0.45); }
+        .mv-panel {
+            position: relative;
+            overflow: hidden;
+            background: var(--paper);
+            border: 1px solid var(--line);
+            border-radius: 20px;
+            padding: 1.4rem;
+            box-shadow: 0 18px 40px -28px rgba(40,46,86,0.45);
+            will-change: transform;
+        }
+        .mv-panel::before {
+            content: '';
+            position: absolute;
+            inset: 0 0 auto 0;
+            height: 1px;
+            background: linear-gradient(90deg, transparent, rgba(154, 167, 255, 0.78), rgba(240, 119, 159, 0.72), rgba(111, 231, 219, 0.78), transparent);
+            opacity: 0.66;
+            pointer-events: none;
+        }
         .mv-grid-2 { display: grid; grid-template-columns: 1.5fr 1fr; gap: 1.4rem; align-items: stretch; }
         .mv-grid-net { display: grid; grid-template-columns: 1.6fr 1fr; gap: 1.4rem; align-items: stretch; }
         .mv-chart { width: 100%; min-height: 340px; }
@@ -5914,6 +6051,101 @@
             font-size: 0.82rem;
             line-height: 1.58;
         }
+        .mv-chart-fallback {
+            min-height: inherit;
+            height: 100%;
+            padding: 1rem 1.02rem;
+            border-radius: 20px;
+            border: 1px solid color-mix(in srgb, var(--fallback-accent, #5566f6) 26%, rgba(255,255,255,0.08));
+            background:
+                radial-gradient(circle at top right, color-mix(in srgb, var(--fallback-accent, #5566f6) 18%, transparent), transparent 34%),
+                linear-gradient(160deg, rgba(18,22,45,0.96), rgba(11,16,33,0.93));
+            display: flex;
+            flex-direction: column;
+            gap: 0.88rem;
+            box-shadow: inset 0 1px 0 rgba(255,255,255,0.05);
+            overflow: hidden;
+        }
+        .mv-chart-fallback-head {
+            display: flex;
+            justify-content: space-between;
+            gap: 0.75rem;
+            align-items: flex-start;
+        }
+        .mv-chart-fallback-head h4 {
+            margin: 0;
+            font-family: 'Fraunces', serif;
+            font-size: 1.02rem;
+            line-height: 1.15;
+            font-weight: 600;
+            background: linear-gradient(100deg, #fff7e0 0%, #f8c5d8 44%, #cbd4ff 74%, #97f1df 100%);
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        .mv-chart-fallback-kicker {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.35rem;
+            font-size: 0.66rem;
+            letter-spacing: 1.26px;
+            text-transform: uppercase;
+            color: rgba(255,238,208,0.72);
+            font-weight: 800;
+        }
+        .mv-chart-fallback-kicker::before {
+            content: '';
+            width: 0.5rem;
+            height: 0.5rem;
+            border-radius: 999px;
+            background: linear-gradient(135deg, var(--fallback-accent, #5566f6), rgba(255,255,255,0.9));
+            box-shadow: 0 0 18px color-mix(in srgb, var(--fallback-accent, #5566f6) 55%, transparent);
+        }
+        .mv-chart-fallback-copy {
+            margin: 0;
+            color: rgba(240,233,252,0.8);
+            font-size: 0.8rem;
+            line-height: 1.58;
+            max-width: 48rem;
+        }
+        .mv-chart-fallback-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(132px, 1fr));
+            gap: 0.62rem;
+        }
+        .mv-chart-fallback-card {
+            padding: 0.78rem 0.8rem;
+            border-radius: 16px;
+            border: 1px solid color-mix(in srgb, var(--fallback-accent, #5566f6) 22%, rgba(255,255,255,0.08));
+            background:
+                linear-gradient(180deg, rgba(255,255,255,0.06), rgba(255,255,255,0.02)),
+                radial-gradient(circle at top left, color-mix(in srgb, var(--fallback-accent, #5566f6) 12%, transparent), transparent 42%);
+            display: grid;
+            gap: 0.22rem;
+        }
+        .mv-chart-fallback-card .k {
+            display: block;
+            font-size: 0.67rem;
+            line-height: 1.3;
+            letter-spacing: 1.18px;
+            text-transform: uppercase;
+            color: rgba(240,233,252,0.6);
+            font-weight: 700;
+        }
+        .mv-chart-fallback-card .v {
+            display: block;
+            font-family: 'Space Grotesk', monospace;
+            font-size: 0.96rem;
+            line-height: 1.32;
+            color: #fff5df;
+            font-weight: 700;
+        }
+        .mv-chart-fallback-card .s {
+            display: block;
+            color: rgba(240,233,252,0.72);
+            font-size: 0.77rem;
+            line-height: 1.48;
+        }
         .mv-song-pager {
             display: inline-flex;
             align-items: center;
@@ -5962,6 +6194,73 @@
             fill: rgba(236,231,248,0.72) !important;
         }
 
+        .mv-chart {
+            position: relative;
+            overflow: hidden;
+            border-radius: 18px;
+            transform: translateZ(0);
+        }
+
+        .mv-chart:empty::before {
+            content: 'Loading the next read…';
+            position: absolute;
+            inset: 0;
+            display: grid;
+            place-items: center;
+            text-align: center;
+            padding: 1rem;
+            color: rgba(241,235,255,0.66);
+            font-size: 0.84rem;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+            background:
+                radial-gradient(circle at top right, rgba(240,119,159,0.10), transparent 34%),
+                linear-gradient(160deg, rgba(17,22,46,0.82), rgba(12,16,33,0.9));
+            border: 1px solid rgba(255,255,255,0.06);
+        }
+
+        .mv-route-step,
+        .mv-role-signal,
+        .mv-fieldnote-card,
+        .mv-hero-guide,
+        .mv-audit-pill,
+        .mv-role-factor,
+        .mv-intel-card,
+        .mv-intel-empty,
+        .mv-song-source-switch button,
+        .mv-toggle button,
+        .mv-chart-fallback-card,
+        .mv-song-pager button {
+            transition: transform 0.22s ease, box-shadow 0.22s ease, border-color 0.22s ease, background 0.22s ease, color 0.22s ease;
+        }
+
+        .mv-route-step:hover,
+        .mv-role-signal:hover,
+        .mv-fieldnote-card:hover,
+        .mv-hero-guide:hover,
+        .mv-audit-pill:hover,
+        .mv-role-factor:hover,
+        .mv-intel-card:hover,
+        .mv-song-source-switch button:hover,
+        .mv-toggle button:hover,
+        .mv-chart-fallback-card:hover,
+        .mv-song-pager button:hover:not(:disabled) {
+            transform: translateY(-2px);
+            box-shadow: 0 18px 30px rgba(8, 11, 26, 0.2);
+        }
+
+        .mv-fieldnote-card:hover,
+        .mv-role-factor:hover,
+        .mv-intel-card:hover,
+        .mv-chart-fallback-card:hover {
+            border-color: rgba(172, 180, 255, 0.24);
+        }
+
+        .mv-song-pager button:hover:not(:disabled) {
+            background: linear-gradient(135deg, rgba(85,102,246,0.16), rgba(240,119,159,0.16));
+            color: #fff8eb;
+        }
+
         @media (max-width: 880px) {
             .header-content { grid-template-columns: 1fr; }
             .research-strip { grid-template-columns: 1fr; padding: 0 1rem; }
@@ -5985,9 +6284,56 @@
             .mv-movement { padding-left: 1.2rem; scroll-margin-top: 8.5rem; }
             .mv-movement::before { width: 0.58rem; height: 0.58rem; top: 0.62rem; }
             .mv-movement::after { left: 0.27rem; }
+            .mv-mhead::after { left: 1.35rem; width: min(9rem, 64%); }
             .mv-logic-grid { grid-template-columns: 1fr; }
             .mv-role-scoregrid { grid-template-columns: 1fr; }
             .mv-song-toolbar { grid-template-columns: 1fr; }
+        }
+
+        @media (prefers-reduced-motion: reduce), (max-width: 820px) {
+            .particle,
+            .mv-resonance-stage::before,
+            .mv-resonance-stage::after,
+            .viz-section,
+            .mv-movement,
+            .entry-card::after,
+            .story-strip,
+            h1,
+            .section-subtitle,
+            .intro-section h2,
+            .control-instructions h3 {
+                animation: none !important;
+            }
+            .mv-panel,
+            .entry-card,
+            .journey-step,
+            .hero-link,
+            .theme-btn,
+            .mv-res-track,
+            .bias-card,
+            .research-card {
+                transition-duration: 0.18s;
+            }
+            .mv-panel:hover,
+            .entry-card:hover,
+            .journey-step:hover,
+            .research-card:hover,
+            .bias-card:hover,
+            .mv-res-track:hover {
+                transform: none;
+            }
+            .mv-panel,
+            .mv-role-card,
+            .mv-chart-fallback,
+            .hero-sidecard,
+            .research-card,
+            .entry-card,
+            .journey-step,
+            .mv-hero-guide,
+            .mv-role-signal {
+                backdrop-filter: none !important;
+                box-shadow: 0 14px 26px -22px rgba(20, 24, 48, 0.48);
+            }
         }
     </style>
     <style>
@@ -6007,6 +6353,40 @@
                 linear-gradient(170deg, #060913 0%, #090f22 28%, #071023 66%, #050711 100%);
             color: var(--primary-text);
             position: relative;
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        :root {
+            scrollbar-color: rgba(139, 128, 255, 0.78) rgba(255,255,255,0.06);
+        }
+
+        * {
+            scrollbar-width: thin;
+            scrollbar-color: rgba(139, 128, 255, 0.78) rgba(255,255,255,0.06);
+        }
+
+        *::-webkit-scrollbar {
+            width: 11px;
+            height: 11px;
+        }
+
+        *::-webkit-scrollbar-track {
+            background: linear-gradient(180deg, rgba(15,18,36,0.82), rgba(11,14,28,0.9));
+            border-radius: 999px;
+        }
+
+        *::-webkit-scrollbar-thumb {
+            border-radius: 999px;
+            border: 2px solid rgba(7, 10, 24, 0.72);
+            background: linear-gradient(180deg, rgba(255, 198, 215, 0.94), rgba(152, 143, 255, 0.94), rgba(113, 232, 220, 0.94));
+            box-shadow: inset 0 0 0 1px rgba(255,255,255,0.08);
+        }
+
+        *::-webkit-scrollbar-thumb:hover {
+            background: linear-gradient(180deg, rgba(255, 222, 170, 0.98), rgba(169, 160, 255, 0.96), rgba(123, 237, 224, 0.96));
         }
 
         body::before,
@@ -6270,13 +6650,13 @@
             animation: driftOrb 12s ease-in-out infinite;
         }
 
-        .research-card:nth-child(1) { background: linear-gradient(160deg, rgba(91,85,255,0.18), rgba(255,255,255,0.04)), var(--shell-glass); }
-        .research-card:nth-child(2) { background: linear-gradient(160deg, rgba(240,119,159,0.18), rgba(255,255,255,0.04)), var(--shell-glass); }
-        .research-card:nth-child(3) { background: linear-gradient(160deg, rgba(15,182,168,0.18), rgba(255,255,255,0.04)), var(--shell-glass); }
-        .entry-card:nth-child(1) { background: linear-gradient(160deg, rgba(91,85,255,0.18), rgba(255,255,255,0.04)), var(--shell-glass); }
-        .entry-card:nth-child(2) { background: linear-gradient(160deg, rgba(240,119,159,0.16), rgba(255,255,255,0.04)), var(--shell-glass); }
-        .entry-card:nth-child(3) { background: linear-gradient(160deg, rgba(15,182,168,0.16), rgba(255,255,255,0.04)), var(--shell-glass); }
-        .entry-card:nth-child(4) { background: linear-gradient(160deg, rgba(244,162,89,0.18), rgba(255,255,255,0.04)), var(--shell-glass); }
+        .research-card:nth-child(1) { background: linear-gradient(160deg, rgba(91,85,255,0.18), rgba(255,255,255,0.04)), var(--shell-glass); --tone-a:#ffe6ae; --tone-b:#d8d0ff; --tone-c:#93e8df; --tone-d:#ffc8d7; }
+        .research-card:nth-child(2) { background: linear-gradient(160deg, rgba(240,119,159,0.18), rgba(255,255,255,0.04)), var(--shell-glass); --tone-a:#ffd8e7; --tone-b:#ffe2af; --tone-c:#d6d3ff; --tone-d:#90e4de; }
+        .research-card:nth-child(3) { background: linear-gradient(160deg, rgba(15,182,168,0.18), rgba(255,255,255,0.04)), var(--shell-glass); --tone-a:#daf2ff; --tone-b:#d8ccff; --tone-c:#ffc8c4; --tone-d:#98ead9; }
+        .entry-card:nth-child(1) { background: linear-gradient(160deg, rgba(91,85,255,0.18), rgba(255,255,255,0.04)), var(--shell-glass); --tone-a:#ffe5ab; --tone-b:#d9d0ff; --tone-c:#94e8df; --tone-d:#ffc7d8; }
+        .entry-card:nth-child(2) { background: linear-gradient(160deg, rgba(240,119,159,0.16), rgba(255,255,255,0.04)), var(--shell-glass); --tone-a:#ffd7e8; --tone-b:#ffe2ad; --tone-c:#d5d4ff; --tone-d:#8ce4dd; }
+        .entry-card:nth-child(3) { background: linear-gradient(160deg, rgba(15,182,168,0.16), rgba(255,255,255,0.04)), var(--shell-glass); --tone-a:#def2ff; --tone-b:#d8cbff; --tone-c:#ffc9c5; --tone-d:#99ead8; }
+        .entry-card:nth-child(4) { background: linear-gradient(160deg, rgba(244,162,89,0.18), rgba(255,255,255,0.04)), var(--shell-glass); --tone-a:#fff0be; --tone-b:#e0d1ff; --tone-c:#95e6df; --tone-d:#ffc6dd; }
 
         .research-strip,
         .entry-grid,
@@ -8547,20 +8927,26 @@
             },
 
             activeTab: 'dashboard',
+            _vizRefreshTimer: null,
+            _vizRefreshFrame: null,
 
             // ==================== INITIALIZATION ====================
             init() {
                 this.attachEventListeners();
                 this.populateExploreYears();
                 this.bindSectionAtlases();
-                this.spawnParticles();
-                this.updateAllVisualizations();
-                this.renderDashboardField();
-                this.loadTrojanHorseSurface();
-                this.loadLiveMetrics();
                 this.loadedTabs = { dashboard: true };
                 this.updateSliderReadout();
-                this.syncAnimatedSurfaces();
+                requestAnimationFrame(() => {
+                    this.updateAllVisualizations();
+                    this.renderDashboardField();
+                    this.syncAnimatedSurfaces();
+                });
+                this.deferNonCriticalWork(() => {
+                    this.spawnParticles();
+                    this.loadTrojanHorseSurface();
+                    this.loadLiveMetrics();
+                }, 160);
             },
 
             loadedTabs: { dashboard: true },
@@ -8614,6 +9000,35 @@
                 const rect = el.getBoundingClientRect();
                 const viewHeight = window.innerHeight || document.documentElement.clientHeight || 0;
                 return rect.bottom > -margin && rect.top < viewHeight + margin;
+            },
+
+            deferNonCriticalWork(callback, timeout = 180) {
+                if (typeof window.requestIdleCallback === 'function') {
+                    window.requestIdleCallback(() => callback(), { timeout });
+                    return;
+                }
+                window.setTimeout(callback, Math.min(timeout, 120));
+            },
+
+            queueVisualizationRefresh(delay = 90) {
+                if (this._vizRefreshTimer) window.clearTimeout(this._vizRefreshTimer);
+                this._vizRefreshTimer = window.setTimeout(() => {
+                    this._vizRefreshTimer = null;
+                    this.updateAllVisualizations();
+                }, delay);
+            },
+
+            mountDashboardFallback(target, config) {
+                const node = typeof target === 'string' ? document.getElementById(target) : target;
+                if (!node) return;
+                const host = node.tagName === 'CANVAS' ? (node.parentElement || node) : node;
+                host.innerHTML = this.renderChartFallback({
+                    kicker: config.kicker || 'Static fallback',
+                    title: config.title || 'Surface still readable',
+                    copy: config.copy || 'This section keeps the evidence visible when an external charting runtime is unavailable.',
+                    accent: config.accent || '#5566f6',
+                    items: config.items || []
+                });
             },
 
             setActiveTab(tab) {
@@ -10972,25 +11387,25 @@
                     this.state.year = parseInt(e.target.value);
                     document.getElementById('yearValue').textContent = e.target.value;
                     this.updateSliderReadout();
-                    this.updateAllVisualizations();
+                    this.queueVisualizationRefresh(70);
                 });
 
                 // Platform selector
                 document.getElementById('platform').addEventListener('change', (e) => {
                     this.state.platform = e.target.value;
-                    this.updateAllVisualizations();
+                    this.queueVisualizationRefresh(40);
                 });
 
                 // Genre selector
                 document.getElementById('genre').addEventListener('change', (e) => {
                     this.state.genre = e.target.value;
-                    this.updateAllVisualizations();
+                    this.queueVisualizationRefresh(40);
                 });
 
                 // Metric selector
                 document.getElementById('metric').addEventListener('change', (e) => {
                     this.state.metric = e.target.value;
-                    this.updateAllVisualizations();
+                    this.queueVisualizationRefresh(40);
                 });
 
                 // Explore data filters
@@ -11022,8 +11437,6 @@
             createBubbleChart() {
                 const ctx = document.getElementById('bubbleChart');
                 if (!ctx) return;
-
-                const chartCtx = ctx.getContext('2d');
                 
                 // Generate bubble data
                 const bubbleData = [];
@@ -11061,6 +11474,28 @@
                         });
                     });
                 });
+
+                if (typeof Chart === 'undefined') {
+                    this.mountDashboardFallback(ctx, {
+                        kicker: 'Field map fallback',
+                        title: 'Platform and genre balance still visible',
+                        copy: 'The chart runtime is unavailable here, so the same bias map is condensed into a ranked read of parity, diversity, and equality across the active slice.',
+                        accent: '#7c3aed',
+                        items: bubbleData
+                            .slice()
+                            .sort((a, b) => b.equality - a.equality)
+                            .slice(0, 6)
+                            .map((entry) => ({
+                                label: entry.label,
+                                value: `${entry.x.toFixed(0)}% leads · ${(entry.y / 10).toFixed(2)} diversity`,
+                                note: `Equality ${entry.equality.toFixed(2)}`
+                            }))
+                    });
+                    this.updateColorLegend();
+                    return;
+                }
+
+                const chartCtx = ctx.getContext('2d');
 
                 // Destroy existing chart
                 if (this.charts.bubble) {
@@ -11191,6 +11626,27 @@
                         target: Math.floor(Math.random() * nodeCount),
                         value: Math.random()
                     });
+                }
+
+                if (typeof d3 === 'undefined') {
+                    const genderCounts = nodes.reduce((acc, node) => {
+                        acc[node.gender] = (acc[node.gender] || 0) + 1;
+                        return acc;
+                    }, {});
+                    this.mountDashboardFallback(container, {
+                        kicker: 'Topology fallback',
+                        title: 'Interaction pressure without the force graph',
+                        copy: 'The network engine is unavailable in this preview, so the same synthetic social field is summarized as reachable cohorts and relationship density.',
+                        accent: '#0fb6a8',
+                        items: [
+                            { label: 'Simulated cast nodes', value: nodeCount.toLocaleString(), note: 'Current active cohort size' },
+                            { label: 'Interaction edges', value: links.length.toLocaleString(), note: 'Synthetic relationship ties in the current slice' },
+                            { label: 'Male-coded nodes', value: (genderCounts.male || 0).toLocaleString(), note: 'One visible center of gravity' },
+                            { label: 'Female-coded nodes', value: (genderCounts.female || 0).toLocaleString(), note: 'Compare this to dialogue and lead-share surfaces' },
+                            { label: 'Non-binary nodes', value: (genderCounts['non-binary'] || 0).toLocaleString(), note: 'Still useful as a presence check even in fallback mode' }
+                        ]
+                    });
+                    return;
                 }
                 
                 const svg = d3.select(container)
@@ -11331,7 +11787,22 @@
                     plot_bgcolor: 'transparent',
                     font: { color: getComputedStyle(document.body).getPropertyValue('--primary-text') }
                 };
-                
+
+                if (typeof Plotly === 'undefined' || !Plotly || typeof Plotly.newPlot !== 'function') {
+                    this.mountDashboardFallback(container, {
+                        kicker: 'Timeline fallback',
+                        title: 'Trend direction still visible',
+                        copy: 'The interactive line chart is unavailable in this environment, so the decade view resolves into end-state readings for each tracked measure.',
+                        accent: '#f0779f',
+                        items: traces.map((trace) => ({
+                            label: trace.name,
+                            value: `${(trace.y[trace.y.length - 1] * 100).toFixed(0)} / 100`,
+                            note: `Started at ${(trace.y[0] * 100).toFixed(0)} / 100 in ${years[0]}`
+                        }))
+                    });
+                    return;
+                }
+
                 Plotly.newPlot('timeSeriesChart', traces, layout, {responsive: true});
             },
 
@@ -11339,14 +11810,34 @@
             createRadarChart() {
                 const ctx = document.getElementById('sentimentRadar');
                 if (!ctx) return;
-
-                const chartCtx = ctx.getContext('2d');
                 
                 if (this.charts.radar) {
                     this.charts.radar.destroy();
                 }
                 
                 const yearModifier = (this.state.year - 2015) / 11;
+                const roleSeries = [
+                    { label: 'Male', values: [85 - yearModifier * 10, 78, 62, 71, 45, 88] },
+                    { label: 'Female', values: [72 + yearModifier * 10, 45, 68, 52, 82, 61] },
+                    { label: 'Non-Binary', values: [15 + yearModifier * 20, 10, 25, 18, 12, 8] }
+                ];
+
+                if (typeof Chart === 'undefined') {
+                    this.mountDashboardFallback(ctx, {
+                        kicker: 'Role map fallback',
+                        title: 'Typecasting pressure still legible',
+                        copy: 'Without the radar runtime, the role map stays available as average reach across protagonist, support, romance, and mentor lanes.',
+                        accent: '#ffbe5c',
+                        items: roleSeries.map((series) => ({
+                            label: series.label,
+                            value: `${(series.values.reduce((sum, value) => sum + value, 0) / series.values.length).toFixed(0)} avg`,
+                            note: `Peak role intensity ${Math.max(...series.values).toFixed(0)}`
+                        }))
+                    });
+                    return;
+                }
+
+                const chartCtx = ctx.getContext('2d');
                 
                 this.charts.radar = new Chart(chartCtx, {
                     type: 'radar',
@@ -11354,20 +11845,20 @@
                         labels: ['Protagonist', 'Antagonist', 'Support', 'Comic Relief', 'Romantic', 'Mentor'],
                         datasets: [
                             {
-                                label: 'Male',
-                                data: [85 - yearModifier * 10, 78, 62, 71, 45, 88],
+                                label: roleSeries[0].label,
+                                data: roleSeries[0].values,
                                 borderColor: '#00d4ff',
                                 backgroundColor: 'rgba(0, 212, 255, 0.2)'
                             },
                             {
-                                label: 'Female',
-                                data: [72 + yearModifier * 10, 45, 68, 52, 82, 61],
+                                label: roleSeries[1].label,
+                                data: roleSeries[1].values,
                                 borderColor: '#ff006e',
                                 backgroundColor: 'rgba(255, 0, 110, 0.2)'
                             },
                             {
-                                label: 'Non-Binary',
-                                data: [15 + yearModifier * 20, 10, 25, 18, 12, 8],
+                                label: roleSeries[2].label,
+                                data: roleSeries[2].values,
                                 borderColor: '#ffbe0b',
                                 backgroundColor: 'rgba(255, 190, 11, 0.2)'
                             }
@@ -11411,6 +11902,30 @@
                         points.size.push(8 + (1 - g.male_bias) * 16);
                     });
                 });
+
+                if (typeof Plotly === 'undefined' || !Plotly || typeof Plotly.newPlot !== 'function') {
+                    this.mountDashboardFallback(container, {
+                        kicker: 'Depth fallback',
+                        title: 'Three-axis pressure without WebGL',
+                        copy: 'The 3D renderer is unavailable here, so the same surface is reduced to the strongest platform-genre combinations by dialogue equity and diversity.',
+                        accent: '#8fdfe0',
+                        items: points.text
+                            .map((label, index) => ({
+                                label,
+                                x: points.x[index],
+                                y: points.y[index],
+                                z: points.z[index]
+                            }))
+                            .sort((a, b) => (b.z + b.y) - (a.z + a.y))
+                            .slice(0, 6)
+                            .map((entry) => ({
+                                label: entry.label,
+                                value: `${entry.x.toFixed(0)} lead share · ${entry.y.toFixed(1)} diversity`,
+                                note: `Dialogue equity ${entry.z.toFixed(0)}`
+                            }))
+                    });
+                    return;
+                }
 
                 Plotly.newPlot('scatter3d', [{
                     type: 'scatter3d',
@@ -11516,23 +12031,32 @@
                 // Show loading indicator
                 const loader = document.getElementById('loadingIndicator');
                 if (loader) loader.classList.add('active');
-                
-                // Update all components
-                requestAnimationFrame(() => {
-                    this.createBubbleChart();
-                    this.create3DChart();
-                    this.createNetworkGraph();
-                    this.createTimeSeriesChart();
-                    this.createRadarChart();
-                    this.updateStats();
-                    this.updateInsights();
-                    this.renderDashboardField();
-                    this.updateDecisionStudio();
-                    
-                    // Hide loading indicator
-                    setTimeout(() => {
+
+                if (this._vizRefreshFrame) cancelAnimationFrame(this._vizRefreshFrame);
+                this._vizRefreshFrame = requestAnimationFrame(() => {
+                    this._vizRefreshFrame = null;
+                    const tasks = [
+                        ['bubble', () => this.createBubbleChart()],
+                        ['landscape', () => this.create3DChart()],
+                        ['network', () => this.createNetworkGraph()],
+                        ['timeline', () => this.createTimeSeriesChart()],
+                        ['roles', () => this.createRadarChart()],
+                        ['stats', () => this.updateStats()],
+                        ['insights', () => this.updateInsights()],
+                        ['field', () => this.renderDashboardField()],
+                        ['decision', () => this.updateDecisionStudio()]
+                    ];
+                    tasks.forEach(([label, task]) => {
+                        try {
+                            task();
+                        } catch (error) {
+                            console.warn('dashboard render failed', label, error);
+                        }
+                    });
+
+                    window.setTimeout(() => {
                         if (loader) loader.classList.remove('active');
-                    }, 300);
+                    }, 180);
                 });
             },
 
@@ -11867,6 +12391,62 @@
                 );
             },
 
+            surfaceText(value) {
+                return String(value ?? '').replace(/[&<>"']/g, function (char) {
+                    return ({
+                        '&': '&amp;',
+                        '<': '&lt;',
+                        '>': '&gt;',
+                        '"': '&quot;',
+                        "'": '&#39;'
+                    })[char];
+                });
+            },
+
+            renderChartFallback(config) {
+                if (!config) return '';
+                const accent = config.accent || '#5566f6';
+                const cards = (config.items || []).slice(0, 8).map((item) => {
+                    return '<div class="mv-chart-fallback-card">'
+                        + '<span class="k">' + this.surfaceText(item.label || 'Signal') + '</span>'
+                        + '<span class="v">' + this.surfaceText(item.value || '—') + '</span>'
+                        + '<span class="s">' + this.surfaceText(item.note || '') + '</span>'
+                        + '</div>';
+                }).join('');
+                return '<div class="mv-chart-fallback" style="--fallback-accent:' + accent + ';">'
+                    + '<div class="mv-chart-fallback-head">'
+                    + '<div>'
+                    + '<span class="mv-chart-fallback-kicker">' + this.surfaceText(config.kicker || 'Fallback') + '</span>'
+                    + '<h4>' + this.surfaceText(config.title || 'Signal still available') + '</h4>'
+                    + '</div>'
+                    + '</div>'
+                    + '<p class="mv-chart-fallback-copy">' + this.surfaceText(config.copy || 'The data is still loaded even when the chart layer is unavailable.') + '</p>'
+                    + '<div class="mv-chart-fallback-grid">' + cards + '</div>'
+                    + '</div>';
+            },
+
+            mountEchart(containerId, fallbackConfig, draw) {
+                const container = typeof containerId === 'string' ? document.getElementById(containerId) : containerId;
+                if (!container) return null;
+                if (typeof echarts === 'undefined' || !echarts || typeof echarts.init !== 'function') {
+                    container.innerHTML = this.renderChartFallback(fallbackConfig);
+                    return null;
+                }
+                try {
+                    const existing = echarts.getInstanceByDom(container);
+                    if (existing) existing.dispose();
+                    container.innerHTML = '';
+                    const chart = echarts.init(container);
+                    this._echartsInstances.push(chart);
+                    draw(chart);
+                    return chart;
+                } catch (error) {
+                    console.warn('music chart render failed', containerId, error);
+                    container.innerHTML = this.renderChartFallback(fallbackConfig);
+                    return null;
+                }
+            },
+
             renderInequality(inq) {
                 if (!inq) return;
                 const set = (id, v) => { const el = document.getElementById(id); if (el) el.textContent = v; };
@@ -11876,6 +12456,21 @@
                 set('dialogueTheil', inq.dialogue.theil.toFixed(3));
                 const ctx = document.getElementById('lorenzChart');
                 if (!ctx) return;
+                if (typeof Chart === 'undefined') {
+                    this.mountDashboardFallback(ctx, {
+                        kicker: 'Verdict fallback',
+                        title: 'Inequality summary remains visible',
+                        copy: 'The Lorenz curve runtime is unavailable here, so the same inequality check stays present as direct concentration scores.',
+                        accent: '#f0779f',
+                        items: [
+                            { label: 'Screen-time Gini', value: inq.screen_time.gini.toFixed(3), note: '0 is equal, 1 is fully concentrated' },
+                            { label: 'Dialogue Gini', value: inq.dialogue.gini.toFixed(3), note: 'Useful when presence and voice drift apart' },
+                            { label: 'Screen-time Theil', value: inq.screen_time.theil.toFixed(3), note: 'Entropy-style inequality measure' },
+                            { label: 'Dialogue Theil', value: inq.dialogue.theil.toFixed(3), note: 'Lets you compare inequity across slices' }
+                        ]
+                    });
+                    return;
+                }
                 if (this._lorenzChart) this._lorenzChart.destroy();
                 const c = this.themeColors();
                 const toXY = pts => pts.map(pt => ({ x: pt.p * 100, y: pt.l * 100 }));
@@ -11930,6 +12525,24 @@
                 const ctx = document.getElementById('trendChart');
                 const note = document.getElementById('trendNote');
                 if (!ctx) return;
+                if (typeof Chart === 'undefined') {
+                    this.mountDashboardFallback(ctx, {
+                        kicker: 'Trend fallback',
+                        title: 'Decade trend still readable',
+                        copy: 'The fitted line chart is unavailable here, so the time surface condenses into slope and confidence summaries.',
+                        accent: '#5566f6',
+                        items: [
+                            { label: 'Gender parity slope', value: trend.gender_parity.slope.toFixed(4), note: `R² ${trend.gender_parity.r_squared.toFixed(2)}` },
+                            { label: 'Diversity slope', value: trend.diversity.slope.toFixed(4), note: `R² ${trend.diversity.r_squared.toFixed(2)}` },
+                            { label: 'First year', value: String((trend.series || [])[0]?.year || '—'), note: 'Beginning of the visible decade run' },
+                            { label: 'Last year', value: String((trend.series || []).slice(-1)[0]?.year || '—'), note: 'Latest year in the fitted series' }
+                        ]
+                    });
+                    if (note) {
+                        note.textContent = `Parity slope ${trend.gender_parity.slope.toFixed(4)} per year; diversity slope ${trend.diversity.slope.toFixed(4)} per year.`;
+                    }
+                    return;
+                }
                 if (this._trendChart) this._trendChart.destroy();
                 const c = this.themeColors();
                 const series = trend.series;
@@ -12039,6 +12652,7 @@
             }
             if (tab === 'music') {
                 MusicViz.load();
+                requestAnimationFrame(() => MusicViz.scheduleVisibleRefresh('tab-switch'));
             }
             StreamLensApp.setActiveTab(tab);
             StreamLensApp.scrollToTabStart();
@@ -12060,6 +12674,9 @@
             const verdictActive = document.getElementById('tab-scorecard');
             if (verdictActive && verdictActive.classList.contains('active')) {
                 StreamLensApp.loadVerdict();
+            }
+            if (MusicViz && typeof MusicViz.scheduleVisibleRefresh === 'function' && MusicViz.isActive && MusicViz.isActive()) {
+                MusicViz.scheduleVisibleRefresh('theme');
             }
         }
 
@@ -12152,6 +12769,7 @@
                 StreamLensApp.resizeDashboardField();
                 if (MusicViz && typeof MusicViz.resizeHeroSurface === 'function') MusicViz.resizeHeroSurface();
                 if (MusicViz && typeof MusicViz.resizeResonance === 'function') MusicViz.resizeResonance();
+                if (MusicViz && typeof MusicViz.scheduleVisibleRefresh === 'function') MusicViz.scheduleVisibleRefresh('resize');
                 StreamLensApp.syncAnimatedSurfaces();
             }, 250);
         });
@@ -12160,13 +12778,13 @@
             StreamLensApp.syncAnimatedSurfaces();
         });
 
-        let scrollSyncFrame = null;
+        let scrollSyncTimer = null;
         window.addEventListener('scroll', () => {
-            if (scrollSyncFrame) return;
-            scrollSyncFrame = requestAnimationFrame(() => {
-                scrollSyncFrame = null;
+            if (scrollSyncTimer) return;
+            scrollSyncTimer = window.setTimeout(() => {
+                scrollSyncTimer = null;
                 StreamLensApp.syncAnimatedSurfaces();
-            });
+            }, 110);
         }, { passive: true });
 
         // ==================== MUSIC VIRALITY (REAL DATA) ====================
@@ -12198,6 +12816,8 @@
             _auditOpen: false,
             _auditTab: 'summary',
             _echartsInstances: [],
+            _deferredRenderFrame: null,
+            _visibleRefreshTimer: null,
             _telemetryBandFrame: null,
             _telemetryBandState: null,
             _active: false,
@@ -12216,6 +12836,184 @@
             _RES_COLORS: ['#f0779f','#5566f6','#0fb6a8','#f4a259','#7c3aed','#34d399','#f43f5e'],
             _PLOT_FONT: '#e7e0f7',
             _PLOT_GRID: 'rgba(255,255,255,0.08)',
+            _PLOT_AXIS: 'rgba(231,224,247,0.64)',
+
+            renderLibraryFallback(containerId, config) {
+                const container = document.getElementById(containerId);
+                if (!container) return;
+                container.innerHTML = StreamLensApp.renderChartFallback.call(StreamLensApp, {
+                    kicker: config.kicker || 'Static fallback',
+                    title: config.title || 'Surface still readable',
+                    copy: config.copy || 'The public evidence remains visible even when a heavier chart runtime is unavailable.',
+                    accent: config.accent || '#5566f6',
+                    items: config.items || []
+                });
+            },
+
+            renderChartFallback(config) {
+                return StreamLensApp.renderChartFallback.call(StreamLensApp, config);
+            },
+
+            mountEchart(containerId, fallbackConfig, draw) {
+                return StreamLensApp.mountEchart.call(StreamLensApp, containerId, fallbackConfig, draw);
+            },
+
+            themeColors() {
+                return StreamLensApp.themeColors.call(StreamLensApp);
+            },
+
+            alphaColor(color, alpha) {
+                return StreamLensApp.alphaColor.call(StreamLensApp, color, alpha);
+            },
+
+            echartsGradient(start, end, horizontal) {
+                return StreamLensApp.echartsGradient.call(StreamLensApp, start, end, horizontal);
+            },
+
+            safeSectionRender(label, render) {
+                try {
+                    render();
+                } catch (error) {
+                    console.warn('music render failed', label, error);
+                }
+            },
+
+            safeNumber(value, fallback = 0) {
+                const numeric = Number(value);
+                return Number.isFinite(numeric) ? numeric : fallback;
+            },
+
+            nonEmptyEntries(record) {
+                return Object.entries(record || {}).filter((entry) => {
+                    return this.safeNumber(entry[1], 0) > 0;
+                });
+            },
+
+            primeFallback(containerId, config) {
+                const container = typeof containerId === 'string' ? document.getElementById(containerId) : containerId;
+                if (!container) return;
+                if (!String(container.innerHTML || '').trim()) {
+                    container.innerHTML = this.renderChartFallback({
+                        kicker: config.kicker || 'Signal',
+                        title: config.title || 'Surface warming up',
+                        copy: config.copy || 'The evidence lane is loading. If the chart runtime cannot paint, the same field will stay readable here.',
+                        accent: config.accent || '#5566f6',
+                        items: config.items || []
+                    });
+                }
+            },
+
+            disposeEchart(containerId) {
+                if (typeof echarts === 'undefined' || !echarts || typeof echarts.getInstanceByDom !== 'function') return;
+                const container = typeof containerId === 'string' ? document.getElementById(containerId) : containerId;
+                if (!container) return;
+                const existing = echarts.getInstanceByDom(container);
+                if (existing) {
+                    existing.dispose();
+                    this._echartsInstances = this._echartsInstances.filter(instance => instance !== existing);
+                }
+            },
+
+            purgePlotly(containerId) {
+                if (typeof Plotly === 'undefined' || !Plotly || typeof Plotly.purge !== 'function') return;
+                const container = typeof containerId === 'string' ? document.getElementById(containerId) : containerId;
+                if (!container) return;
+                try {
+                    Plotly.purge(container);
+                } catch (error) {
+                    console.warn('plotly purge failed', containerId, error);
+                }
+            },
+
+            normalizeTimeline(timeline) {
+                const source = timeline || {};
+                const sourceYears = (source.years || []).map((year) => this.safeNumber(year, 0)).filter((year) => year > 0);
+                const songYears = (this._data.songs || [])
+                    .map((song) => this.safeNumber(song.published_year, 0))
+                    .filter((year) => year > 0);
+                const knownYears = Array.from(new Set(sourceYears.concat(songYears))).sort((a, b) => a - b);
+                if (!knownYears.length) {
+                    return Object.assign({}, source, { years: [], song_counts: [], avg_views: [], missing_years: [] });
+                }
+                const countMap = new Map((source.years || []).map((year, index) => [this.safeNumber(year, 0), this.safeNumber((source.song_counts || [])[index], 0)]));
+                const avgMap = new Map((source.years || []).map((year, index) => [this.safeNumber(year, 0), this.safeNumber((source.avg_views || [])[index], 0)]));
+                const firstYear = knownYears[0];
+                const lastYear = knownYears[knownYears.length - 1];
+                const years = [];
+                const songCounts = [];
+                const avgViews = [];
+                const missingYears = [];
+                for (let year = firstYear; year <= lastYear; year += 1) {
+                    years.push(year);
+                    const count = countMap.has(year) ? countMap.get(year) : 0;
+                    const avg = avgMap.has(year) ? avgMap.get(year) : 0;
+                    songCounts.push(count);
+                    avgViews.push(avg);
+                    if (!countMap.has(year) && !avgMap.has(year)) {
+                        missingYears.push(year);
+                    }
+                }
+                return Object.assign({}, source, {
+                    years: years,
+                    song_counts: songCounts,
+                    avg_views: avgViews,
+                    missing_years: Array.from(new Set(((source.missing_years || []).map((year) => this.safeNumber(year, 0)).filter((year) => year > 0)).concat(missingYears))).sort((a, b) => a - b)
+                });
+            },
+
+            scheduleVisibleRefresh(reason = 'settle') {
+                clearTimeout(this._visibleRefreshTimer);
+                this._visibleRefreshTimer = window.setTimeout(() => {
+                    if (!this._loaded || !this.isActive()) return;
+                    [
+                        ['powerlaw', () => this.renderPowerLaw()],
+                        ['inequality', () => this.renderInequality()],
+                        ['correlations', () => this.renderCorrelations()],
+                        ['archetypes', () => this.renderArchetypes()],
+                        ['network', () => this.renderNetwork()],
+                        ['predictability', () => this.renderPredictability()],
+                        ['resonance', () => this.renderResonance()],
+                        ['bias', () => this.renderBias()],
+                        ['scatter3d', () => this.render3DScatter()],
+                        ['songs', () => this.renderSongs()]
+                    ].forEach(([label, task]) => this.safeSectionRender(reason + ':' + label, task));
+                    this.resizeHeroSurface();
+                    this.resizeResonance();
+                }, 150);
+            },
+
+            scheduleDeferredSections() {
+                if (this._deferredRenderFrame) {
+                    cancelAnimationFrame(this._deferredRenderFrame);
+                    this._deferredRenderFrame = null;
+                }
+                const tasks = [
+                    ['inequality', () => this.renderInequality()],
+                    ['correlations', () => this.renderCorrelations()],
+                    ['archetypes', () => this.renderArchetypes()],
+                    ['network', () => this.renderNetwork()],
+                    ['predictability', () => this.renderPredictability()],
+                    ['resonance', () => this.renderResonance()],
+                    ['scatter3d', () => this.render3DScatter()]
+                ];
+                let index = 0;
+                const step = () => {
+                    if (!this._loaded) {
+                        this._deferredRenderFrame = null;
+                        return;
+                    }
+                    const task = tasks[index];
+                    if (!task) {
+                        this._deferredRenderFrame = null;
+                        this.scheduleVisibleRefresh('post-load');
+                        return;
+                    }
+                    this.safeSectionRender(task[0], task[1]);
+                    index += 1;
+                    this._deferredRenderFrame = requestAnimationFrame(step);
+                };
+                this._deferredRenderFrame = requestAnimationFrame(step);
+            },
 
             bindRoleSwitch() {
                 if (this._roleSwitchBound) return;
@@ -12249,9 +13047,9 @@
                     this.initTelemetryBand();
                     if (this._heroRenderer && !this._heroFrame) this.renderHeroSurface();
                     if (this._resonanceRenderer && !this._resonanceFrame) this.renderResonance();
+                    this.scheduleVisibleRefresh('activate');
                 }
             },
-            _PLOT_AXIS: 'rgba(231,224,247,0.64)',
             _MOVEMENT_ORDER: ['mvPowerLaw','mvInequality','mvCorrelation','mvArchetypes','mvNetwork','mvPredictability','mvResonance','mvWhatIf','mvBias','mv3DLandscape','mvSongsExplorer'],
             _MOVEMENT_NOTES: {
                 mvPowerLaw: {
@@ -12779,19 +13577,15 @@
             },
 
             render() {
-                this.renderHero();
-                this.renderAudit();
-                this.renderPowerLaw();
-                this.renderInequality();
-                this.renderCorrelations();
-                this.renderArchetypes();
-                this.renderNetwork();
-                this.renderPredictability();
-                this.renderResonance();
-                this.renderBias();
-                this.render3DScatter();
-                this.renderIntelligence();
-                this.renderSongs();
+                [
+                    ['hero', () => this.renderHero()],
+                    ['audit', () => this.renderAudit()],
+                    ['powerlaw', () => this.renderPowerLaw()],
+                    ['bias', () => this.renderBias()],
+                    ['intelligence', () => this.renderIntelligence()],
+                    ['songs', () => this.renderSongs()]
+                ].forEach(([label, task]) => this.safeSectionRender(label, task));
+                this.scheduleDeferredSections();
             },
 
             renderHero() {
@@ -13307,6 +14101,22 @@
                 document.getElementById('mvXmin').textContent = this.fmt(d.xmin);
                 document.getElementById('mvPowerTakeaway').innerHTML = '<b>Takeaway:</b> ' + d.interpretation;
                 const pts = d.ccdf || [];
+                if (typeof Plotly === 'undefined' || !Plotly || typeof Plotly.newPlot !== 'function') {
+                    this.renderLibraryFallback('mvPowerChart', {
+                        kicker: 'Power-law fallback',
+                        title: 'Attention tail still measurable',
+                        copy: 'The log-log plot is unavailable here, so the heavy-tail fit is reduced to the empirical tail shape, threshold, and stability bounds.',
+                        accent: '#8f9dff',
+                        items: [
+                            { label: 'Tail exponent α', value: String(d.alpha), note: 'Lower values imply a heavier winner tail.' },
+                            { label: '95% interval', value: `[${d.alpha_ci.low}, ${d.alpha_ci.high}]`, note: 'Bootstrap confidence around the tail fit.' },
+                            { label: 'KS distance', value: String(d.ks_distance), note: 'Smaller is closer to the fitted power law.' },
+                            { label: 'Tail threshold', value: this.fmt(d.xmin), note: `${d.n} rows in the fitted regime.` }
+                        ]
+                    });
+                    return;
+                }
+                this.purgePlotly('mvPowerChart');
                 Plotly.newPlot('mvPowerChart', [{
                     x: pts.map(p => p.views), y: pts.map(p => p.p_at_least),
                     mode: 'markers', type: 'scattergl',
@@ -13331,24 +14141,55 @@
                 document.getElementById('mvIneqTakeaway').innerHTML = '<b>Takeaway:</b> ' + d.interpretation;
                 // Lorenz (ECharts)
                 const el = document.getElementById('mvLorenzChart');
-                const ec = echarts.init(el);
-                this._echartsInstances.push(ec);
                 const lorenz = d.lorenz || [];
-                ec.setOption({
-                    grid: { left: 55, right: 20, top: 20, bottom: 45 },
-                    xAxis: { name: '% of songs (ranked)', nameLocation: 'middle', nameGap: 28, min: 0, max: 1,
-                        splitLine: { lineStyle: { color: 'rgba(40,46,86,0.08)' } }, axisLabel: { formatter: v => Math.round(v*100)+'%' } },
-                    yAxis: { name: '% of views', nameLocation: 'middle', nameGap: 35, min: 0, max: 1,
-                        splitLine: { lineStyle: { color: 'rgba(40,46,86,0.08)' } }, axisLabel: { formatter: v => Math.round(v*100)+'%' } },
-                    series: [
-                        { type: 'line', data: [[0,0],[1,1]], lineStyle: { type: 'dashed', color: '#ccc', width: 1.5 }, symbol: 'none', name: 'Perfect equality', silent: true },
-                        { type: 'line', data: lorenz.map(p => [p.p, p.l]), lineStyle: { color: '#5566f6', width: 2.5 }, areaStyle: { color: 'rgba(85,102,246,0.12)' }, symbol: 'none', name: 'Lorenz curve', smooth: true }
-                    ],
-                    tooltip: { trigger: 'axis', formatter: p => { const v = p[1] || p[0]; return Math.round(v.data[0]*100) + '% of songs hold ' + Math.round(v.data[1]*100) + '% of views'; } },
-                    animation: true, animationDuration: 900, animationEasing: 'cubicOut'
-                });
+                if (typeof echarts === 'undefined' || !echarts || typeof echarts.init !== 'function') {
+                    this.renderLibraryFallback('mvLorenzChart', {
+                        kicker: 'Inequality fallback',
+                        title: 'Concentration stays visible without the Lorenz plot',
+                        copy: 'This fallback keeps the same ownership story intact: how much attention the top slice takes and how far the field sits from equality.',
+                        accent: '#5566f6',
+                        items: [
+                            { label: 'Gini', value: String(d.gini), note: '0 means equal, 1 means fully concentrated.' },
+                            { label: 'Theil', value: String(d.theil), note: 'Entropy-style concentration measure.' },
+                            { label: 'Top 3 share', value: Math.round(d.top3_channel_share * 100) + '%', note: 'How much of the field the top three channels hold.' },
+                            { label: 'Top 10 share', value: Math.round(d.top10_channel_share * 100) + '%', note: 'Whether the market opens up after the first winner ring.' }
+                        ]
+                    });
+                } else {
+                    this.disposeEchart('mvLorenzChart');
+                    const ec = echarts.init(el);
+                    this._echartsInstances.push(ec);
+                    ec.setOption({
+                        grid: { left: 55, right: 20, top: 20, bottom: 45 },
+                        xAxis: { name: '% of songs (ranked)', nameLocation: 'middle', nameGap: 28, min: 0, max: 1,
+                            splitLine: { lineStyle: { color: 'rgba(40,46,86,0.08)' } }, axisLabel: { formatter: v => Math.round(v*100)+'%' } },
+                        yAxis: { name: '% of views', nameLocation: 'middle', nameGap: 35, min: 0, max: 1,
+                            splitLine: { lineStyle: { color: 'rgba(40,46,86,0.08)' } }, axisLabel: { formatter: v => Math.round(v*100)+'%' } },
+                        series: [
+                            { type: 'line', data: [[0,0],[1,1]], lineStyle: { type: 'dashed', color: '#ccc', width: 1.5 }, symbol: 'none', name: 'Perfect equality', silent: true },
+                            { type: 'line', data: lorenz.map(p => [p.p, p.l]), lineStyle: { color: '#5566f6', width: 2.5 }, areaStyle: { color: 'rgba(85,102,246,0.12)' }, symbol: 'none', name: 'Lorenz curve', smooth: true }
+                        ],
+                        tooltip: { trigger: 'axis', formatter: p => { const v = p[1] || p[0]; return Math.round(v.data[0]*100) + '% of songs hold ' + Math.round(v.data[1]*100) + '% of views'; } },
+                        animation: true, animationDuration: 900, animationEasing: 'cubicOut'
+                    });
+                }
                 // Top channels bar
                 const channels = d.top_channels || [];
+                if (typeof Plotly === 'undefined' || !Plotly || typeof Plotly.newPlot !== 'function') {
+                    this.renderLibraryFallback('mvTopChannelsChart', {
+                        kicker: 'Channel fallback',
+                        title: 'Top attention holders',
+                        copy: 'The bar chart is unavailable here, so the same concentration field stays visible as direct channel totals.',
+                        accent: '#0fb6a8',
+                        items: channels.slice(0, 6).map((channel) => ({
+                            label: channel.channel,
+                            value: this.fmt(channel.views),
+                            note: 'Visible view total in the current field.'
+                        }))
+                    });
+                    return;
+                }
+                this.purgePlotly('mvTopChannelsChart');
                 Plotly.newPlot('mvTopChannelsChart', [{
                     x: channels.map(c => c.channel), y: channels.map(c => c.views),
                     type: 'bar', marker: { color: channels.map((_,i) => 'rgba(85,102,246,' + (1 - i * 0.07) + ')'), line: { width: 0 } },
@@ -13368,8 +14209,6 @@
                 // Heatmap (ECharts)
                 const hm = d.heatmap;
                 const el = document.getElementById('mvHeatmapChart');
-                const ec = echarts.init(el);
-                this._echartsInstances.push(ec);
                 const labels = hm.labels;
                 const data = [];
                 for (let i = 0; i < labels.length; i++) {
@@ -13377,18 +14216,39 @@
                         data.push([j, i, hm.matrix[i][j]]);
                     }
                 }
-                ec.setOption({
-                    grid: { left: 110, right: 40, top: 10, bottom: 90 },
-                    xAxis: { type: 'category', data: labels, axisLabel: { rotate: 40, fontSize: 10, interval: 0 }, splitArea: { show: true } },
-                    yAxis: { type: 'category', data: labels, axisLabel: { fontSize: 10, interval: 0 }, splitArea: { show: true } },
-                    visualMap: { min: -1, max: 1, calculable: true, orient: 'horizontal', left: 'center', bottom: 0,
-                        inRange: { color: ['#f0779f','#fefefe','#5566f6'] },
-                        textStyle: { fontSize: 10 } },
-                    series: [{ type: 'heatmap', data: data, label: { show: true, fontSize: 9, formatter: p => p.data[2].toFixed(2) },
-                        emphasis: { itemStyle: { shadowBlur: 8, shadowColor: 'rgba(0,0,0,0.3)' } } }],
-                    tooltip: { formatter: p => labels[p.data[1]] + ' vs ' + labels[p.data[0]] + ': ' + p.data[2].toFixed(3) },
-                    animation: true
-                });
+                if (typeof echarts === 'undefined' || !echarts || typeof echarts.init !== 'function') {
+                    this.renderLibraryFallback('mvHeatmapChart', {
+                        kicker: 'Correlation fallback',
+                        title: 'Feature relationships still readable',
+                        copy: 'The heatmap runtime is unavailable, so the matrix resolves into the strongest variable pairings instead of disappearing.',
+                        accent: '#f0779f',
+                        items: data
+                            .filter((entry) => entry[0] !== entry[1])
+                            .sort((a, b) => Math.abs(b[2]) - Math.abs(a[2]))
+                            .slice(0, 6)
+                            .map((entry) => ({
+                                label: `${labels[entry[1]]} ↔ ${labels[entry[0]]}`,
+                                value: entry[2].toFixed(3),
+                                note: entry[2] >= 0 ? 'Positive association' : 'Inverse association'
+                            }))
+                    });
+                } else {
+                    this.disposeEchart('mvHeatmapChart');
+                    const ec = echarts.init(el);
+                    this._echartsInstances.push(ec);
+                    ec.setOption({
+                        grid: { left: 110, right: 40, top: 10, bottom: 90 },
+                        xAxis: { type: 'category', data: labels, axisLabel: { rotate: 40, fontSize: 10, interval: 0 }, splitArea: { show: true } },
+                        yAxis: { type: 'category', data: labels, axisLabel: { fontSize: 10, interval: 0 }, splitArea: { show: true } },
+                        visualMap: { min: -1, max: 1, calculable: true, orient: 'horizontal', left: 'center', bottom: 0,
+                            inRange: { color: ['#f0779f','#fefefe','#5566f6'] },
+                            textStyle: { fontSize: 10 } },
+                        series: [{ type: 'heatmap', data: data, label: { show: true, fontSize: 9, formatter: p => p.data[2].toFixed(2) },
+                            emphasis: { itemStyle: { shadowBlur: 8, shadowColor: 'rgba(0,0,0,0.3)' } } }],
+                        tooltip: { formatter: p => labels[p.data[1]] + ' vs ' + labels[p.data[0]] + ': ' + p.data[2].toFixed(3) },
+                        animation: true
+                    });
+                }
                 // Bar rows
                 this.renderCorrBars();
             },
@@ -13432,8 +14292,23 @@
                     legend.appendChild(chip);
                 });
                 var archEl = document.getElementById('mvArchChart');
+                if (typeof echarts === 'undefined' || !echarts || typeof echarts.init !== 'function') {
+                    this.renderLibraryFallback('mvArchChart', {
+                        kicker: 'Archetype fallback',
+                        title: 'Cluster stories still visible',
+                        copy: 'The scatter engine is unavailable in this preview, so the archetype layer stays readable as the main cluster families and their song counts.',
+                        accent: '#7c3aed',
+                        items: d.clusters.map((cluster) => ({
+                            label: cluster.name,
+                            value: cluster.count.toLocaleString() + ' songs',
+                            note: cluster.blurb || 'Public cluster summary'
+                        }))
+                    });
+                    return;
+                }
                 var existing = echarts.getInstanceByDom(archEl);
                 if (existing) existing.dispose();
+                this.disposeEchart('mvArchChart');
                 var archEc = echarts.init(archEl);
                 this._echartsInstances.push(archEc);
                 const clusterNames = d.clusters.map(c => c.name);
@@ -13558,6 +14433,24 @@
                 const height = container.clientHeight || 420;
                 const nodes = d.nodes.map(n => ({ id: n.id, freq: n.freq, degree: n.degree, community: n.community }));
                 const links = d.edges.map(e => ({ source: e.source, target: e.target, weight: e.weight }));
+                if (typeof d3 === 'undefined') {
+                    this.renderLibraryFallback('mvNetworkChart', {
+                        kicker: 'Network fallback',
+                        title: 'Tag bridges still visible',
+                        copy: 'The force graph is unavailable in this environment, so the same semantic network resolves into the most connected tags and the scale of the graph.',
+                        accent: '#34d399',
+                        items: nodes
+                            .slice()
+                            .sort((a, b) => (b.degree || 0) - (a.degree || 0))
+                            .slice(0, 6)
+                            .map((node) => ({
+                                label: node.id,
+                                value: `Degree ${node.degree}`,
+                                note: `Community ${node.community} · freq ${node.freq}`
+                            }))
+                    });
+                    return;
+                }
                 const svg = d3.select(container).append('svg').attr('width', width).attr('height', height)
                     .attr('viewBox', '0 0 ' + width + ' ' + height).style('width', '100%').style('height', '100%');
                 const maxDeg = Math.max(1, ...nodes.map(n => n.degree));
@@ -13610,26 +14503,56 @@
                 document.getElementById('mvPredTakeaway').innerHTML = '<b>Takeaway:</b> ' + d.interpretation;
                 // Luck vs Skill gauge (ECharts)
                 const el = document.getElementById('mvPredChart');
-                const ec = echarts.init(el);
-                this._echartsInstances.push(ec);
-                ec.setOption({
-                    series: [{
-                        type: 'pie', radius: ['50%', '78%'], center: ['50%', '50%'],
-                        avoidLabelOverlap: false, startAngle: 90,
-                        label: { show: true, position: 'center', fontSize: 22, fontWeight: 600, fontFamily: 'Space Grotesk',
-                            formatter: d.predictable_pct + '%\nskill', color: '#5566f6' },
-                        data: [
-                            { value: d.predictable_pct, name: 'Predictable', itemStyle: { color: '#5566f6' } },
-                            { value: d.luck_pct, name: 'Timing & luck', itemStyle: { color: 'rgba(40,46,86,0.10)' } }
-                        ],
-                        emphasis: { scale: false }
-                    }],
-                    tooltip: { formatter: '{b}: {c}%' },
-                    animation: true, animationDuration: 1000
-                });
+                if (typeof echarts === 'undefined' || !echarts || typeof echarts.init !== 'function') {
+                    this.renderLibraryFallback('mvPredChart', {
+                        kicker: 'Predictability fallback',
+                        title: 'Skill versus luck split',
+                        copy: 'The gauge renderer is unavailable here, so the same prediction surface stays visible as model lift, luck share, and the strongest pre-publication features.',
+                        accent: '#5566f6',
+                        items: [
+                            { label: 'Predictable share', value: d.predictable_pct + '%', note: 'Variance the model can explain from public features.' },
+                            { label: 'Timing and luck', value: d.luck_pct + '%', note: 'What remains outside the modeled structure.' },
+                            { label: 'Ensemble lift', value: (d.ensemble_r2 * 100).toFixed(0) + '%', note: 'Cross-validated explanatory power.' }
+                        ]
+                    });
+                } else {
+                    this.disposeEchart('mvPredChart');
+                    const ec = echarts.init(el);
+                    this._echartsInstances.push(ec);
+                    ec.setOption({
+                        series: [{
+                            type: 'pie', radius: ['50%', '78%'], center: ['50%', '50%'],
+                            avoidLabelOverlap: false, startAngle: 90,
+                            label: { show: true, position: 'center', fontSize: 22, fontWeight: 600, fontFamily: 'Space Grotesk',
+                                formatter: d.predictable_pct + '%\nskill', color: '#5566f6' },
+                            data: [
+                                { value: d.predictable_pct, name: 'Predictable', itemStyle: { color: '#5566f6' } },
+                                { value: d.luck_pct, name: 'Timing & luck', itemStyle: { color: 'rgba(40,46,86,0.10)' } }
+                            ],
+                            emphasis: { scale: false }
+                        }],
+                        tooltip: { formatter: '{b}: {c}%' },
+                        animation: true, animationDuration: 1000
+                    });
+                }
                 // Feature importances bar
                 const feats = d.features || [];
                 const el2 = document.getElementById('mvImpChart');
+                if (typeof echarts === 'undefined' || !echarts || typeof echarts.init !== 'function') {
+                    this.renderLibraryFallback('mvImpChart', {
+                        kicker: 'Feature fallback',
+                        title: 'What the model leaned on',
+                        copy: 'The ranked feature bars are unavailable in this environment, so the same feature hierarchy is listed directly.',
+                        accent: '#0fb6a8',
+                        items: feats.slice(0, 6).map((feature) => ({
+                            label: feature.label,
+                            value: (feature.importance * 100).toFixed(1) + '%',
+                            note: 'Relative contribution inside the ensemble.'
+                        }))
+                    });
+                    return;
+                }
+                this.disposeEchart('mvImpChart');
                 const ec2 = echarts.init(el2);
                 this._echartsInstances.push(ec2);
                 ec2.setOption({
@@ -13892,9 +14815,15 @@
                     if (!noteRows.length) {
                         notesEl.innerHTML = '<div class="mv-intel-empty">No note-bearing files are linked here yet. The chart wakes up the moment MusicXML, MIDI, ABC, or LilyPond files land in the repo.</div>';
                     } else {
-                        const noteEc = echarts.init(notesEl);
-                        this._echartsInstances.push(noteEc);
-                        noteEc.setOption({
+                        this.mountEchart('mvIntelNotesChart', {
+                            accent: '#f0779f',
+                            kicker: 'Score-linked read',
+                            title: 'Most common note families',
+                            copy: 'The note layer is available, so the fallback still lists the strongest recurring note families even if the chart surface cannot paint.',
+                            items: noteRows.slice(0, 6).map(function (row) {
+                                return { label: row.item, value: row.count.toLocaleString(), note: 'Parsed note events' };
+                            })
+                        }, (noteEc) => noteEc.setOption({
                             title: { text: 'Most common note families', left: 'center', top: 8, textStyle: { fontSize: 13, fontWeight: 600, fontFamily: 'Inter', color: this._PLOT_FONT } },
                             tooltip: { trigger: 'axis' },
                             grid: { left: 58, right: 28, top: 56, bottom: 36 },
@@ -13914,7 +14843,7 @@
                                 }
                             }],
                             animationDuration: 900
-                        });
+                        }));
                     }
                 }
 
@@ -13924,9 +14853,15 @@
                     if (!keyRows.length) {
                         keysEl.innerHTML = '<div class="mv-intel-empty">Key, meter, and tempo summaries stay blank until the repo has score-linked pieces to parse.</div>';
                     } else {
-                        const keyEc = echarts.init(keysEl);
-                        this._echartsInstances.push(keyEc);
-                        keyEc.setOption({
+                        this.mountEchart('mvIntelKeysChart', {
+                            accent: '#5566f6',
+                            kicker: 'Score-linked read',
+                            title: 'Observed keys in linked notation',
+                            copy: 'The chart layer can fall back to a readable key inventory so the note-linked lane stays useful instead of going blank.',
+                            items: keyRows.slice(0, 6).map(function (row) {
+                                return { label: row.item, value: row.count.toLocaleString(), note: 'Linked score hits' };
+                            })
+                        }, (keyEc) => keyEc.setOption({
                             title: { text: 'Observed keys in linked notation', left: 'center', top: 8, textStyle: { fontSize: 13, fontWeight: 600, fontFamily: 'Inter', color: this._PLOT_FONT } },
                             tooltip: { trigger: 'item' },
                             series: [{
@@ -13940,7 +14875,7 @@
                                 })
                             }],
                             animationDuration: 900
-                        });
+                        }));
                     }
                 }
             },
@@ -14108,7 +15043,7 @@
                 document.getElementById('mvBiasTop5').textContent = Math.round(b.concentration.top5_share * 100) + '%';
                 document.getElementById('mvBiasCoverage').textContent = Math.round(((b.coverage || {}).confidence || 0) * 100) + '%';
                 document.getElementById('mvBiasYearCoverage').textContent = Math.round(((b.coverage || {}).publication_year_share || 0) * 100) + '%';
-                const timeline = b.publication_timeline || {};
+                const timeline = this.normalizeTimeline(b.publication_timeline || {});
                 const gapNote = Array.isArray(timeline.missing_years) && timeline.missing_years.length
                     ? ' Timeline gaps stay visible rather than being smoothed away: ' + timeline.missing_years.slice(0, 6).join(', ') + (timeline.missing_years.length > 6 ? '…' : '') + '.'
                     : '';
@@ -14122,199 +15057,126 @@
                 const c = this.themeColors();
                 const chartPalette = [c.accent, c.secondary, c.quaternary, c.tertiary, '#9aa7ff', '#ffc0d6'];
                 const titleStyle = { fontSize: 13, fontWeight: 700, fontFamily: 'Space Grotesk', color: c.ink };
+                const coverage = b.coverage || {};
+                const genderCounts = this.nonEmptyEntries(((b.gender || {}).counts) || {});
+                const averageViewsByGender = this.nonEmptyEntries(((b.gender || {}).avg_views_by_gender) || {});
+                const classifiedRows = (((b.classified_genres || {}).breakdown) || [])
+                    .slice()
+                    .sort((a, z) => (this.safeNumber(z.classified_view_share || z.view_share, 0)) - (this.safeNumber(a.classified_view_share || a.view_share, 0)));
+                const rawGenreRows = ((b.genre_breakdown || []).slice()).sort((a, z) => this.safeNumber(z.view_share, 0) - this.safeNumber(a.view_share, 0));
+                const rawGenreCounts = this.nonEmptyEntries((((b.genres || {}).counts) || {}))
+                    .filter((entry) => entry[0] !== 'Other/Unclassified')
+                    .sort((a, z) => z[1] - a[1]);
+                const genreRows = classifiedRows.length
+                    ? classifiedRows.map((row) => [row.genre, this.safeNumber(row.song_count, 0), this.safeNumber(row.classified_view_share || row.view_share, 0)])
+                    : rawGenreCounts.map((entry) => [entry[0], this.safeNumber(entry[1], 0), 0]);
+                const durationBias = b.duration_bias || {};
+                const durationBands = [
+                    { label: '< 3 min', row: durationBias.short_under_3min || { avg_views: 0, count: 0 } },
+                    { label: '3–4 min', row: durationBias.medium_3to4min || { avg_views: 0, count: 0 } },
+                    { label: '> 4 min', row: durationBias.long_over_4min || { avg_views: 0, count: 0 } }
+                ];
+                const collaboration = b.collaboration || {};
+                const languageRows = this.nonEmptyEntries(((b.language_bias || {}).counts) || {})
+                    .filter((entry) => entry[0] !== 'Unknown')
+                    .sort((a, z) => z[1] - a[1]);
+                const topEngagementRows = (((b.engagement_bias || {}).top_engaged_songs) || [])
+                    .filter((song) => this.safeNumber(song.engagement, 0) > 0);
+                const countryRows = this.nonEmptyEntries(((b.country_bias || {}).counts) || {})
+                    .sort((a, z) => z[1] - a[1]);
+                const timeline = this.normalizeTimeline(b.publication_timeline || {});
+
+                this.primeFallback('mvGenderChart', {
+                    accent: c.secondary,
+                    kicker: 'Bias field',
+                    title: 'Artist gender mix',
+                    copy: 'Known artist metadata fills this lane. When the public field is sparse, the fallback still shows how much of the set is classified.',
+                    items: genderCounts.length
+                        ? genderCounts.map((entry) => ({ label: entry[0], value: entry[1].toLocaleString() + ' songs', note: 'Known in the current field' }))
+                        : [{ label: 'Known gender rows', value: Math.round((coverage.gender_known_share || 0) * 100) + '%', note: 'Metadata coverage is visible even when the chart surface is still settling.' }]
+                });
+                this.primeFallback('mvGenreChart', {
+                    accent: c.quaternary,
+                    kicker: 'Bias field',
+                    title: 'Genre concentration',
+                    copy: 'Genre coverage is intentionally kept visible. If the heavier chart misses its first paint, the ranked public field stays readable.',
+                    items: (classifiedRows.length ? classifiedRows : rawGenreRows).slice(0, 6).map((row) => ({
+                        label: row.genre || row[0],
+                        value: this.safeNumber(row.song_count || row[1], 0).toLocaleString() + ' songs',
+                        note: (((row.classified_view_share || row.view_share || row[2] || 0) * 100).toFixed(1)) + '% of tracked views'
+                    }))
+                });
+                this.primeFallback('mvGenderViewsChart', {
+                    accent: c.accent,
+                    kicker: 'Bias field',
+                    title: 'Average views by gender',
+                    copy: 'This compares attention, not just presence. If the plot surface is late, the averages still appear here.',
+                    items: averageViewsByGender.length
+                        ? averageViewsByGender.map((entry) => ({ label: entry[0], value: this.fmt(entry[1]), note: 'Average views per known song' }))
+                        : [{ label: 'Known view buckets', value: Math.round((coverage.gender_known_share || 0) * 100) + '%', note: 'Coverage is visible even when the comparison set is sparse.' }]
+                });
+                this.primeFallback('mvDurationBiasChart', {
+                    accent: c.tertiary,
+                    kicker: 'Bias field',
+                    title: 'Duration and attention',
+                    copy: 'The point is to see whether length behaves like an attention pressure variable. The fallback keeps the band averages readable.',
+                    items: durationBands.map((band) => ({
+                        label: band.label,
+                        value: this.fmt(this.safeNumber(band.row.avg_views, 0)),
+                        note: this.safeNumber(band.row.count, 0) + ' songs in band'
+                    }))
+                });
+                this.primeFallback('mvCollabChart', {
+                    accent: c.secondary,
+                    kicker: 'Bias field',
+                    title: 'Solo versus collaboration',
+                    copy: 'This stays visible because collaboration is often where business strategy and audience reach quietly diverge.',
+                    items: [
+                        { label: 'Solo', value: this.safeNumber(collaboration.solo_count, 0).toLocaleString() + ' songs', note: 'Single-billed releases' },
+                        { label: 'Collaboration', value: this.safeNumber(collaboration.collab_count, 0).toLocaleString() + ' songs', note: Math.round(this.safeNumber(collaboration.collab_share, 0) * 100) + '% of the set' }
+                    ]
+                });
+                this.primeFallback('mvLanguageChart', {
+                    accent: c.quaternary,
+                    kicker: 'Bias field',
+                    title: 'Language distribution',
+                    copy: 'Language is one of the fastest ways to see whether a market read is broad or just overfitted to one lane.',
+                    items: languageRows.length
+                        ? languageRows.slice(0, 6).map((entry) => ({ label: entry[0], value: entry[1].toLocaleString() + ' songs', note: 'Known language metadata' }))
+                        : [{ label: 'Known language rows', value: Math.round((coverage.language_known_share || 0) * 100) + '%', note: 'Language coverage is still shown even if few rows are classified.' }]
+                });
+                this.primeFallback('mvCountryChart', {
+                    accent: c.accent,
+                    kicker: 'Bias field',
+                    title: 'Channel country',
+                    copy: 'Country metadata helps separate market shape from platform shape. The fallback keeps the visible territories on screen.',
+                    items: countryRows.length
+                        ? countryRows.slice(0, 6).map((entry) => ({ label: entry[0], value: entry[1].toLocaleString() + ' channels', note: 'Known channel location' }))
+                        : [{ label: 'Known country rows', value: Math.round((this.safeNumber((b.country_bias || {}).known_share, 0)) * 100) + '%', note: 'Country coverage is sparse, so the repository does not pretend otherwise.' }]
+                });
+                this.primeFallback('mvTimelineChart', {
+                    accent: c.quaternary,
+                    kicker: 'Bias field',
+                    title: 'Publication timeline',
+                    copy: 'Years are intentionally left uneven. The fallback keeps gaps and explicit coverage visible even if the chart paints late.',
+                    items: timeline.years.length
+                        ? [
+                            { label: 'Window', value: String(timeline.years[0]) + '–' + String(timeline.years[timeline.years.length - 1]), note: timeline.years.length + ' years represented' },
+                            { label: 'Known years', value: Math.round((coverage.publication_year_share || 0) * 100) + '%', note: 'Rows with an attributable year' },
+                            { label: 'Explicit dates', value: Math.round((coverage.publication_year_explicit_share || 0) * 100) + '%', note: 'Direct upload date coverage' },
+                            { label: 'Timeline gaps', value: timeline.missing_years.length ? timeline.missing_years.slice(0, 4).join(', ') + (timeline.missing_years.length > 4 ? '…' : '') : 'None', note: 'Missing years stay visible instead of being smoothed away.' }
+                        ]
+                        : [{ label: 'Known years', value: Math.round((coverage.publication_year_share || 0) * 100) + '%', note: 'No year timeline can be drawn until the public rows carry enough date coverage.' }]
+                });
+
                 this.renderBiasSummary();
                 this.renderRoleLens();
-                // Gender donut (ECharts)
-                const genderEl = document.getElementById('mvGenderChart');
-                const genderEc = echarts.init(genderEl);
-                this._echartsInstances.push(genderEc);
-                const gc = b.gender.counts;
-                const gColors = { female: c.secondary, male: c.accent, mixed: c.quaternary, unknown: '#cbd5e1' };
-                genderEc.setOption({
-                    title: { text: 'Artist Gender (Songs)', left: 'center', top: 8, textStyle: titleStyle },
-                    tooltip: { trigger: 'item', formatter: '{b}: {c} songs ({d}%)' },
-                    series: [{ type: 'pie', radius: ['40%', '70%'], center: ['50%', '55%'], avoidLabelOverlap: true,
-                        label: { formatter: '{b}\n{c}', fontSize: 11, color: c.ink },
-                        data: Object.entries(gc).map(([k, v]) => ({ name: k, value: v, itemStyle: { color: gColors[k] || '#94a3b8' } })),
-                        emphasis: { scale: true, scaleSize: 6 }
-                    }],
-                    animation: true, animationDuration: 800
-                });
-                // Genre bar (ECharts)
-                const genreEl = document.getElementById('mvGenreChart');
-                const genreEc = echarts.init(genreEl);
-                this._echartsInstances.push(genreEc);
-                const classifiedRows = (((b.classified_genres || {}).breakdown) || []).slice().sort((a, z) => (z.classified_view_share || z.view_share || 0) - (a.classified_view_share || a.view_share || 0));
-                const genres = classifiedRows.length
-                    ? classifiedRows.map(row => [row.genre, row.song_count])
-                    : Object.entries(b.genres.counts).filter(entry => entry[0] !== 'Other/Unclassified').sort((a, z) => z[1] - a[1]);
-                genreEc.setOption({
-                    title: { text: 'Classified Genre Distribution', left: 'center', top: 8, textStyle: titleStyle },
-                    grid: { left: 120, right: 30, top: 40, bottom: 20 },
-                    xAxis: { type: 'value', axisLabel: { color: c.dim }, splitLine: { lineStyle: { color: this.alphaColor(c.accent, 0.09) } } },
-                    yAxis: { type: 'category', data: genres.map(g => g[0]).reverse(), axisLabel: { fontSize: 11, color: c.dim } },
-                    series: [{ type: 'bar', data: genres.map(g => g[1]).reverse(),
-                        itemStyle: { color: this.echartsGradient(c.accent, c.quaternary, true), borderRadius: [0,8,8,0] },
-                        barWidth: 16 }],
-                    tooltip: { formatter: '{b}: {c} songs' },
-                    animation: true
-                });
-                // Gender views comparison bar
-                const gvEl = document.getElementById('mvGenderViewsChart');
-                const gvEc = echarts.init(gvEl);
-                this._echartsInstances.push(gvEc);
-                const avgV = b.gender.avg_views_by_gender;
-                const genders = Object.keys(avgV);
-                gvEc.setOption({
-                    title: { text: 'Avg Views per Song by Gender', left: 'center', top: 8, textStyle: titleStyle },
-                    grid: { left: 80, right: 30, top: 45, bottom: 30 },
-                    xAxis: { type: 'category', data: genders, axisLabel: { fontSize: 12, color: c.dim } },
-                    yAxis: { type: 'value', axisLabel: { color: c.dim, formatter: function(v) { return v >= 1e6 ? (v/1e6).toFixed(0) + 'M' : v; } }, splitLine: { lineStyle: { color: this.alphaColor(c.secondary, 0.08) } } },
-                    series: [{ type: 'bar', data: genders.map(g => ({ value: avgV[g], itemStyle: { color: g === 'female' ? MusicViz.echartsGradient(c.secondary, c.tertiary, false) : g === 'male' ? MusicViz.echartsGradient(c.accent, '#9aa7ff', false) : MusicViz.echartsGradient(c.quaternary, c.tertiary, false) } })),
-                        barWidth: 40, label: { show: true, position: 'top', formatter: function(p) { return (p.value/1e6).toFixed(0) + 'M'; }, fontSize: 11 } }],
-                    tooltip: { formatter: function(p) { return p.name + ': ' + (p.value).toLocaleString() + ' avg views'; } },
-                    animation: true
-                });
-                // Duration bias bar
-                var dbEl = document.getElementById('mvDurationBiasChart');
-                var dbEc = echarts.init(dbEl);
-                this._echartsInstances.push(dbEc);
-                var db = b.duration_bias;
-                var durCats = ['< 3 min', '3–4 min', '> 4 min'];
-                var durData = [db.short_under_3min, db.medium_3to4min, db.long_over_4min];
-                dbEc.setOption({
-                    title: { text: 'Duration vs Average Views', left: 'center', top: 8, textStyle: titleStyle },
-                    grid: { left: 80, right: 30, top: 45, bottom: 30 },
-                    xAxis: { type: 'category', data: durCats, axisLabel: { color: c.dim } },
-                    yAxis: { type: 'value', axisLabel: { color: c.dim, formatter: function(v) { return v >= 1e6 ? (v/1e6).toFixed(0) + 'M' : v; } }, splitLine: { lineStyle: { color: this.alphaColor(c.quaternary, 0.08) } } },
-                    series: [{ type: 'bar', data: durData.map(function(d, i) { return { value: d.avg_views, itemStyle: { color: MusicViz.echartsGradient(chartPalette[i % chartPalette.length], chartPalette[(i + 1) % chartPalette.length], false) } }; }),
-                        barWidth: 50, label: { show: true, position: 'top', formatter: function(p) { return durData[p.dataIndex].count + ' songs'; }, fontSize: 10 } }],
-                    tooltip: { formatter: function(p) { return p.name + ': ' + (p.value).toLocaleString() + ' avg views (' + durData[p.dataIndex].count + ' songs)'; } },
-                    animation: true
-                });
-                // Collaboration pie
-                var collEl = document.getElementById('mvCollabChart');
-                var collEc = echarts.init(collEl);
-                this._echartsInstances.push(collEc);
-                var coll = b.collaboration;
-                collEc.setOption({
-                    title: { text: 'Solo vs Collaboration', left: 'center', top: 8, textStyle: titleStyle },
-                    tooltip: { trigger: 'item', formatter: '{b}: {c} songs ({d}%)' },
-                    series: [{ type: 'pie', radius: ['40%', '70%'], center: ['50%', '55%'],
-                        data: [
-                            { name: 'Solo', value: coll.solo_count, itemStyle: { color: c.accent } },
-                            { name: 'Collaboration', value: coll.collab_count, itemStyle: { color: c.tertiary } }
-                        ],
-                        label: { formatter: '{b}\n{c} ({d}%)', fontSize: 11, color: c.ink },
-                        emphasis: { scale: true, scaleSize: 6 }
-                    }],
-                    animation: true
-                });
-                // Language bias bar
-                if (b.language_bias && b.language_bias.counts) {
-                    var langEl = document.getElementById('mvLanguageChart');
-                    var langEc = echarts.init(langEl);
-                    this._echartsInstances.push(langEc);
-                    var lc = b.language_bias.counts;
-                    var langArr = Object.entries(lc).filter(function(e) { return e[0] !== 'Unknown'; }).sort(function(a, b) { return b[1] - a[1]; });
-                    var langColors = [c.accent,c.secondary,c.quaternary,c.tertiary,'#a78bfa','#34d399','#fb7185','#fbbf24'];
-                    langEc.setOption({
-                        title: { text: 'Language Distribution', left: 'center', top: 8, textStyle: titleStyle },
-                        tooltip: { trigger: 'item', formatter: '{b}: {c} songs ({d}%)' },
-                        series: [{ type: 'pie', radius: ['35%', '65%'], center: ['50%', '55%'], roseType: 'radius',
-                            data: langArr.map(function(e, i) { return { name: e[0], value: e[1], itemStyle: { color: langColors[i % langColors.length] } }; }),
-                            label: { formatter: '{b}\n{c}', fontSize: 10, color: c.ink },
-                            emphasis: { scale: true, scaleSize: 6 },
-                            animationType: 'scale', animationEasing: 'elasticOut'
-                        }],
-                        animation: true, animationDuration: 1000
-                    });
-                }
-                // Engagement scatter
-                if (b.engagement_bias && b.engagement_bias.top_engaged_songs) {
-                    var engEl = document.getElementById('mvEngagementChart');
-                    var engEc = echarts.init(engEl);
-                    this._echartsInstances.push(engEc);
-                    var topEng = b.engagement_bias.top_engaged_songs;
-                    engEc.setOption({
-                        title: { text: 'Top Engagement (Likes/Views)', left: 'center', top: 8, textStyle: titleStyle },
-                        grid: { left: 60, right: 30, top: 45, bottom: 50 },
-                        xAxis: { type: 'category', data: topEng.map(function(s) { return s.title.length > 25 ? s.title.substring(0, 22) + '...' : s.title; }), axisLabel: { color: c.dim, fontSize: 9, rotate: 15 } },
-                        yAxis: { type: 'value', name: 'Engagement %', nameTextStyle: { color: c.dim }, axisLabel: { color: c.dim, formatter: function(v) { return (v * 100).toFixed(1) + '%'; } }, splitLine: { lineStyle: { color: MusicViz.alphaColor(c.secondary, 0.08) } } },
-                        series: [{ type: 'bar', data: topEng.map(function(s, i) { return { value: s.engagement, itemStyle: { color: MusicViz.echartsGradient(chartPalette[i % chartPalette.length], chartPalette[(i + 2) % chartPalette.length], false) } }; }),
-                            barWidth: 32, label: { show: true, position: 'top', formatter: function(p) { return (p.value * 100).toFixed(1) + '%'; }, fontSize: 10 } }],
-                        tooltip: { formatter: function(p) { return topEng[p.dataIndex].title + ': ' + (topEng[p.dataIndex].engagement * 100).toFixed(2) + '% engagement'; } },
-                        animation: true, animationDuration: 800
-                    });
-                }
-                // Country treemap
-                if (b.country_bias && b.country_bias.counts) {
-                    var ctryEl = document.getElementById('mvCountryChart');
-                    var ctryEc = echarts.init(ctryEl);
-                    this._echartsInstances.push(ctryEc);
-                    var cc = b.country_bias.counts;
-                    var ctryArr = Object.entries(cc).sort(function(a, b) { return b[1] - a[1]; });
-                    var ctryColors = [c.accent,c.quaternary,c.secondary,c.tertiary,'#a78bfa','#34d399','#fb7185','#fbbf24','#818cf8','#6ee7b7'];
-                    ctryEc.setOption({
-                        title: { text: 'Channel Country', left: 'center', top: 8, textStyle: titleStyle },
-                        tooltip: { formatter: '{b}: {c} channels' },
-                        series: [{ type: 'treemap', width: '90%', height: '70%', top: 40,
-                            data: ctryArr.map(function(e, i) { return { name: e[0], value: e[1], itemStyle: { color: ctryColors[i % ctryColors.length] } }; }),
-                            label: { fontSize: 12, fontWeight: 600 },
-                            breadcrumb: { show: false },
-                            levels: [{ itemStyle: { borderColor: '#fff', borderWidth: 2, gapWidth: 2 } }]
-                        }],
-                        animation: true, animationDuration: 900
-                    });
-                }
-                if (b.publication_timeline && b.publication_timeline.years && b.publication_timeline.years.length) {
-                    var tlEl = document.getElementById('mvTimelineChart');
-                    var tlEc = echarts.init(tlEl);
-                    this._echartsInstances.push(tlEc);
-                    var tl = b.publication_timeline;
-                    tlEc.setOption({
-                        title: { text: 'Publication Timeline', left: 'center', top: 8, textStyle: titleStyle },
-                        tooltip: { trigger: 'axis' },
-                        legend: { top: 30, data: ['Songs', 'Avg Views'], textStyle: { fontSize: 11, color: c.dim } },
-                        grid: { left: 65, right: 45, top: 70, bottom: 35 },
-                        xAxis: { type: 'category', data: tl.years.map(function(y) { return String(y); }), axisLabel: { fontSize: (window.innerWidth || 1200) < 720 ? 9 : 10, interval: 0, rotate: (window.innerWidth || 1200) < 720 ? 42 : 0, color: c.dim } },
-                        yAxis: [
-                            { type: 'value', name: 'Songs', nameTextStyle: { color: c.dim }, axisLabel: { color: c.dim }, splitLine: { lineStyle: { color: this.alphaColor(c.accent, 0.08) } } },
-                            { type: 'value', name: 'Avg views', nameTextStyle: { color: c.dim }, axisLabel: { color: c.dim, formatter: function(v) { return MusicViz.fmt(v); } }, splitLine: { show: false } }
-                        ],
-                        series: [
-                            {
-                                name: 'Songs',
-                                type: 'bar',
-                                data: tl.song_counts,
-                                itemStyle: { color: this.echartsGradient(c.accent, c.secondary, false), borderRadius: [8,8,0,0] },
-                                barWidth: 22
-                            },
-                            {
-                                name: 'Avg Views',
-                                type: 'line',
-                                yAxisIndex: 1,
-                                connectNulls: false,
-                                smooth: true,
-                                data: tl.avg_views,
-                                symbol: 'circle',
-                                symbolSize: 8,
-                                lineStyle: { width: 3, color: c.quaternary },
-                                itemStyle: { color: c.quaternary },
-                                areaStyle: { color: this.alphaColor(c.quaternary, 0.12) }
-                            }
-                        ],
-                        animation: true, animationDuration: 900
-                    });
-                }
-                // Extra metrics
                 if (b.enriched_stats) {
                     var totalEl = document.getElementById('mvBiasTotalSongs');
-                    if (totalEl) totalEl.textContent = b.enriched_stats.total_songs;
+                    if (totalEl) totalEl.textContent = this.safeNumber(b.enriched_stats.total_songs, 0);
                     var srcEl = document.getElementById('mvBiasSourceList');
                     if (srcEl && b.enriched_stats.sources) {
-                        var srcNames = { primary_top100: 'Top 100 (2025)', most_viewed_2026: 'Most Viewed (2026)', youtube_music_data: 'YouTube Music Data' };
-                        var coverage = b.coverage || {};
+                        var srcNames = { primary_top100: 'Core 100 (2025)', most_viewed_2026: 'Most viewed field', youtube_music_data: 'YouTube music data' };
                         srcEl.innerHTML = Object.entries(b.enriched_stats.sources).map(function(e) { return (srcNames[e[0]] || e[0]) + ': ' + e[1] + ' songs'; }).join('<br>')
                             + '<br><br>Known gender: ' + Math.round((coverage.gender_known_share || 0) * 100) + '%'
                             + '<br>Known genres: ' + Math.round((coverage.genre_known_share || 0) * 100) + '%'
@@ -14326,20 +15188,291 @@
                 if (b.genre_breakdown) {
                     var genreBody = document.getElementById('mvGenreBreakdownBody');
                     if (genreBody) {
-                        var breakdown = b.genre_breakdown.slice().sort(function(a, b) {
-                            return (b.view_share || 0) - (a.view_share || 0);
-                        });
-                        genreBody.innerHTML = breakdown.map(function(row) {
+                        genreBody.innerHTML = rawGenreRows.map((row) => {
                             return '<tr>' +
-                                '<td>' + row.genre + '</td>' +
-                                '<td>' + row.song_count.toLocaleString() + '</td>' +
-                                '<td>' + (row.view_share * 100).toFixed(1) + '%</td>' +
-                                '<td>' + MusicViz.fmt(row.avg_views) + '</td>' +
-                                '<td>' + row.avg_duration_min.toFixed(2) + ' min</td>' +
-                                '<td>' + (row.collab_share * 100).toFixed(0) + '%</td>' +
+                                '<td>' + (row.genre || 'Unclassified') + '</td>' +
+                                '<td>' + this.safeNumber(row.song_count, 0).toLocaleString() + '</td>' +
+                                '<td>' + (this.safeNumber(row.view_share, 0) * 100).toFixed(1) + '%</td>' +
+                                '<td>' + this.fmt(this.safeNumber(row.avg_views, 0)) + '</td>' +
+                                '<td>' + this.safeNumber(row.avg_duration_min, 0).toFixed(2) + ' min</td>' +
+                                '<td>' + (this.safeNumber(row.collab_share, 0) * 100).toFixed(0) + '%</td>' +
                             '</tr>';
                         }).join('');
                     }
+                }
+
+                const gc = Object.fromEntries(genderCounts);
+                const gColors = { female: c.secondary, male: c.accent, mixed: c.quaternary, unknown: '#cbd5e1' };
+                if (genderCounts.length) {
+                    this.mountEchart('mvGenderChart', {
+                        accent: c.secondary,
+                        kicker: 'Bias field',
+                        title: 'Artist gender mix',
+                        copy: 'This lane compares the known artist-gender mix in the public field. It is only as broad as the available metadata, so the coverage card stays visible beside it.',
+                        items: genderCounts.map((entry) => ({ label: entry[0], value: entry[1].toLocaleString() + ' songs', note: 'Known in current field' }))
+                    }, (genderEc) => genderEc.setOption({
+                        title: { text: 'Artist Gender (Songs)', left: 'center', top: 8, textStyle: titleStyle },
+                        tooltip: { trigger: 'item', formatter: '{b}: {c} songs ({d}%)' },
+                        series: [{
+                            type: 'pie',
+                            radius: ['40%', '70%'],
+                            center: ['50%', '55%'],
+                            avoidLabelOverlap: true,
+                            label: { formatter: '{b}\n{c}', fontSize: 11, color: c.ink },
+                            data: genderCounts.map((entry) => ({ name: entry[0], value: entry[1], itemStyle: { color: gColors[entry[0]] || '#94a3b8' } })),
+                            emphasis: { scale: true, scaleSize: 6 }
+                        }],
+                        animation: true,
+                        animationDuration: 800
+                    }));
+                }
+
+                if (genreRows.length) {
+                    this.mountEchart('mvGenreChart', {
+                        accent: c.quaternary,
+                        kicker: 'Bias field',
+                        title: 'Genre concentration',
+                        copy: 'Genre labels are classified from the public rows, then ranked by where the field actually concentrates. This is why the breakdown table sits nearby instead of hiding the counts.',
+                        items: genreRows.slice(0, 6).map((row) => ({
+                            label: row[0],
+                            value: this.safeNumber(row[1], 0).toLocaleString() + ' songs',
+                            note: ((this.safeNumber(row[2], 0)) * 100).toFixed(1) + '% of tracked views'
+                        }))
+                    }, (genreEc) => genreEc.setOption({
+                        title: { text: 'Classified Genre Distribution', left: 'center', top: 8, textStyle: titleStyle },
+                        grid: { left: 120, right: 30, top: 40, bottom: 20 },
+                        xAxis: { type: 'value', axisLabel: { color: c.dim }, splitLine: { lineStyle: { color: this.alphaColor(c.accent, 0.09) } } },
+                        yAxis: { type: 'category', data: genreRows.map((row) => row[0]).reverse(), axisLabel: { fontSize: 11, color: c.dim } },
+                        series: [{
+                            type: 'bar',
+                            data: genreRows.map((row) => row[1]).reverse(),
+                            itemStyle: { color: this.echartsGradient(c.accent, c.quaternary, true), borderRadius: [0, 8, 8, 0] },
+                            barWidth: 16
+                        }],
+                        tooltip: { formatter: '{b}: {c} songs' },
+                        animation: true
+                    }));
+                }
+
+                if (averageViewsByGender.length) {
+                    const averageViewKeys = averageViewsByGender.map((entry) => entry[0]);
+                    const averageViewMap = Object.fromEntries(averageViewsByGender);
+                    this.mountEchart('mvGenderViewsChart', {
+                        accent: c.accent,
+                        kicker: 'Bias field',
+                        title: 'Average views by gender',
+                        copy: 'The point here is not who has the most songs, but whether comparable songs convert attention differently once they are in the field.',
+                        items: averageViewsByGender.map((entry) => ({ label: entry[0], value: this.fmt(entry[1]), note: 'Average views per song' }))
+                    }, (gvEc) => gvEc.setOption({
+                        title: { text: 'Avg Views per Song by Gender', left: 'center', top: 8, textStyle: titleStyle },
+                        grid: { left: 80, right: 30, top: 45, bottom: 30 },
+                        xAxis: { type: 'category', data: averageViewKeys, axisLabel: { fontSize: 12, color: c.dim } },
+                        yAxis: { type: 'value', axisLabel: { color: c.dim, formatter: function (value) { return value >= 1e6 ? (value / 1e6).toFixed(0) + 'M' : value; } }, splitLine: { lineStyle: { color: this.alphaColor(c.secondary, 0.08) } } },
+                        series: [{
+                            type: 'bar',
+                            data: averageViewKeys.map((gender) => ({
+                                value: averageViewMap[gender],
+                                itemStyle: {
+                                    color: gender === 'female'
+                                        ? this.echartsGradient(c.secondary, c.tertiary, false)
+                                        : gender === 'male'
+                                            ? this.echartsGradient(c.accent, '#9aa7ff', false)
+                                            : this.echartsGradient(c.quaternary, c.tertiary, false)
+                                }
+                            })),
+                            barWidth: 40,
+                            label: { show: true, position: 'top', formatter: function (point) { return (point.value / 1e6).toFixed(0) + 'M'; }, fontSize: 11 }
+                        }],
+                        tooltip: { formatter: function (point) { return point.name + ': ' + Number(point.value).toLocaleString() + ' avg views'; } },
+                        animation: true
+                    }));
+                }
+
+                this.mountEchart('mvDurationBiasChart', {
+                    accent: c.tertiary,
+                    kicker: 'Bias field',
+                    title: 'Duration and attention',
+                    copy: 'Duration is treated as a pressure variable, not a verdict. The useful read is whether shorter or longer cuts systematically capture more attention in this particular field.',
+                    items: durationBands.map((band) => ({
+                        label: band.label,
+                        value: this.fmt(this.safeNumber(band.row.avg_views, 0)),
+                        note: this.safeNumber(band.row.count, 0) + ' songs in band'
+                    }))
+                }, (dbEc) => dbEc.setOption({
+                    title: { text: 'Duration vs Average Views', left: 'center', top: 8, textStyle: titleStyle },
+                    grid: { left: 80, right: 30, top: 45, bottom: 30 },
+                    xAxis: { type: 'category', data: durationBands.map((band) => band.label), axisLabel: { color: c.dim } },
+                    yAxis: { type: 'value', axisLabel: { color: c.dim, formatter: function (value) { return value >= 1e6 ? (value / 1e6).toFixed(0) + 'M' : value; } }, splitLine: { lineStyle: { color: this.alphaColor(c.quaternary, 0.08) } } },
+                    series: [{
+                        type: 'bar',
+                        data: durationBands.map((band, index) => ({
+                            value: this.safeNumber(band.row.avg_views, 0),
+                            itemStyle: { color: this.echartsGradient(chartPalette[index % chartPalette.length], chartPalette[(index + 1) % chartPalette.length], false) }
+                        })),
+                        barWidth: 50,
+                        label: { show: true, position: 'top', formatter: function (point) { return durationBands[point.dataIndex].row.count + ' songs'; }, fontSize: 10 }
+                    }],
+                    tooltip: { formatter: function (point) { return point.name + ': ' + Number(point.value).toLocaleString() + ' avg views (' + durationBands[point.dataIndex].row.count + ' songs)'; } },
+                    animation: true
+                }));
+
+                this.mountEchart('mvCollabChart', {
+                    accent: c.secondary,
+                    kicker: 'Bias field',
+                    title: 'Solo versus collaboration',
+                    copy: 'Collaboration is a structural choice in the field. This split lets you see whether shared billing is a niche tactic or a dominant path to reach.',
+                    items: [
+                        { label: 'Solo', value: this.safeNumber(collaboration.solo_count, 0).toLocaleString() + ' songs', note: 'Single-billed releases' },
+                        { label: 'Collaboration', value: this.safeNumber(collaboration.collab_count, 0).toLocaleString() + ' songs', note: Math.round((this.safeNumber(collaboration.collab_share, 0)) * 100) + '% of the set' }
+                    ]
+                }, (collEc) => collEc.setOption({
+                    title: { text: 'Solo vs Collaboration', left: 'center', top: 8, textStyle: titleStyle },
+                    tooltip: { trigger: 'item', formatter: '{b}: {c} songs ({d}%)' },
+                    series: [{
+                        type: 'pie',
+                        radius: ['40%', '70%'],
+                        center: ['50%', '55%'],
+                        data: [
+                            { name: 'Solo', value: this.safeNumber(collaboration.solo_count, 0), itemStyle: { color: c.accent } },
+                            { name: 'Collaboration', value: this.safeNumber(collaboration.collab_count, 0), itemStyle: { color: c.tertiary } }
+                        ],
+                        label: { formatter: '{b}\n{c} ({d}%)', fontSize: 11, color: c.ink },
+                        emphasis: { scale: true, scaleSize: 6 }
+                    }],
+                    animation: true
+                }));
+
+                if (languageRows.length) {
+                    const languageColors = [c.accent, c.secondary, c.quaternary, c.tertiary, '#a78bfa', '#34d399', '#fb7185', '#fbbf24'];
+                    this.mountEchart('mvLanguageChart', {
+                        accent: c.quaternary,
+                        kicker: 'Bias field',
+                        title: 'Language distribution',
+                        copy: 'Language sits close to market reach, geography, and platform packaging. Keeping it visible helps avoid calling something universal when it is mostly concentrated in one language lane.',
+                        items: languageRows.slice(0, 6).map((entry) => ({ label: entry[0], value: entry[1].toLocaleString() + ' songs', note: 'Known language metadata' }))
+                    }, (langEc) => langEc.setOption({
+                        title: { text: 'Language Distribution', left: 'center', top: 8, textStyle: titleStyle },
+                        tooltip: { trigger: 'item', formatter: '{b}: {c} songs ({d}%)' },
+                        series: [{
+                            type: 'pie',
+                            radius: ['35%', '65%'],
+                            center: ['50%', '55%'],
+                            roseType: 'radius',
+                            data: languageRows.map((entry, index) => ({ name: entry[0], value: entry[1], itemStyle: { color: languageColors[index % languageColors.length] } })),
+                            label: { formatter: '{b}\n{c}', fontSize: 10, color: c.ink },
+                            emphasis: { scale: true, scaleSize: 6 },
+                            animationType: 'scale',
+                            animationEasing: 'elasticOut'
+                        }],
+                        animation: true,
+                        animationDuration: 1000
+                    }));
+                }
+
+                if (topEngagementRows.length) {
+                    this.mountEchart('mvEngagementChart', {
+                        accent: c.tertiary,
+                        kicker: 'Bias field',
+                        title: 'Engagement pressure',
+                        copy: 'These are the songs turning views into disproportionately strong reaction. It is useful as a pressure read, not as a claim that engagement alone equals cultural meaning.',
+                        items: topEngagementRows.slice(0, 5).map((song) => ({
+                            label: song.title,
+                            value: (this.safeNumber(song.engagement, 0) * 100).toFixed(1) + '%',
+                            note: this.fmt(this.safeNumber(song.views, 0)) + ' tracked views'
+                        }))
+                    }, (engEc) => engEc.setOption({
+                        title: { text: 'Top Engagement (Likes/Views)', left: 'center', top: 8, textStyle: titleStyle },
+                        grid: { left: 60, right: 30, top: 45, bottom: 50 },
+                        xAxis: { type: 'category', data: topEngagementRows.map((song) => song.title.length > 25 ? song.title.substring(0, 22) + '...' : song.title), axisLabel: { color: c.dim, fontSize: 9, rotate: 15 } },
+                        yAxis: { type: 'value', name: 'Engagement %', nameTextStyle: { color: c.dim }, axisLabel: { color: c.dim, formatter: function (value) { return (value * 100).toFixed(1) + '%'; } }, splitLine: { lineStyle: { color: this.alphaColor(c.secondary, 0.08) } } },
+                        series: [{
+                            type: 'bar',
+                            data: topEngagementRows.map((song, index) => ({
+                                value: this.safeNumber(song.engagement, 0),
+                                itemStyle: { color: this.echartsGradient(chartPalette[index % chartPalette.length], chartPalette[(index + 2) % chartPalette.length], false) }
+                            })),
+                            barWidth: 32,
+                            label: { show: true, position: 'top', formatter: function (point) { return (point.value * 100).toFixed(1) + '%'; }, fontSize: 10 }
+                        }],
+                        tooltip: { formatter: function (point) { return topEngagementRows[point.dataIndex].title + ': ' + (topEngagementRows[point.dataIndex].engagement * 100).toFixed(2) + '% engagement'; } },
+                        animation: true,
+                        animationDuration: 800
+                    }));
+                }
+
+                if (countryRows.length) {
+                    const countryColors = [c.accent, c.quaternary, c.secondary, c.tertiary, '#a78bfa', '#34d399', '#fb7185', '#fbbf24', '#818cf8', '#6ee7b7'];
+                    this.mountEchart('mvCountryChart', {
+                        accent: c.accent,
+                        kicker: 'Bias field',
+                        title: 'Channel country',
+                        copy: 'Country metadata helps separate platform-wide behaviour from a field that is mostly being driven by a smaller set of territories.',
+                        items: countryRows.slice(0, 6).map((entry) => ({ label: entry[0], value: entry[1].toLocaleString() + ' channels', note: 'Known channel location' }))
+                    }, (ctryEc) => ctryEc.setOption({
+                        title: { text: 'Channel Country', left: 'center', top: 8, textStyle: titleStyle },
+                        tooltip: { formatter: '{b}: {c} channels' },
+                        series: [{
+                            type: 'treemap',
+                            width: '90%',
+                            height: '70%',
+                            top: 40,
+                            data: countryRows.map((entry, index) => ({ name: entry[0], value: entry[1], itemStyle: { color: countryColors[index % countryColors.length] } })),
+                            label: { fontSize: 12, fontWeight: 600 },
+                            breadcrumb: { show: false },
+                            levels: [{ itemStyle: { borderColor: '#fff', borderWidth: 2, gapWidth: 2 } }]
+                        }],
+                        animation: true,
+                        animationDuration: 900
+                    }));
+                }
+
+                if (timeline.years && timeline.years.length) {
+                    this.mountEchart('mvTimelineChart', {
+                        accent: c.quaternary,
+                        kicker: 'Bias field',
+                        title: 'Publication timeline',
+                        copy: 'Dates are left uneven on purpose. Gaps, inferred years, and recirculated catalog uploads change how a “viral now” story should be read.',
+                        items: [
+                            { label: 'Window', value: String(timeline.years[0]) + '–' + String(timeline.years[timeline.years.length - 1]), note: timeline.years.length + ' years represented' },
+                            { label: 'Known years', value: Math.round((coverage.publication_year_share || 0) * 100) + '%', note: 'Rows with an attributable year' },
+                            { label: 'Explicit dates', value: Math.round((coverage.publication_year_explicit_share || 0) * 100) + '%', note: 'Direct upload date coverage' },
+                            { label: 'Timeline gaps', value: timeline.missing_years.length ? timeline.missing_years.slice(0, 4).join(', ') + (timeline.missing_years.length > 4 ? '…' : '') : 'None', note: 'Years missing from the timeline remain visible.' }
+                        ]
+                    }, (tlEc) => tlEc.setOption({
+                        title: { text: 'Publication Timeline', left: 'center', top: 8, textStyle: titleStyle },
+                        tooltip: { trigger: 'axis' },
+                        legend: { top: 30, data: ['Songs', 'Avg Views'], textStyle: { fontSize: 11, color: c.dim } },
+                        grid: { left: 65, right: 45, top: 70, bottom: 35 },
+                        xAxis: { type: 'category', data: timeline.years.map((year) => String(year)), axisLabel: { fontSize: (window.innerWidth || 1200) < 720 ? 9 : 10, interval: 0, rotate: (window.innerWidth || 1200) < 720 ? 42 : 0, color: c.dim } },
+                        yAxis: [
+                            { type: 'value', name: 'Songs', nameTextStyle: { color: c.dim }, axisLabel: { color: c.dim }, splitLine: { lineStyle: { color: this.alphaColor(c.accent, 0.08) } } },
+                            { type: 'value', name: 'Avg views', nameTextStyle: { color: c.dim }, axisLabel: { color: c.dim, formatter: (value) => this.fmt(value) }, splitLine: { show: false } }
+                        ],
+                        series: [
+                            {
+                                name: 'Songs',
+                                type: 'bar',
+                                data: timeline.song_counts,
+                                itemStyle: { color: this.echartsGradient(c.accent, c.secondary, false), borderRadius: [8, 8, 0, 0] },
+                                barWidth: 22
+                            },
+                            {
+                                name: 'Avg Views',
+                                type: 'line',
+                                yAxisIndex: 1,
+                                connectNulls: false,
+                                smooth: true,
+                                data: timeline.avg_views,
+                                symbol: 'circle',
+                                symbolSize: 8,
+                                lineStyle: { width: 3, color: c.quaternary },
+                                itemStyle: { color: c.quaternary },
+                                areaStyle: { color: this.alphaColor(c.quaternary, 0.12) }
+                            }
+                        ],
+                        animation: true,
+                        animationDuration: 900
+                    }));
                 }
             },
 
@@ -14615,6 +15748,24 @@
                 if (!d || !d.points) return;
                 var pts = d.points;
                 var clusterNames = d.clusters.map(function(c) { return c.name; });
+                if (typeof Plotly === 'undefined' || !Plotly || typeof Plotly.newPlot !== 'function') {
+                    this.renderLibraryFallback('mv3DScatter', {
+                        kicker: '3D fallback',
+                        title: 'Virality depth without the rotating scene',
+                        copy: 'The 3D renderer is unavailable here, so the same cluster field is condensed into the heaviest songs by views, virality, and channel scale.',
+                        accent: '#f4a259',
+                        items: pts
+                            .slice()
+                            .sort((a, b) => (b.views || 0) - (a.views || 0))
+                            .slice(0, 6)
+                            .map((point) => ({
+                                label: point.title,
+                                value: this.fmt(point.views || 0),
+                                note: `${point.archetype} · ${point.channel}`
+                            }))
+                    });
+                    return;
+                }
                 var traces = clusterNames.map(function(name, i) {
                     var p = pts.filter(function(pt) { return pt.archetype === name; });
                     return {
@@ -14628,6 +15779,7 @@
                         hovertemplate: '%{text}<extra>' + name + '</extra>'
                     };
                 });
+                this.purgePlotly('mv3DScatter');
                 Plotly.newPlot('mv3DScatter', traces, {
                     scene: {
                         xaxis: { title: 'log₁₀(Views)', gridcolor: this._PLOT_GRID, zerolinecolor: this._PLOT_GRID, tickfont: { color: this._PLOT_AXIS }, titlefont: { color: this._PLOT_FONT }, backgroundcolor: 'rgba(20,18,44,0.72)' },
