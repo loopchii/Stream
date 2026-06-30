@@ -308,3 +308,265 @@ BIAS_LIBRARY = [
 ]
 
 CATEGORIES = sorted({b["category"] for b in BIAS_LIBRARY})
+
+PIPELINE_STAGES = [
+    {
+        "id": "greenlight",
+        "label": "Greenlight",
+        "short_label": "Scope",
+        "note": "What receives money, mandate, and time.",
+    },
+    {
+        "id": "writing",
+        "label": "Writing",
+        "short_label": "Voice",
+        "note": "Who gets motive, dialogue, and interiority.",
+    },
+    {
+        "id": "casting",
+        "label": "Casting",
+        "short_label": "Presence",
+        "note": "Who gets status, desirability, and screen real estate.",
+    },
+    {
+        "id": "framing",
+        "label": "Framing",
+        "short_label": "Emphasis",
+        "note": "Camera, edit, soundtrack, and narrative stress.",
+    },
+    {
+        "id": "packaging",
+        "label": "Packaging",
+        "short_label": "Shelf",
+        "note": "Artwork, synopsis, tagging, and genre labeling.",
+    },
+    {
+        "id": "ranking",
+        "label": "Ranking",
+        "short_label": "Loop",
+        "note": "Search, recommendation, and repeat exposure.",
+    },
+    {
+        "id": "memory",
+        "label": "Audience Memory",
+        "short_label": "Memory",
+        "note": "What gets normalized, desired, or forgotten.",
+    },
+]
+
+ROLE_LIBRARY = [
+    {"id": "creator", "label": "Creator"},
+    {"id": "operator", "label": "Operator"},
+    {"id": "buyer", "label": "Buyer"},
+    {"id": "public", "label": "Public"},
+]
+
+CATEGORY_ROUTES = {
+    "gender": {
+        "entry_stage": "writing",
+        "path": ["writing", "casting", "framing", "packaging", "memory"],
+        "fundamental": "voice allocation",
+        "dissonance": "one gender is treated as default competence or centrality",
+        "repair": "rebalance speaking power and role gravity before exposure multiplies the gap",
+        "harm": {"representation": 92, "revenue": 66, "trust": 78, "safety": 55},
+        "wave": {"amplitude": 0.82, "spread": 0.66, "persistence": 0.78, "drift": 0.46},
+    },
+    "race": {
+        "entry_stage": "casting",
+        "path": ["casting", "framing", "packaging", "ranking", "memory"],
+        "fundamental": "narrative legitimacy",
+        "dissonance": "who gets to feel universal versus marked or niche",
+        "repair": "repair the casting and packaging boundary before search turns a bias into discoverability law",
+        "harm": {"representation": 95, "revenue": 72, "trust": 83, "safety": 67},
+        "wave": {"amplitude": 0.88, "spread": 0.72, "persistence": 0.84, "drift": 0.52},
+    },
+    "age": {
+        "entry_stage": "casting",
+        "path": ["casting", "framing", "packaging", "memory"],
+        "fundamental": "life-stage visibility",
+        "dissonance": "some ages are treated as prestige and others as expiry",
+        "repair": "restore role volume across ages before stereotype hardens into expectation",
+        "harm": {"representation": 78, "revenue": 58, "trust": 71, "safety": 42},
+        "wave": {"amplitude": 0.7, "spread": 0.54, "persistence": 0.73, "drift": 0.39},
+    },
+    "writing": {
+        "entry_stage": "writing",
+        "path": ["writing", "framing", "packaging", "memory"],
+        "fundamental": "explanation rights",
+        "dissonance": "some groups are given shorthand while others are given complexity",
+        "repair": "rewrite the scene before edit and synopsis flatten the same distortion again",
+        "harm": {"representation": 74, "revenue": 51, "trust": 77, "safety": 48},
+        "wave": {"amplitude": 0.76, "spread": 0.5, "persistence": 0.69, "drift": 0.43},
+    },
+    "narrative": {
+        "entry_stage": "writing",
+        "path": ["writing", "framing", "memory"],
+        "fundamental": "story consequence",
+        "dissonance": "harm is normalized as destiny for some people and complexity for others",
+        "repair": "interrupt the trope before the audience is asked to call it realism",
+        "harm": {"representation": 81, "revenue": 44, "trust": 75, "safety": 63},
+        "wave": {"amplitude": 0.8, "spread": 0.48, "persistence": 0.82, "drift": 0.47},
+    },
+    "production": {
+        "entry_stage": "greenlight",
+        "path": ["greenlight", "writing", "casting", "packaging", "ranking"],
+        "fundamental": "resource asymmetry",
+        "dissonance": "bias enters before the audience sees a frame because the opportunity set is already tilted",
+        "repair": "repair budget and staffing before the catalogue pretends the outcome was merit alone",
+        "harm": {"representation": 89, "revenue": 81, "trust": 74, "safety": 36},
+        "wave": {"amplitude": 0.9, "spread": 0.74, "persistence": 0.88, "drift": 0.42},
+    },
+    "algorithmic": {
+        "entry_stage": "ranking",
+        "path": ["ranking", "memory"],
+        "fundamental": "feedback eligibility",
+        "dissonance": "what was overexposed yesterday becomes the reason to overexpose it again tomorrow",
+        "repair": "add counterfactual retrieval, exposure floors, and ranking audits before repetition becomes policy",
+        "harm": {"representation": 86, "revenue": 76, "trust": 88, "safety": 69},
+        "wave": {"amplitude": 0.84, "spread": 0.8, "persistence": 0.91, "drift": 0.58},
+    },
+    "intersectional": {
+        "entry_stage": "casting",
+        "path": ["casting", "framing", "packaging", "ranking", "memory"],
+        "fundamental": "compounded exclusion",
+        "dissonance": "the people missing from single-axis fixes disappear again once categories combine",
+        "repair": "test intersections on purpose because averages will flatter the system otherwise",
+        "harm": {"representation": 97, "revenue": 69, "trust": 84, "safety": 72},
+        "wave": {"amplitude": 0.93, "spread": 0.76, "persistence": 0.9, "drift": 0.5},
+    },
+}
+
+ENTRY_STAGE_OVERRIDES = {
+    "thumbnail-bias": "packaging",
+    "search-bias": "ranking",
+    "recommendation-loop": "ranking",
+    "category-ghetto": "packaging",
+    "metric-myopia": "ranking",
+    "director-gap": "greenlight",
+    "writers-room-gap": "greenlight",
+    "budget-gap": "greenlight",
+    "crew-gap": "greenlight",
+    "whitewashing": "casting",
+    "authentic-casting": "casting",
+    "male-gaze": "framing",
+}
+
+
+def _stage_lookup():
+    return {stage["id"]: stage for stage in PIPELINE_STAGES}
+
+
+def _category_profile(category: str) -> dict:
+    return CATEGORY_ROUTES.get(category, CATEGORY_ROUTES["writing"])
+
+
+def _path_with_override(item: dict, base_path: list[str], entry_stage: str) -> list[str]:
+    if entry_stage in base_path:
+        start = base_path.index(entry_stage)
+        return base_path[start:]
+    return [entry_stage] + [stage for stage in base_path if stage != entry_stage]
+
+
+def _harm_profile(category: str, measured_here: bool) -> dict:
+    profile = dict(_category_profile(category)["harm"])
+    if measured_here:
+        profile["trust"] = min(99, profile["trust"] + 6)
+        profile["representation"] = min(99, profile["representation"] + 3)
+    return profile
+
+
+def _wave_profile(category: str, measured_here: bool) -> dict:
+    wave = dict(_category_profile(category)["wave"])
+    if measured_here:
+        wave["persistence"] = round(min(0.98, wave["persistence"] + 0.05), 3)
+        wave["spread"] = round(min(0.95, wave["spread"] + 0.03), 3)
+    return {key: round(float(value), 3) for key, value in wave.items()}
+
+
+def _role_routes(item: dict, path: list[str], harm: dict) -> dict:
+    first = path[0]["label"]
+    last = path[-1]["label"]
+    measured = "This one is also measured inside Stream, so the library and live metrics can reinforce each other." if item["measured_here"] else "This one is field knowledge first, which means it should sharpen review before the metric layer ever feels certain."
+    return {
+        "creator": {
+            "headline": "What a creator can do",
+            "summary": f"Interrogate the script, casting, or packaging boundary where this pattern enters first: {first}. {measured}",
+            "actions": [
+                f"Check whether {item['name'].lower()} begins in premise, dialogue allocation, or who gets narrative rescue.",
+                "Rewrite for agency, not just optics: who acts, who explains, who is looked at, who is believed.",
+                f"Do not stop at the cut. Ask how the same pattern might be reintroduced by packaging or ranking before it reaches {last}.",
+            ],
+        },
+        "operator": {
+            "headline": "What an operator can instrument",
+            "summary": f"This pattern enters at {first} and tends to survive until {last}. The system question is where to place checks before repetition turns into policy.",
+            "actions": [
+                "Add stage-level checks where the pattern first becomes legible instead of waiting for the final report card.",
+                "Compare row-level evidence, packaging labels, and recommendation outcomes so the same distortion is not hidden by one aggregate.",
+                "Treat recurrence as a systems problem: if the same bias keeps reappearing, the pipeline is teaching itself the wrong baseline.",
+            ],
+        },
+        "buyer": {
+            "headline": "What a buyer or executive should care about",
+            "summary": f"The commercial risk is not only reputational. Bias that survives from {first} to {last} narrows demand, wastes catalogue value, and makes forecasting less honest.",
+            "actions": [
+                f"Read the revenue signal with the representation signal. This pattern currently carries a revenue pressure of {harm['revenue']}/100.",
+                "Ask whether underperformance is being manufactured by shelving, framing, or exposure rules rather than the work itself.",
+                "Use the result to find missed demand, avoid stale commissioning logic, and reduce preventable trust erosion.",
+            ],
+        },
+        "public": {
+            "headline": "What an ordinary viewer or listener can learn",
+            "summary": f"This pattern matters because it changes what feels normal. Once it survives long enough to reach {last}, it starts teaching audiences what to expect from real people.",
+            "actions": [
+                "Notice who gets complexity, who gets shorthand, and who only arrives as atmosphere or warning.",
+                "Track the shelf as much as the story: what is missing, what is over-repeated, and what is made to seem niche.",
+                "Use the result as a way to ask better questions, not just to label something bad and move on.",
+            ],
+        },
+    }
+
+
+def bias_propagation_surface() -> dict:
+    stage_map = _stage_lookup()
+    items = []
+    for item in BIAS_LIBRARY:
+        category = item["category"]
+        profile = _category_profile(category)
+        entry_stage = ENTRY_STAGE_OVERRIDES.get(item["id"], profile["entry_stage"])
+        path_ids = _path_with_override(item, profile["path"], entry_stage)
+        path = [stage_map[stage_id] for stage_id in path_ids if stage_id in stage_map]
+        harm = _harm_profile(category, item["measured_here"])
+        wave = _wave_profile(category, item["measured_here"])
+        items.append(
+            {
+                "id": item["id"],
+                "name": item["name"],
+                "category": category,
+                "measured_here": item["measured_here"],
+                "entry_stage": entry_stage,
+                "entry_label": stage_map[entry_stage]["label"],
+                "propagation_path": path_ids,
+                "path_labels": [stage["label"] for stage in path],
+                "fundamental": profile["fundamental"],
+                "dissonance": profile["dissonance"],
+                "repair": profile["repair"],
+                "propagation_summary": (
+                    f"{item['name']} usually becomes visible in {stage_map[entry_stage]['label']}, "
+                    f"then keeps its force through {' → '.join(stage['short_label'] for stage in path)}."
+                ),
+                "consequence": item["why_it_matters"],
+                "harm_profile": harm,
+                "wave_profile": wave,
+                "role_routes": _role_routes(item, path, harm),
+            }
+        )
+    return {
+        "stages": PIPELINE_STAGES,
+        "roles": ROLE_LIBRARY,
+        "items": items,
+        "notes": {
+            "headline": "Bias rarely appears once. It enters, gets reinforced, then starts to feel natural.",
+            "method": "This propagation layer is a public interpretive map built from the documented bias library and the live Stream metrics, not a claim of hidden private instrumentation.",
+        },
+    }

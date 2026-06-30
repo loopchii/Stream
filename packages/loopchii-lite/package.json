@@ -1,0 +1,11 @@
+{
+  "name": "@loopchii/loopchii-lite",
+  "version": "0.1.0",
+  "description": "A deterministic public guard wrapper for Stream demos and browser-side governance simulations.",
+  "type": "module",
+  "main": "./src/index.js",
+  "exports": {
+    ".": "./src/index.js"
+  },
+  "license": "MIT"
+}

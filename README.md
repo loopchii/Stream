@@ -1,11 +1,11 @@
 # Stream
 
 <p align="center">
-  <strong>Loopchii Stream</strong> is a public research surface for media bias, representation, and attention analysis.
+  <strong>Loopchii Stream</strong> is a public research repository for media bias, music virality, cultural attention, and inspectable analysis.
 </p>
 
 <p align="center">
-  It is designed to be readable, falsifiable, and useful without exposing private Loopchii runtime systems.
+  It is meant to be readable, checkable, and useful without pretending public research and private runtime systems are the same thing.
 </p>
 
 <p align="center">
@@ -24,25 +24,26 @@
   <img src="https://img.shields.io/github/license/loopchii/Stream?style=for-the-badge" alt="License">
 </p>
 
-> **Why this exists:** public research should be sharp, honest, and easy to verify. This repository keeps the method visible, the data boundary explicit, and the public story separate from any proprietary Loopchii internals.
+> **Why this exists:** public work should not ask for trust before it shows its inputs, boundaries, and tradeoffs. Stream exists to make the work visible enough to inspect, challenge, and improve.
 
-Stream is a Loopchii public research surface for media bias, representation, and attention analysis. It uses information theory, statistical testing, network analysis, resonance mapping, and clearly bounded synthetic data to show how cultural pattern analysis can be made inspectable instead of rhetorical. The purpose of this repository is to publish methods, visual reasoning, and reproducible outputs while keeping proprietary runtime systems elsewhere in the Loopchii ecosystem. Platform analysis now separates film, series, docuseries, animation, reality, talk shows, and related formats by platform so the public surface can distinguish format-specific effects from broader platform effects.
+Stream is where Loopchii publishes a bounded public surface: reproducible methods, readable visual reasoning, and a contribution path that does not depend on private infrastructure. Some lanes are synthetic and clearly labeled because they are here to teach the method. Some lanes are built from public music data because they are here to test what the method can actually hold when the inputs are real. The repo separates those two jobs on purpose.
 
 ## Start Here
 
-Pick the quickest route in:
+Pick the route that matches how you like to learn:
 
 | If you want to... | Go here | What you get |
 |---|---|---|
-| Explore the public interface first | [Dashboard Preview](https://htmlpreview.github.io/?https://github.com/loopchii/Stream/blob/main/index.html) | The browser surface with charts, story flow, and the real-data music module |
-| Inspect the methods first | [`StreamLen_processors.html`](https://htmlpreview.github.io/?https://github.com/loopchii/Stream/blob/main/StreamLen_processors.html) | A notebook-style walkthrough of the processing logic and measurement choices |
-| See something useful in under 10 seconds | `python lens_visualizer.py` | A terminal-first stream demo with public lens findings and instant visual feedback |
-| Review the developer setup | [contributing.md](contributing.md) | Clean setup steps, contribution lanes, and review expectations |
-| Read the current contract | [What This Actually Does](#what-this-actually-does) | The fastest path to the repo’s scope, boundaries, and public artifacts |
+| See the browser surface first | [Dashboard Preview](https://htmlpreview.github.io/?https://github.com/loopchii/Stream/blob/main/index.html) | The public UI with charts, story flow, the real-data music lane, and the clickable audit layer |
+| Read the processing choices first | [`StreamLen_processors.html`](https://htmlpreview.github.io/?https://github.com/loopchii/Stream/blob/main/StreamLen_processors.html) | A notebook-style walkthrough of how the data is cleaned, shaped, and measured |
+| Try the smallest working tool | `python lens_visualizer.py` | A terminal-first demo with public lens findings and instant visual feedback |
+| Review the setup and contribution lanes | [contributing.md](contributing.md) | Local setup, accepted scopes, and how to add public value without overclaiming |
+| Start with the public scope | [What This Actually Does](#what-this-actually-does) | The quickest way to understand what this repo is for, what it is not, and how the data is bounded |
 
 ## Navigation
 
 - [What This Actually Does](#what-this-actually-does)
+- [Browser Playground](#browser-playground)
 - [Public Lens SDK](#public-lens-sdk)
 - [Media Liability Lab](#media-liability-lab)
 - [Why Engineers Trust This Repo](#why-engineers-trust-this-repo)
@@ -57,19 +58,31 @@ Pick the quickest route in:
 
 ## Why Engineers Trust This Repo
 
-- The claim boundary is explicit. Synthetic representation data is labeled throughout, and the real-data music module is separated on purpose.
-- The public artifacts are inspectable. The dashboard, notebook-style walkthrough, and exported results all point back to code in this repository.
-- The surface is reproducible. Local runs, static artifacts, and API responses come from the same Python pipeline.
-- The repo is tested continuously. CI runs linting and tests across supported Python versions on every push to `main`.
+- The claim boundary is explicit. Synthetic representation data is labeled throughout, and the real-data music lane is kept separate on purpose.
+- The artifacts are inspectable. The dashboard, methods notebook, static exports, and API surfaces all trace back to code in this repository.
+- The same pipeline feeds local runs, static JSON exports, and API responses. There is less room for the public story to drift away from what the code actually does.
+- CI runs tests on push so contributors can change the repo without turning it into a slideshow of unverifiable screenshots.
+
+## Data Engineering Surface
+
+Stream now exposes its public analytical operating model directly instead of hiding it behind screenshots and prose. The Learn tab and `/api/system/data-engineering` surface show the same things a data engineer or analytics lead would ask for before trusting a public number:
+
+- dataset grain and primary keys
+- partition strategy and refresh posture
+- quality checks on nulls, uniqueness, domain control, and leakage
+- bronze → silver → gold → serving lineage
+- delivery parity across FastAPI, static JSON exports, and the browser surface
+
+This is deliberate. A chart should not be the first place someone learns how a system behaves. The pipeline, the contract boundary, and the publishing discipline should be visible before anyone is asked to trust the result.
 
 ## Choose Your Path
 
 | Reader | Best first stop | Why |
 |---|---|---|
-| Engineer | [Quick Start](#quick-start) | Get the app running locally, inspect the API, and trace outputs back to code |
-| Researcher | [Data and Methods](#data-and-methods) | Review assumptions, metrics, and the synthetic-vs-real distinction before citing anything |
-| Designer or writer | [The Interactive Dashboard](#the-interactive-dashboard) | Understand how the story flow, visual hierarchy, and explanatory language are structured |
-| Contributor | [contributing.md](contributing.md) | See the accepted scopes for code, data, documentation, and public research support |
+| Engineer | [Quick Start](#quick-start) | Run it locally, inspect the API, and trace outputs back to code |
+| Researcher | [Data and Methods](#data-and-methods) | Review assumptions, metrics, and the synthetic-vs-real boundary before citing anything |
+| Designer or writer | [The Interactive Dashboard](#the-interactive-dashboard) | See how the visual flow, narrative pacing, and explanation strategy are structured |
+| Contributor | [contributing.md](contributing.md) | Find the accepted lanes for code, data, docs, and public research support |
 
 <div align="center">
   
@@ -92,6 +105,31 @@ The interactive dashboard lets you inspect those patterns across seven tabs — 
 - It is not a hidden proprietary Loopchii runtime.
 - It is not a claim about private studio catalogues, internal platform data, or undisclosed production systems.
 - It is not a generic “AI for media” wrapper. The value here is in clear methods, bounded interpretation, and visible public artifacts.
+
+## Browser Playground
+
+The fastest path into Stream is now the public split-screen playground in [`index.html`](https://htmlpreview.github.io/?https://github.com/loopchii/Stream/blob/main/index.html). It exists for one reason: most public research repos make people read for ten minutes before they can feel any value. This one should not.
+
+What it gives you immediately:
+
+- a browser-side comparison between a typical wrapper that reacts after risky material renders and a governed path that stops the fragment before it lands
+- a tiny public wrapper surface in [`packages/loopchii-lite`](packages/loopchii-lite) for contributors who want something they can inspect and adapt in minutes
+- a deterministic set of nuisance cases that map to ordinary engineering headaches: direct identifiers, leaked secrets, protected text, and unsafe retention prompts
+
+The playground is intentionally public and bounded. It does **not** claim private runtime enforcement, hardware binding, or proprietary Loopchii internals. Its job is adoption: prove usefulness quickly, invite contribution honestly, and give engineers something concrete to extend.
+
+Minimal public example:
+
+```js
+import { govern } from "@loopchii/loopchii-lite";
+
+const result = govern({
+  prompt: "Draft a reply using the customer email export and phone numbers.",
+  draftResponse: "Here are the contacts: jordan@example.com ..."
+});
+
+return result.allowed ? result.standardResponse : result.safeResponse;
+```
 
 ## Public Lens SDK
 
@@ -150,6 +188,22 @@ The newest module goes beyond synthetic data entirely. It analyses the **100 mos
 **Live data extraction (optional):** If you set a `YOUTUBE_API_KEY` environment variable, the built-in `music_ingest.py` module calls the YouTube Data API v3 to refresh view counts and pull additional tracks on demand — no code changes needed. Without a key, the app serves the committed real dataset.
 
 Data sources: YouTube Top 100 (2025), Most Viewed Music Videos (2026, Kaggle), YouTube Music Data (Kaggle), YouTube Top Channels (2026, Kaggle). **636 real songs** from 3 datasets. No synthetic data is used in this module.
+
+### Score-Aware Music Intelligence
+
+The repo now includes a separate harvest layer for score and notation work:
+
+- `music_intelligence.py` scans the repository for MusicXML, MIDI, ABC, LilyPond, tabs, and chord charts.
+- `music_index.json` and `music_index.csv` export the piece-level index.
+- `music_analysis_report.md` summarizes what is actually linked today.
+
+This layer keeps the claim boundary strict:
+
+- the public song catalog and the score layer are separate on purpose
+- note and chord claims appear only when the repository contains notation-bearing files
+- when the repo has no linked score material, the surface shows the gap instead of faking musical certainty
+
+That means contributors can deepen the music lane in a very concrete way: add notation files under `scores/`, `music/`, `notation/`, or similar public folders and rerun the build. The UI will fold those files back into the song index automatically and start surfacing note families, chord movement, key distribution, and the score-link coverage rate.
 
 ## The Mathematical Framework
 
@@ -528,7 +582,9 @@ Stream/
 
 ### Statistical Rigor
 
-The pipeline uses a chi-square goodness-of-fit test for dialogue distribution (with p-values), normalized Shannon entropy for diversity, attribute assortativity for network homophily, and deviation-from-mean comparisons for age, sentiment, and screen-time bias. There are no trained models, bootstraps, or causal estimators in the current codebase — and the README won't pretend otherwise.
+The synthetic representation lane uses chi-square goodness-of-fit testing for dialogue distribution (with p-values), normalized Shannon entropy for diversity, attribute assortativity for network homophily, and deviation-from-mean comparisons for age, sentiment, and screen-time bias.
+
+The real-data music lane goes further: it includes bootstrap confidence intervals for the power-law tail, partial Spearman checks for feature relationships, a cross-validated ensemble regressor for the what-if predictor, and a public audit surface that shows how rows were filtered, deduplicated, or held back before any chart claims to be meaningful.
 
 <div align="center">
   

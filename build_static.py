@@ -18,6 +18,7 @@ import json
 from pathlib import Path
 
 import app as backend
+import music_intelligence
 import music_pipeline
 
 BASE = Path(__file__).resolve().parent
@@ -39,6 +40,9 @@ def build_data() -> None:
     # Sample-size independent content.
     write_json(DATA / "learn.json", backend.learn())
     write_json(DATA / "bias-library.json", backend.bias_library())
+    write_json(DATA / "system" / "data-engineering.json", backend.data_engineering_surface())
+    write_json(DATA / "system" / "bias-propagation.json", backend.bias_propagation())
+    write_json(DATA / "system" / "trojan-horse.json", backend.trojan_horse_surface())
 
     for n in SIZES:
         print(f"Running pipeline at n_samples={n} ...")
@@ -79,11 +83,24 @@ def build_music() -> None:
     write_json(out / "resonance.json", report["resonance"])
     write_json(out / "songs.json", report["songs"])
     write_json(out / "bias.json", report["bias"])
+    write_json(out / "quality.json", report["quality"])
     write_json(out / "genres.json", report["bias"].get("genre_breakdown", []))
     write_json(out / "timeline.json", report["bias"].get("publication_timeline", {}))
     write_json(out / "status.json", {"live_available": False, "source": "bundled_csv",
                                      "note": "Static build - committed real dataset."})
     write_json(out / "simulate.json", music_pipeline.simulate_grid())
+    intelligence = music_intelligence.build_music_data_package(
+        repo_root=BASE,
+        enable_live_enrichment=False,
+    )
+    write_json(out / "intelligence.json", intelligence["summary"])
+    write_json(out / "index.json", intelligence["pieces"])
+    music_intelligence.write_package(
+        intelligence,
+        BASE / "music_index.json",
+        BASE / "music_index.csv",
+        BASE / "music_analysis_report.md",
+    )
 
 
 if __name__ == "__main__":

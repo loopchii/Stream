@@ -73,6 +73,25 @@ def test_media_types(client):
     assert {'media_type', 'diversity', 'gender_parity', 'avg_sentiment', 'sample_size'} <= set(rows[0])
 
 
+def test_music_quality_surface(client):
+    res = client.get('/api/music/quality')
+    assert res.status_code == 200
+    body = res.json()
+    coverage = body['coverage']
+    assert 'publication_year_explicit_share' in coverage
+    assert 'publication_year_inferred_share' in coverage
+
+
+def test_music_timeline_surface(client):
+    res = client.get('/api/music/timeline')
+    assert res.status_code == 200
+    body = res.json()
+    assert 'years' in body
+    assert 'missing_years' in body
+    if body['years']:
+        assert body['years'] == list(range(body['years'][0], body['years'][-1] + 1))
+
+
 def test_platform_media_types(client):
     res = client.get('/api/metrics/platform-media')
     assert res.status_code == 200
@@ -195,6 +214,55 @@ def test_learn(client):
     cards = res.json()
     assert len(cards) >= 5
     assert all({'title', 'summary', 'detail', 'try_it'} <= set(c) for c in cards)
+
+
+def test_data_engineering_surface(client):
+    res = client.get('/api/system/data-engineering')
+    assert res.status_code == 200
+    body = res.json()
+    assert {'generated_at', 'operating_model', 'service_levels', 'delivery_surfaces', 'stages', 'lineage', 'contracts', 'quality_highlights'} <= set(body)
+    assert body['operating_model']['dataset_count'] >= 2
+    assert len(body['service_levels']) >= 4
+    assert len(body['delivery_surfaces']) >= 3
+    assert len(body['stages']) >= 4
+    assert len(body['contracts']) >= 2
+    first_contract = body['contracts'][0]
+    assert {'dataset_id', 'grain', 'primary_key', 'partition_keys', 'quality_checks', 'schema_profile', 'schema'} <= set(first_contract)
+    assert len(first_contract['quality_checks']) >= 3
+    assert len(first_contract['schema']) >= 5
+    assert first_contract['schema_profile']['column_count'] >= 5
+
+
+def test_bias_propagation_surface(client):
+    res = client.get('/api/system/bias-propagation')
+    assert res.status_code == 200
+    body = res.json()
+    assert {'stages', 'roles', 'items', 'notes'} <= set(body)
+    assert len(body['stages']) >= 6
+    assert len(body['roles']) >= 4
+    assert len(body['items']) >= 50
+    first = body['items'][0]
+    assert {'id', 'name', 'category', 'entry_stage', 'propagation_path', 'harm_profile', 'wave_profile', 'role_routes'} <= set(first)
+    assert len(first['propagation_path']) >= 2
+    assert {'creator', 'operator', 'buyer', 'public'} <= set(first['role_routes'])
+
+
+def test_trojan_horse_surface(client):
+    res = client.get('/api/system/trojan-horse')
+    assert res.status_code == 200
+    body = res.json()
+    assert {'generated_at', 'headline', 'description', 'presets', 'package'} <= set(body)
+    assert len(body['presets']) >= 5
+    assert body['package']['name'] == '@loopchii/loopchii-lite'
+
+
+def test_playground_simulate_blocks_pii(client):
+    res = client.get('/api/playground/simulate', params={'prompt': 'Use the customer email export and phone list.'})
+    assert res.status_code == 200
+    body = res.json()
+    assert body['blocked'] is True
+    assert body['category'] == 'pii'
+    assert body['governed_risky_tokens_rendered'] == 0
 
 
 def test_export_has_download_header(client):

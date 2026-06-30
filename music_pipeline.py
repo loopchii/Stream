@@ -30,6 +30,7 @@ from __future__ import annotations
 import math
 import re
 from collections import Counter
+from datetime import date
 from functools import lru_cache
 from pathlib import Path
 from typing import Dict, List, Optional, Sequence, Tuple
@@ -223,6 +224,11 @@ SUPPLEMENT_MOST_VIEWED = BASE_DIR / "data_sources" / "most-viewed-yt-videos-2026
 SUPPLEMENT_MUSIC_DATA = BASE_DIR / "data_sources" / "youtube-music-data.csv"
 SUPPLEMENT_CHANNELS = BASE_DIR / "data_sources" / "youtube-top-channels-2026.csv"
 SEED = 42
+CURRENT_YEAR = date.today().year
+RECENT_PUBLIC_YEAR_MIN = 2018
+
+_YEAR_HINT_RE = re.compile(r"(?<!\d)(20\d{2})(?!\d)")
+_COPYRIGHT_YEAR_RE = re.compile(r"[©℗]\s*(20\d{2})")
 
 # Human-readable labels and tooltips for every engineered feature, reused by the
 # API and the front end so the meaning of each number is never ambiguous.
@@ -304,6 +310,50 @@ def _looks_official(title: object, tags: object) -> int:
     return 1 if _OFFICIAL_RE.search(blob) else 0
 
 
+def _coerce_recent_public_year(value: object) -> int:
+    try:
+        year = int(value)
+    except (TypeError, ValueError):
+        return 0
+    if RECENT_PUBLIC_YEAR_MIN <= year <= CURRENT_YEAR + 1:
+        return year
+    return 0
+
+
+def _infer_publication_year_from_text(*fields: object) -> Tuple[int, str]:
+    """Extract a conservative year hint from public text.
+
+    This is deliberately narrow. A year is admitted only when either:
+
+    1. a copyright / rights marker carries a recent year, or
+    2. the visible public text collapses to exactly one distinct recent year.
+
+    Anything more ambiguous stays unknown.
+    """
+    text = " ".join(str(field or "") for field in fields if field is not None)
+    if not text.strip():
+        return 0, "unknown"
+
+    copyright_hits = [
+        year
+        for year in (_coerce_recent_public_year(hit) for hit in _COPYRIGHT_YEAR_RE.findall(text))
+        if year
+    ]
+    if copyright_hits:
+        return max(copyright_hits), "copyright_notice"
+
+    recent_hits = [
+        year
+        for year in (_coerce_recent_public_year(hit) for hit in _YEAR_HINT_RE.findall(text))
+        if year
+    ]
+    distinct = sorted(set(recent_hits))
+    if len(distinct) == 1:
+        return distinct[0], "single_recent_year_hint"
+
+    return 0, "unknown"
+
+
 def engineer_features(df: pd.DataFrame) -> pd.DataFrame:
     """Derive the modelling features from the raw scraped columns."""
     out = pd.DataFrame()
@@ -333,6 +383,24 @@ def engineer_features(df: pd.DataFrame) -> pd.DataFrame:
     out["thumbnail"] = df.get("thumbnail", pd.Series([""] * len(df))).astype(str)
     out["channel_url"] = df.get("channel_url", pd.Series([""] * len(df))).astype(str)
     out["_raw_tags"] = df.get("tags", pd.Series([""] * len(df))).astype(str)
+
+    if "date" in df.columns:
+        parsed = pd.to_datetime(df["date"], errors="coerce", utc=True)
+        out["published_at"] = parsed.dt.strftime("%Y-%m-%d").fillna("")
+        out["published_year"] = parsed.dt.year.fillna(0).astype(int)
+        out["published_year_source"] = np.where(parsed.notna(), "explicit_date", "unknown")
+    else:
+        inferred = df.apply(
+            lambda row: _infer_publication_year_from_text(
+                row.get("title"),
+                row.get("fulltitle"),
+                row.get("description"),
+            ),
+            axis=1,
+        )
+        out["published_at"] = ""
+        out["published_year"] = inferred.apply(lambda item: item[0]).astype(int)
+        out["published_year_source"] = inferred.apply(lambda item: item[1]).astype(str)
 
     out = out.dropna(subset=["view_count"]).reset_index(drop=True)
     out["view_count"] = out["view_count"].astype(float)
@@ -416,6 +484,7 @@ def _load_supplement_music_data() -> pd.DataFrame:
         parsed = pd.to_datetime(df["date"], errors="coerce", utc=True)
         out["published_at"] = parsed.dt.strftime("%Y-%m-%d").fillna("")
         out["published_year"] = parsed.dt.year.fillna(0).astype(int)
+        out["published_year_source"] = np.where(parsed.notna(), "explicit_date", "unknown")
     out["source"] = "youtube_music_data"
     return out.dropna(subset=["view_count"]).reset_index(drop=True)
 
@@ -434,6 +503,11 @@ def _load_channel_countries() -> Dict[str, str]:
     return mapping
 
 
+def _normalise_titles(values: pd.Series) -> pd.Series:
+    return values.astype(str).str.lower().str.strip()
+
+
+@lru_cache(maxsize=2)
 def load_enriched_dataset() -> pd.DataFrame:
     """Build the unified music dataset from all available sources.
 
@@ -451,12 +525,12 @@ def load_enriched_dataset() -> pd.DataFrame:
     sup2 = _load_supplement_music_data()
 
     # Deduplicate by normalised title
-    seen = set(primary["title"].str.lower().str.strip())
+    seen = set(_normalise_titles(primary["title"]))
     extras = []
     for sup in [sup1, sup2]:
         if sup.empty:
             continue
-        sup["_norm"] = sup["title"].str.lower().str.strip()
+        sup["_norm"] = _normalise_titles(sup["title"])
         novel = sup[~sup["_norm"].isin(seen)].copy()
         seen.update(novel["_norm"])
         extras.append(novel.drop(columns=["_norm"]))
@@ -519,6 +593,14 @@ def load_enriched_dataset() -> pd.DataFrame:
             sup_eng["published_year"] = pd.to_numeric(
                 combined_extras["published_year"], errors="coerce"
             ).fillna(0).astype(int)
+        if "published_year_source" in combined_extras:
+            sup_eng["published_year_source"] = combined_extras["published_year_source"].fillna("unknown").astype(str)
+        elif "published_year" in sup_eng.columns:
+            sup_eng["published_year_source"] = np.where(
+                sup_eng["published_year"].astype(int) > 0,
+                "explicit_date",
+                "unknown",
+            )
         if "source" in combined_extras:
             sup_eng["source"] = combined_extras["source"]
 
@@ -532,6 +614,8 @@ def load_enriched_dataset() -> pd.DataFrame:
             primary_out["published_at"] = ""
         if "published_year" not in primary_out.columns:
             primary_out["published_year"] = 0
+        if "published_year_source" not in primary_out.columns:
+            primary_out["published_year_source"] = "unknown"
         primary_out["source"] = "primary_top100"
 
         merged = pd.concat(
@@ -548,6 +632,8 @@ def load_enriched_dataset() -> pd.DataFrame:
             merged["published_at"] = ""
         if "published_year" not in merged.columns:
             merged["published_year"] = 0
+        if "published_year_source" not in merged.columns:
+            merged["published_year_source"] = "unknown"
 
     # --- Enrich with channel country from DS3 ---
     countries = _load_channel_countries()
@@ -571,6 +657,199 @@ def load_dataset(csv_path: Optional[str] = None) -> pd.DataFrame:
     path = Path(csv_path) if csv_path else DEFAULT_CSV
     raw = pd.read_csv(path)
     return engineer_features(raw)
+
+
+def quality_report(df: Optional[pd.DataFrame] = None) -> Dict[str, object]:
+    """Document source coverage, cleaning choices, and model guardrails."""
+    primary_raw = pd.read_csv(DEFAULT_CSV)
+    primary = load_dataset() if df is None else df.copy()
+    enriched = load_enriched_dataset()
+
+    primary_norm = _normalise_titles(primary_raw["title"])
+    primary_seen = set(primary_norm)
+
+    sup1_raw_rows = 0
+    sup1_music_rows = 0
+    sup1_added = 0
+    sup1_deduped = 0
+    sup1_missing_views = 0
+    sup1_missing_language = 0
+    if SUPPLEMENT_MOST_VIEWED.exists():
+        sup1_raw = pd.read_csv(SUPPLEMENT_MOST_VIEWED)
+        sup1_raw_rows = int(len(sup1_raw))
+        sup1_music = sup1_raw[sup1_raw["content_type"] == "Music Video"].copy()
+        sup1_music_rows = int(len(sup1_music))
+        sup1_missing_views = int(
+            sup1_music["views"].apply(_parse_human_number).eq(0).sum()
+        )
+        if "detected_language" in sup1_music.columns:
+            sup1_missing_language = int(
+                sup1_music["detected_language"].fillna("").astype(str).str.strip().eq("").sum()
+            )
+        sup1_norm = _normalise_titles(sup1_music["title"])
+        sup1_novel_mask = ~sup1_norm.isin(primary_seen)
+        sup1_added = int(sup1_novel_mask.sum())
+        sup1_deduped = int(len(sup1_music) - sup1_added)
+        primary_seen.update(sup1_norm[sup1_novel_mask])
+
+    sup2_raw_rows = 0
+    sup2_added = 0
+    sup2_deduped = 0
+    sup2_missing_views = 0
+    sup2_missing_duration = 0
+    sup2_missing_followers = 0
+    sup2_rows_with_dates = 0
+    if SUPPLEMENT_MUSIC_DATA.exists():
+        sup2_raw = pd.read_csv(SUPPLEMENT_MUSIC_DATA)
+        sup2_raw_rows = int(len(sup2_raw))
+        sup2_missing_views = int(pd.to_numeric(sup2_raw["viewCount"], errors="coerce").isna().sum())
+        sup2_missing_duration = int(sup2_raw["duration"].isna().sum())
+        sup2_missing_followers = int(pd.to_numeric(sup2_raw["numberOfSubscribers"], errors="coerce").isna().sum())
+        if "date" in sup2_raw.columns:
+            sup2_rows_with_dates = int(pd.to_datetime(sup2_raw["date"], errors="coerce", utc=True).notna().sum())
+        sup2_clean = sup2_raw[pd.to_numeric(sup2_raw["viewCount"], errors="coerce").notna()].copy()
+        sup2_norm = _normalise_titles(sup2_clean["title"])
+        sup2_novel_mask = ~sup2_norm.isin(primary_seen)
+        sup2_added = int(sup2_novel_mask.sum())
+        sup2_deduped = int(len(sup2_clean) - sup2_added)
+        primary_seen.update(sup2_norm[sup2_novel_mask])
+
+    primary_missing_views = int(pd.to_numeric(primary_raw["view_count"], errors="coerce").isna().sum())
+    primary_missing_duration = int(pd.to_numeric(primary_raw["duration"], errors="coerce").isna().sum())
+    primary_missing_followers = int(pd.to_numeric(primary_raw["channel_follower_count"], errors="coerce").isna().sum())
+    primary_year_hints = 0
+    if "published_year" in primary.columns:
+        primary_year_hints = int(pd.to_numeric(primary["published_year"], errors="coerce").fillna(0).astype(int).gt(0).sum())
+
+    known_languages = 0
+    if "detected_language" in enriched.columns:
+        known_languages = int(
+            enriched["detected_language"]
+            .fillna("Unknown")
+            .astype(str)
+            .loc[lambda s: ~s.isin(["", "Unknown"])]
+            .nunique()
+        )
+
+    published_years = pd.to_numeric(
+        enriched.get("published_year", pd.Series([0] * len(enriched))),
+        errors="coerce",
+    ).fillna(0).astype(int)
+    published_year_sources = enriched.get(
+        "published_year_source",
+        pd.Series(["unknown"] * len(enriched), index=enriched.index),
+    ).fillna("unknown").astype(str)
+    explicit_year_rows = int(((published_years > 0) & published_year_sources.eq("explicit_date")).sum())
+    inferred_year_rows = int(((published_years > 0) & ~published_year_sources.isin(["explicit_date", "unknown"])).sum())
+    published_years = published_years[published_years > 0]
+
+    source_audit = [
+        {
+            "source": "Top 100 (2025)",
+            "file": DEFAULT_CSV.name,
+            "raw_rows": int(len(primary_raw)),
+            "admitted_rows": int(len(primary)),
+            "duplicates_removed": 0,
+            "missing_views_dropped": primary_missing_views,
+            "missing_duration_imputed": primary_missing_duration,
+            "missing_followers_imputed": primary_missing_followers,
+            "rows_with_year_hints": primary_year_hints,
+            "notes": "Primary cohort used for the core charts and leaderboard surfaces.",
+        },
+        {
+            "source": "Most Viewed (2026)",
+            "file": SUPPLEMENT_MOST_VIEWED.name,
+            "raw_rows": sup1_raw_rows,
+            "music_rows_after_filter": sup1_music_rows,
+            "admitted_rows": sup1_added,
+            "duplicates_removed": sup1_deduped,
+            "missing_views_dropped": sup1_missing_views,
+            "missing_language_labels": sup1_missing_language,
+            "notes": "Filtered to music videos before deduplication against the primary cohort.",
+        },
+        {
+            "source": "YouTube Music Data",
+            "file": SUPPLEMENT_MUSIC_DATA.name,
+            "raw_rows": sup2_raw_rows,
+            "admitted_rows": sup2_added,
+            "duplicates_removed": sup2_deduped,
+            "missing_views_dropped": sup2_missing_views,
+            "missing_duration_imputed": sup2_missing_duration,
+            "missing_followers_imputed": sup2_missing_followers,
+            "rows_with_publication_dates": sup2_rows_with_dates,
+            "notes": "Adds duration, engagement, subscriber, and publication timing context where available.",
+        },
+    ]
+
+    feature_manifest = [
+        {
+            "feature": name,
+            "label": FEATURE_LABELS.get(name, name),
+            "description": FEATURE_HELP.get(name, ""),
+            "used_for_prediction": name in PREDICTOR_FEATURES,
+            "descriptive_only": name not in PREDICTOR_FEATURES,
+        }
+        for name in FEATURE_LABELS
+    ]
+
+    return {
+        "generated_at": date.today().isoformat(),
+        "cohorts": {
+            "core_top_100": {
+                "songs": int(len(primary)),
+                "channels": int(primary["channel"].nunique()),
+                "purpose": "Used for the core view, inequality, correlation, archetype, network, and prediction charts.",
+            },
+            "enriched_context": {
+                "songs": int(len(enriched)),
+                "sources": {str(k): int(v) for k, v in enriched["source"].value_counts().to_dict().items()},
+                "purpose": "Used where broader structural checks matter: bias, language mix, publication timing, and resonance context.",
+            },
+        },
+        "source_audit": source_audit,
+        "cleaning_steps": [
+            "Coerce view counts to numeric and drop rows that still cannot be measured.",
+            "Normalize title strings before cross-source deduplication so the same song is not counted twice.",
+            "Convert durations to minutes and fill missing durations with the source median rather than inventing a default.",
+            "Fill missing subscriber counts with the source median so reach-adjusted comparisons remain stable.",
+            "Map channel countries only when a public lookup exists; otherwise keep the value as Unknown instead of guessing.",
+            "Carry publication years directly from public date fields, and only infer a year from free text when a single recent year or copyright marker is unambiguous.",
+            "Keep the top-100 cohort separate from the enriched context so broad structural claims do not overwrite the core leaderboard.",
+        ],
+        "guardrails": [
+            "Virality coefficient is excluded from the predictor set because it is derived from views and would leak the target.",
+            "All prediction scores are reported out-of-fold with 5-fold cross-validation, not in-sample fit.",
+            "Power-law confidence intervals use 500 bootstrap resamples over the fitted tail only.",
+            "Correlation rows include partial Spearman checks so raw associations are not mistaken for independent effects.",
+            "Publication timelines are shown only for rows with explicit public dates or conservative text-resolved year hints; missing years are not backfilled.",
+            "Years inferred from description text are marked separately from explicit upload dates so time claims stay auditable.",
+        ],
+        "model_rigor": {
+            "target": "log1p(view_count)",
+            "cv_folds": 5,
+            "bootstrap_power_law": 500,
+            "bootstrap_correlations": 400,
+            "predictor_features": [FEATURE_LABELS.get(name, name) for name in PREDICTOR_FEATURES],
+            "blocked_from_prediction": ["Virality (views per subscriber)"],
+        },
+        "coverage": {
+            "known_languages": known_languages,
+            "countries_mapped": int(
+                enriched.get("country", pd.Series([], dtype=str))
+                .astype(str)
+                .loc[lambda s: ~s.isin(["", "Unknown"])]
+                .nunique()
+            ),
+            "publication_year_min": int(published_years.min()) if not published_years.empty else None,
+            "publication_year_max": int(published_years.max()) if not published_years.empty else None,
+            "publication_year_explicit_rows": explicit_year_rows,
+            "publication_year_inferred_rows": inferred_year_rows,
+            "publication_year_explicit_share": round(float(explicit_year_rows) / len(enriched), 3) if len(enriched) else 0.0,
+            "publication_year_inferred_share": round(float(inferred_year_rows) / len(enriched), 3) if len(enriched) else 0.0,
+            "duplicate_titles_removed": int(sup1_deduped + sup2_deduped),
+        },
+        "feature_manifest": feature_manifest,
+    }
 
 
 # --------------------------------------------------------------------------- #
@@ -1027,6 +1306,10 @@ def _detect_collab(title: str) -> bool:
     return any(ind in low for ind in indicators)
 
 
+def _clamp01(value: float) -> float:
+    return max(0.0, min(1.0, float(value)))
+
+
 def bias_analysis(df: Optional[pd.DataFrame] = None) -> Dict[str, object]:
     """Compute music-specific bias dimensions from the real dataset."""
     analysis_df = load_enriched_dataset().copy() if df is None else df.copy()
@@ -1049,6 +1332,7 @@ def bias_analysis(df: Optional[pd.DataFrame] = None) -> Dict[str, object]:
     total_gendered = female_songs + male_songs
     female_ratio = female_songs / total_gendered if total_gendered else 0.5
     gender_parity = round(1.0 - abs(0.5 - female_ratio) * 2, 3)
+    gender_known_share = round(total_gendered / len(analysis_df), 3) if len(analysis_df) else 0.0
 
     # Gender × views disparity (do female artists get fewer views per song?)
     avg_views_by_gender = {}
@@ -1086,6 +1370,33 @@ def bias_analysis(df: Optional[pd.DataFrame] = None) -> Dict[str, object]:
             }
         )
     genre_gini = round(float(gini(list(genre_views_dict.values()))), 3)
+    classified_genre_df = analysis_df[analysis_df["genre"] != "Other/Unclassified"].copy()
+    classified_genre_share = round(float(len(classified_genre_df)) / len(analysis_df), 3) if len(analysis_df) else 0.0
+    classified_genre_views = float(classified_genre_df["view_count"].sum()) if len(classified_genre_df) else 0.0
+    classified_view_share = round(classified_genre_views / total_views, 4) if total_views else 0.0
+    classified_genre_breakdown = []
+    classified_views_dict: Dict[str, float] = {}
+    if len(classified_genre_df):
+        for g in classified_genre_df["genre"].unique():
+            genre_df = classified_genre_df[classified_genre_df["genre"] == g]
+            genre_total_views = float(genre_df["view_count"].sum())
+            classified_views_dict[g] = genre_total_views
+            classified_genre_breakdown.append(
+                {
+                    "genre": g,
+                    "song_count": int(len(genre_df)),
+                    "view_share": round(genre_total_views / total_views, 4) if total_views else 0.0,
+                    "classified_view_share": round(genre_total_views / classified_genre_views, 4) if classified_genre_views else 0.0,
+                    "avg_views": round(float(genre_df["view_count"].mean())) if len(genre_df) else 0,
+                    "median_views": round(float(genre_df["view_count"].median())) if len(genre_df) else 0,
+                    "avg_duration_min": round(float(genre_df["duration_min"].mean()), 2) if len(genre_df) else 0.0,
+                    "collab_share": round(float(genre_df["title"].apply(_detect_collab).mean()), 3) if len(genre_df) else 0.0,
+                    "top_song": str(genre_df.sort_values("view_count", ascending=False).iloc[0]["title"]) if len(genre_df) else "",
+                    "top_channel": str(genre_df.sort_values("view_count", ascending=False).iloc[0]["channel"]) if len(genre_df) else "",
+                }
+            )
+    classified_genre_gini = round(float(gini(list(classified_views_dict.values()))), 3) if classified_views_dict else 0.0
+    classified_genre_diversity = round(1.0 - classified_genre_gini, 3) if classified_views_dict else 0.0
 
     # --- Collaboration patterns ---
     analysis_df["is_collab"] = analysis_df["title"].apply(_detect_collab)
@@ -1134,19 +1445,6 @@ def bias_analysis(df: Optional[pd.DataFrame] = None) -> Dict[str, object]:
         float(channel_views.tail(len(channel_views) // 2).sum()) / total_views, 4
     )
 
-    # --- Summary bias scores ---
-    bias_scores = {
-        "gender_parity": gender_parity,
-        "views_parity": views_parity,
-        "genre_diversity": round(1.0 - genre_gini, 3),
-        "collab_rate": round(collab_count / len(analysis_df), 3),
-        "concentration_top5": top5_share,
-    }
-    vp_score = 1.0 - abs(1.0 - min(views_parity, 2.0))
-    overall_bias_grade = letter_grade(
-        (gender_parity + vp_score + (1.0 - genre_gini) + (1.0 - top5_share)) / 4.0
-    )
-
     # --- Language bias (from enriched dataset) ---
     try:
         lang_counts = edf["detected_language"].value_counts().to_dict()
@@ -1165,6 +1463,10 @@ def bias_analysis(df: Optional[pd.DataFrame] = None) -> Dict[str, object]:
             "gini": lang_gini,
             "n_languages": len([k for k in lang_counts if k != "Unknown"]),
         }
+        language_known_share = round(
+            float(edf["detected_language"].fillna("Unknown").astype(str).loc[lambda s: ~s.isin(["", "Unknown"])].shape[0]) / len(edf),
+            3,
+        ) if len(edf) else 0.0
 
         # --- Engagement bias ---
         eng_ratio = edf["engagement_ratio"].dropna()
@@ -1204,6 +1506,7 @@ def bias_analysis(df: Optional[pd.DataFrame] = None) -> Dict[str, object]:
     except Exception:
         language_bias = {"counts": {}, "views": {}, "english_share": 0,
                          "gini": 0, "n_languages": 0}
+        language_known_share = 0.0
         engagement_bias = {"median_engagement": 0, "mean_engagement": 0,
                            "top_engaged_songs": []}
         country_bias = {"counts": {}, "views": {}, "unknown_count": 0}
@@ -1212,20 +1515,56 @@ def bias_analysis(df: Optional[pd.DataFrame] = None) -> Dict[str, object]:
     timeline_df = pd.DataFrame()
     if "published_year" in edf.columns:
         timeline_df = edf[pd.to_numeric(edf["published_year"], errors="coerce").fillna(0) > 0].copy()
-    publication_timeline = {"years": [], "song_counts": [], "total_views": [], "avg_views": []}
+    publication_timeline = {
+        "years": [],
+        "observed_years": [],
+        "missing_years": [],
+        "song_counts": [],
+        "total_views": [],
+        "avg_views": [],
+        "explicit_rows": 0,
+        "inferred_rows": 0,
+        "note": "Bars show dated rows only. Missing years stay visible instead of being interpolated into the timeline.",
+    }
+    publication_year_explicit_share = 0.0
+    publication_year_inferred_share = 0.0
     if not timeline_df.empty:
         timeline_df["published_year"] = pd.to_numeric(timeline_df["published_year"], errors="coerce").fillna(0).astype(int)
+        timeline_df["published_year_source"] = timeline_df.get(
+            "published_year_source",
+            pd.Series(["unknown"] * len(timeline_df), index=timeline_df.index),
+        ).fillna("unknown").astype(str)
+        explicit_rows = int(timeline_df["published_year_source"].eq("explicit_date").sum())
+        inferred_rows = int((~timeline_df["published_year_source"].isin(["explicit_date", "unknown"])).sum())
         year_groups = timeline_df.groupby("published_year").agg(
             song_count=("title", "size"),
             total_views=("view_count", "sum"),
             avg_views=("view_count", "mean"),
         ).reset_index().sort_values("published_year")
-        publication_timeline = {
-            "years": year_groups["published_year"].astype(int).tolist(),
-            "song_counts": year_groups["song_count"].astype(int).tolist(),
-            "total_views": [round(float(v)) for v in year_groups["total_views"].tolist()],
-            "avg_views": [round(float(v)) for v in year_groups["avg_views"].tolist()],
+        observed_years = year_groups["published_year"].astype(int).tolist()
+        full_years = list(range(observed_years[0], observed_years[-1] + 1)) if observed_years else []
+        year_lookup = {
+            int(row["published_year"]): {
+                "song_count": int(row["song_count"]),
+                "total_views": round(float(row["total_views"])),
+                "avg_views": round(float(row["avg_views"])),
+            }
+            for _, row in year_groups.iterrows()
         }
+        publication_timeline = {
+            "years": full_years,
+            "observed_years": observed_years,
+            "missing_years": [year for year in full_years if year not in year_lookup],
+            "song_counts": [year_lookup.get(year, {}).get("song_count", 0) for year in full_years],
+            "total_views": [year_lookup.get(year, {}).get("total_views", 0) for year in full_years],
+            "avg_views": [year_lookup[year]["avg_views"] if year in year_lookup else None for year in full_years],
+            "explicit_rows": explicit_rows,
+            "inferred_rows": inferred_rows,
+            "note": "Bars show dated rows only. Blank line segments mean the current public corpus does not expose a usable year for that point.",
+        }
+        publication_year_explicit_share = round(float(explicit_rows) / len(edf), 3) if len(edf) else 0.0
+        publication_year_inferred_share = round(float(inferred_rows) / len(edf), 3) if len(edf) else 0.0
+    publication_year_coverage = round(float(len(timeline_df)) / len(edf), 3) if len(edf) else 0.0
 
     duration_lookup = {
         "short_under_3min": "< 3 min",
@@ -1233,95 +1572,125 @@ def bias_analysis(df: Optional[pd.DataFrame] = None) -> Dict[str, object]:
         "long_over_4min": "> 4 min",
     }
     best_duration_key = max(duration_bias, key=lambda k: duration_bias[k]["avg_views"]) if duration_bias else "medium_3to4min"
-    best_genre_row = max(genre_breakdown, key=lambda row: row["view_share"], default={})
+    best_genre_row = max(classified_genre_breakdown, key=lambda row: row["classified_view_share"], default={})
     best_genre = str(best_genre_row.get("genre", "Unknown"))
     best_duration_label = duration_lookup.get(best_duration_key, "3–4 min")
     latest_year = publication_timeline["years"][-1] if publication_timeline["years"] else None
     earliest_year = publication_timeline["years"][0] if publication_timeline["years"] else None
+    coverage_confidence = round(
+        (
+            gender_known_share
+            + classified_genre_share
+            + language_known_share
+            + publication_year_coverage
+        ) / 4.0,
+        3,
+    )
+    language_breadth = round(
+        _clamp01(language_bias.get("n_languages", 0) / 8.0) * (1.0 - language_bias.get("english_share", 0)),
+        3,
+    )
+    concentration_relief = round(1.0 - top10_share, 3)
+    vp_score = _clamp01(1.0 - abs(1.0 - min(views_parity, 2.0)))
+    overall_score = (
+        gender_parity * 0.2
+        + vp_score * 0.16
+        + classified_genre_diversity * 0.18
+        + concentration_relief * 0.16
+        + language_breadth * 0.1
+        + coverage_confidence * 0.2
+    )
+    overall_bias_grade = letter_grade(overall_score)
+
+    # --- Summary bias scores ---
+    bias_scores = {
+        "gender_parity": gender_parity,
+        "views_parity": views_parity,
+        "genre_diversity": classified_genre_diversity,
+        "genre_diversity_all": round(1.0 - genre_gini, 3),
+        "coverage_confidence": coverage_confidence,
+        "known_genre_share": classified_genre_share,
+        "language_breadth": language_breadth,
+        "collab_rate": round(collab_count / len(analysis_df), 3),
+        "concentration_top5": top5_share,
+        "publication_year_coverage": publication_year_coverage,
+    }
+
     role_perspectives = {
         "artist": {
             "title": "Artist lens",
             "summary": (
-                f"The market rewards a narrow set of release shapes, and that matters because visibility is a revenue path, "
-                f"not just a vanity metric. {best_genre} currently captures the largest share of views, the strongest "
-                f"duration bucket is {best_duration_label}, and collaboration helps most when it matches the song instead "
-                f"of diluting it."
+                f"This is a market-shape read, not a songwriting oracle. In the classified slice, {best_genre} carries the strongest "
+                f"share of visible attention, the strongest duration pocket is {best_duration_label}, and collaboration helps most when "
+                f"it expands reach without making the track anonymous."
             ),
             "signals": [
-                {"label": "Best-return genre", "value": best_genre},
+                {"label": "Known-genre leader", "value": best_genre},
                 {"label": "Collab view share", "value": f"{collab_view_share * 100:.1f}%"},
-                {"label": "Genre diversity", "value": f"{1.0 - genre_gini:.3f}"},
+                {"label": "Known-genre diversity", "value": f"{classified_genre_diversity:.3f}"},
                 {"label": "Top duration band", "value": best_duration_label},
             ],
             "takeaway": (
-                "For an artist, the practical move is not to chase the loudest chart; it is to choose the format that "
-                "gives the track a believable path to repeat attention, licensing, and fan memory."
+                "The practical question is not which genre is supposedly 'best.' It is whether your release shape can still find oxygen once "
+                "attention narrows around a few familiar patterns."
             ),
         },
         "consumer": {
             "title": "Consumer lens",
             "summary": (
-                f"Listeners are seeing a catalog that is concentrated in a few formats and languages. The timeline spans "
-                f"{earliest_year} to {latest_year}, which makes it easier to tell whether discovery is opening up or "
-                f"just recycling the same attention loops. That matters because a good discovery system should feel broad, "
-                f"not repetitive."
+                f"Listeners are moving through a field that is both concentrated and partially labeled. The visible publication window spans "
+                f"{earliest_year} to {latest_year}, but only {publication_year_coverage * 100:.0f}% of rows carry public year data, which "
+                f"means breadth has to be read with some caution."
             ),
             "signals": [
                 {"label": "Languages detected", "value": str(language_bias.get("n_languages", 0))},
                 {"label": "English share", "value": f"{language_bias.get('english_share', 0) * 100:.1f}%"},
-                {"label": "Best-return genre", "value": best_genre},
+                {"label": "Known-genre coverage", "value": f"{classified_genre_share * 100:.0f}%"},
                 {"label": "Publication span", "value": f"{earliest_year or '—'}–{latest_year or '—'}"},
             ],
             "takeaway": (
-                "For a consumer, the useful question is whether discovery is broad or just polished; the data suggests "
-                "the answer depends on where you enter the catalog and which lanes get the most promotion."
+                "A healthy discovery system should feel broader than its hit list. If the surface feels repetitive, the numbers suggest you may not be imagining it."
             ),
         },
         "business": {
             "title": "Business lens",
             "summary": (
-                f"Attention is concentrated: the top 5 channels still control {top5_share * 100:.0f}% of views. "
-                f"That makes release strategy, format choice, and catalogue timing matter more than volume alone. For "
-                f"labels and buyers, virality is a mechanism with measurable friction, not a magic trick."
+                f"Attention remains narrow enough that a small set of channels can still steer the visible market. The top 5 hold "
+                f"{top5_share * 100:.1f}% of views and the top 10 hold {top10_share * 100:.1f}%, which is useful if you need to separate repeatable "
+                f"distribution logic from one-off mythology."
             ),
             "signals": [
                 {"label": "Top 5 concentration", "value": f"{top5_share * 100:.1f}%"},
-                {"label": "Genre diversity", "value": f"{1.0 - genre_gini:.3f}"},
+                {"label": "Coverage confidence", "value": f"{coverage_confidence * 100:.0f}%"},
                 {"label": "Views parity", "value": f"{views_parity:.2f}x"},
             ],
             "takeaway": (
-                "For business teams, the point is not just which songs won. It is which structural choices scale repeatably "
-                "without assuming that every audience behaves the same way."
+                "The value is not 'which song went viral.' It is which conditions keep narrowing or opening the market across multiple cohorts."
             ),
         },
         "research": {
             "title": "Research lens",
             "summary": (
-                f"The dataset is large enough to test whether a pattern survives after slicing by genre, language, and "
-                f"publication year. The result is not a wrapper claim; it is a measured view of where attention is truly "
-                f"concentrated, and where a flattering story falls apart under review."
+                f"The useful question is not whether a pattern exists somewhere, but whether it survives classification gaps, coverage limits, and cohort changes. "
+                f"This lane is strongest when it keeps the leaderboard separate from the broader structural context instead of pretending they are the same thing."
             ),
             "signals": [
                 {"label": "Genre Gini", "value": f"{genre_gini:.3f}"},
-                {"label": "Gender parity", "value": f"{gender_parity:.3f}"},
-                {"label": "Observation window", "value": f"{len(publication_timeline.get('years', []))} years"},
+                {"label": "Coverage confidence", "value": f"{coverage_confidence * 100:.0f}%"},
+                {"label": "Observed years", "value": f"{len(publication_timeline.get('observed_years', []))}"},
             ],
             "takeaway": (
-                "For research, the value is in the method: cross-check the same signal from different angles until the "
-                "story stops changing."
+                "The method earns trust when the story gets smaller where coverage is weak, and sharper where multiple checks agree."
             ),
         },
     }
 
     interpretation = (
-        f"Analysing {enriched_stats['total_songs']} songs across multiple datasets. "
-        f"Gender parity is {gender_parity:.2f} "
-        f"({'near-equal' if gender_parity > 0.8 else 'skewed'}). "
-        f"Female artists average {f_avg:,.0f} views/song vs male {m_avg:,.0f} "
-        f"(ratio {views_parity:.2f}). "
-        f"Genre concentration (Gini {genre_gini}) suggests "
-        f"{'broad' if genre_gini < 0.4 else 'moderate' if genre_gini < 0.6 else 'high'} diversity. "
-        f"The top 5 channels control {top5_share * 100:.0f}% of all views."
+        f"Analysing {enriched_stats['total_songs']} public songs across multiple datasets. "
+        f"Known-gender coverage is {gender_known_share * 100:.0f}% and known-genre coverage is {classified_genre_share * 100:.0f}%, so the equity read should be treated as directional rather than total. "
+        f"Within the labeled subset, gender parity is {gender_parity:.2f} and female artists average {f_avg:,.0f} views/song versus {m_avg:,.0f} for male artists (ratio {views_parity:.2f}). "
+        f"Genre concentration is high overall (Gini {genre_gini:.3f}), while the classified-only genre diversity reads {classified_genre_diversity:.3f}. "
+        f"The top 5 channels still control {top5_share * 100:.1f}% of all views."
     )
 
     return {
@@ -1332,6 +1701,7 @@ def bias_analysis(df: Optional[pd.DataFrame] = None) -> Dict[str, object]:
             "gender_parity": gender_parity,
             "views_parity": views_parity,
             "female_ratio": round(female_ratio, 3),
+            "known_share": gender_known_share,
         },
         "genres": {
             "counts": genre_counts_dict,
@@ -1339,6 +1709,13 @@ def bias_analysis(df: Optional[pd.DataFrame] = None) -> Dict[str, object]:
             "gini": genre_gini,
         },
         "genre_breakdown": genre_breakdown,
+        "classified_genres": {
+            "share_of_songs": classified_genre_share,
+            "share_of_views": classified_view_share,
+            "gini": classified_genre_gini,
+            "diversity": classified_genre_diversity,
+            "breakdown": classified_genre_breakdown,
+        },
         "collaboration": {
             "collab_count": collab_count,
             "solo_count": int(len(analysis_df) - collab_count),
@@ -1352,6 +1729,15 @@ def bias_analysis(df: Optional[pd.DataFrame] = None) -> Dict[str, object]:
             "bottom50_share": bottom50_share,
         },
         "language_bias": language_bias,
+        "coverage": {
+            "gender_known_share": gender_known_share,
+            "genre_known_share": classified_genre_share,
+            "language_known_share": language_known_share,
+            "publication_year_share": publication_year_coverage,
+            "publication_year_explicit_share": publication_year_explicit_share,
+            "publication_year_inferred_share": publication_year_inferred_share,
+            "confidence": coverage_confidence,
+        },
         "engagement_bias": engagement_bias,
         "country_bias": country_bias,
         "publication_timeline": publication_timeline,
@@ -1666,9 +2052,9 @@ def overview(df: Optional[pd.DataFrame] = None) -> Dict[str, object]:
 
 
 def songs_table(
-    df: Optional[pd.DataFrame] = None, limit: int = 100, sort_by: str = "view_count"
+    df: Optional[pd.DataFrame] = None, limit: int = 700, sort_by: str = "view_count"
 ) -> List[Dict[str, object]]:
-    df = load_dataset() if df is None else df
+    df = load_enriched_dataset() if df is None else df
     sort_col = sort_by if sort_by in df.columns else "view_count"
     ordered = df.sort_values(sort_col, ascending=False).head(limit)
     records = []
@@ -1683,6 +2069,10 @@ def songs_table(
                 "virality_coefficient": round(float(r["virality_coefficient"]), 3),
                 "tag_count": int(r["tag_count"]),
                 "is_official": int(r["is_official"]),
+                "source": str(r.get("source", "primary_top100")),
+                "published_year": int(r.get("published_year", 0) or 0),
+                "published_year_source": str(r.get("published_year_source", "unknown")),
+                "detected_language": str(r.get("detected_language", "Unknown")),
             }
         )
     return records
@@ -1691,6 +2081,7 @@ def songs_table(
 def full_report(df: Optional[pd.DataFrame] = None) -> Dict[str, object]:
     """Everything in one payload - used to bake the static site."""
     df = load_dataset() if df is None else df
+    enriched = load_enriched_dataset()
     return {
         "overview": overview(df),
         "power_law": power_law_analysis(df),
@@ -1699,9 +2090,10 @@ def full_report(df: Optional[pd.DataFrame] = None) -> Dict[str, object]:
         "archetypes": archetype_analysis(df),
         "network": network_analysis(),
         "predictability": predictability_analysis(df),
-        "resonance": resonance_analysis(df),
-        "songs": songs_table(df, limit=100),
-        "bias": bias_analysis(df),
+        "resonance": resonance_analysis(enriched),
+        "songs": songs_table(enriched, limit=int(len(enriched))),
+        "bias": bias_analysis(enriched),
+        "quality": quality_report(df),
         "feature_labels": FEATURE_LABELS,
     }
 

@@ -22,6 +22,7 @@ from music_pipeline import (
     overview,
     power_law_analysis,
     predictability_analysis,
+    quality_report,
     resonance_analysis,
     simulate_grid,
     simulate_virality,
@@ -148,6 +149,7 @@ class TestPipeline:
         songs = songs_table(df, limit=10)
         assert len(songs) == 10
         assert songs[0]["view_count"] >= songs[1]["view_count"]
+        assert "published_year_source" in songs[0]
 
     def test_bias_analysis(self, df):
         b = bias_analysis(df)
@@ -159,8 +161,26 @@ class TestPipeline:
         assert b["collaboration"]["collab_count"] >= 0
         assert b["concentration"]["top5_share"] > 0
         assert "years" in b["publication_timeline"]
+        years = b["publication_timeline"]["years"]
+        assert years == list(range(years[0], years[-1] + 1))
+        assert "missing_years" in b["publication_timeline"]
         assert {'artist', 'consumer', 'business', 'research'} <= set(b["role_perspectives"])
         assert b["overall_grade"]
+
+    def test_quality_report(self, df):
+        q = quality_report(df)
+        assert "cohorts" in q
+        assert q["cohorts"]["core_top_100"]["songs"] >= 80
+        assert q["cohorts"]["enriched_context"]["songs"] >= q["cohorts"]["core_top_100"]["songs"]
+        assert len(q["source_audit"]) >= 1
+        assert len(q["cleaning_steps"]) >= 3
+        assert q["model_rigor"]["cv_folds"] == 5
+        assert len(q["feature_manifest"]) >= 1
+        assert q["coverage"]["publication_year_explicit_share"] >= 0.0
+        assert q["coverage"]["publication_year_inferred_share"] >= 0.0
+
+    def test_primary_dataset_carries_year_hints(self, df):
+        assert int((df["published_year"] > 0).sum()) >= 30
 
     def test_archetypes_have_followers(self, df):
         a = archetype_analysis(df)
@@ -172,7 +192,7 @@ class TestPipeline:
         r = full_report(df)
         expected_keys = [
             "overview", "power_law", "inequality", "correlations",
-            "archetypes", "network", "predictability", "resonance", "songs", "bias",
+            "archetypes", "network", "predictability", "resonance", "songs", "bias", "quality",
         ]
         for k in expected_keys:
             assert k in r
@@ -261,6 +281,14 @@ class TestMusicAPI:
         assert "genre_breakdown" in d
         assert "publication_timeline" in d
         assert "overall_grade" in d
+
+    def test_quality(self, client):
+        res = client.get("/api/music/quality")
+        assert res.status_code == 200
+        body = res.json()
+        assert "cohorts" in body
+        assert "source_audit" in body
+        assert "guardrails" in body
 
     def test_genres(self, client):
         res = client.get("/api/music/genres")

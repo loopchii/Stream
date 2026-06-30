@@ -16,10 +16,13 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import FileResponse, JSONResponse
 
 import music_ingest
+import music_intelligence
 import music_pipeline
 from advanced_metrics import letter_grade as grade_for
-from bias_library import BIAS_LIBRARY, CATEGORIES
+from bias_library import BIAS_LIBRARY, CATEGORIES, bias_propagation_surface
+from data_engineering import build_data_engineering_snapshot
 from lens_sdk import default_registry, evaluate_stream
+from loopchii_lite import public_playground_snapshot, simulate_governance
 from media_liability_lab import (
     analyze_compulsive_usage,
     build_causal_map,
@@ -101,9 +104,34 @@ class MusicCache:
         with self._lock:
             self._report = None
         music_pipeline.load_dataset.cache_clear()
+        music_pipeline.load_enriched_dataset.cache_clear()
 
 
 music_cache = MusicCache()
+
+
+class MusicIntelligenceCache:
+    """Cache the score-aware music harvest so the UI can inspect it cheaply."""
+
+    def __init__(self):
+        self._lock = Lock()
+        self._package: Optional[dict] = None
+
+    def package(self) -> dict:
+        with self._lock:
+            if self._package is None:
+                self._package = music_intelligence.build_music_data_package(
+                    repo_root=BASE_DIR,
+                    enable_live_enrichment=False,
+                )
+            return self._package
+
+    def invalidate(self) -> None:
+        with self._lock:
+            self._package = None
+
+
+music_intelligence_cache = MusicIntelligenceCache()
 
 
 @app.get("/", include_in_schema=False)
@@ -378,6 +406,25 @@ LEARN_CONTENT = [
                    "same pipeline can ingest real catalog data without code changes."),
         "try_it": "Read DataProcessor.generate_synthetic_data to see exactly how each field is produced.",
     },
+    {
+        "id": "data-contracts",
+        "title": "Data Contracts and Grain",
+        "summary": "A trustworthy dashboard starts with row grain, keys, and partition rules.",
+        "detail": ("Before a chart is allowed to feel persuasive, the underlying dataset needs a declared grain, "
+                   "a key strategy, and enough quality checks to prove rows have not drifted into nonsense. "
+                   "Stream now exposes those contracts directly for both the synthetic representation lane and "
+                   "the public music lane."),
+        "try_it": "Open GET /api/system/data-engineering and inspect the contract list, quality checks, and partition keys.",
+    },
+    {
+        "id": "data-lineage",
+        "title": "Lineage and Serving Layers",
+        "summary": "Good analysis is a system: landing, standardizing, modeling, and serving are different jobs.",
+        "detail": ("The repo now exposes an explicit bronze → silver → gold → serving path so readers can see where "
+                   "raw files stop, standardization begins, and business-facing metrics finally become safe to publish. "
+                   "That separation matters because a chart should never outrun the part of the system that made it."),
+        "try_it": "Use the Learn tab's data platform section to follow lineage from source files through contracts into the UI.",
+    },
 ]
 
 
@@ -390,10 +437,43 @@ def bias_library(category: Optional[str] = None):
     return {"total": len(items), "categories": CATEGORIES, "items": items}
 
 
+@app.get("/api/system/bias-propagation")
+def bias_propagation():
+    """Public map of where bias enters and how it tends to propagate."""
+    return bias_propagation_surface()
+
+
 @app.get("/api/learn")
 def learn():
     """Educational explanations of every metric used in the analysis"""
     return LEARN_CONTENT
+
+
+@app.get("/api/system/data-engineering")
+def data_engineering_surface():
+    """Public contract, lineage, and quality surface for the Stream repo."""
+    synthetic_results = cache.results()
+    synthetic_df = cache.dataframe()
+    music_df = music_pipeline.load_enriched_dataset()
+    music_quality = music_pipeline.quality_report(music_df)
+    return build_data_engineering_snapshot(
+        synthetic_df=synthetic_df,
+        synthetic_results=synthetic_results,
+        music_df=music_df,
+        music_quality=music_quality,
+    )
+
+
+@app.get("/api/system/trojan-horse")
+def trojan_horse_surface():
+    """Public zero-friction adoption surface for the browser playground."""
+    return public_playground_snapshot()
+
+
+@app.get("/api/playground/simulate")
+def playground_simulate(prompt: str = Query(..., min_length=4, max_length=600)):
+    """Deterministic public guard simulation for the split-screen playground."""
+    return simulate_governance(prompt)
 
 
 @app.get("/api/characters")
@@ -470,7 +550,7 @@ def music_resonance():
 
 @app.get("/api/music/songs")
 def music_songs(
-    limit: int = Query(default=100, ge=1, le=1000),
+    limit: int = Query(default=700, ge=1, le=1000),
     sort_by: str = "view_count",
 ):
     """The real songs table, sortable for the explorer."""
@@ -505,6 +585,58 @@ def music_bias():
     return music_cache.report()["bias"]
 
 
+@app.get("/api/music/quality")
+def music_quality():
+    """Source audit, cleaning steps, and model guardrails for the music lane."""
+    return music_cache.report()["quality"]
+
+
+@app.get("/api/music/intelligence")
+def music_intelligence_summary():
+    """Score-aware repository harvest for note, chord, and notation coverage."""
+    return music_intelligence_cache.package()["summary"]
+
+
+@app.get("/api/music/index")
+def music_index(
+    limit: int = Query(default=60, ge=1, le=500),
+    offset: int = Query(default=0, ge=0, le=5000),
+    q: str = Query(default="", max_length=200),
+    score_linked: Optional[bool] = None,
+):
+    """Piece-level index linking catalog songs to any local notation assets."""
+    items = music_intelligence_cache.package()["pieces"]
+    query = q.strip().lower()
+    if score_linked is not None:
+        items = [
+            item
+            for item in items
+            if bool((item.get("notation_summary") or {}).get("matched_file_count")) is score_linked
+        ]
+    if query:
+        items = [
+            item
+            for item in items
+            if query
+            in " ".join(
+                [
+                    str(item.get("title") or ""),
+                    str(item.get("artist") or ""),
+                    str(item.get("composer") or ""),
+                    " ".join(source.get("path", "") for source in item.get("source_files") or []),
+                ]
+            ).lower()
+        ]
+    window = items[offset : offset + limit]
+    return {
+        "total": len(items),
+        "offset": offset,
+        "limit": limit,
+        "count": len(window),
+        "items": window,
+    }
+
+
 @app.get("/api/music/genres")
 def music_genres():
     """Per-genre breakdown with view share, duration, and collaboration mix."""
@@ -530,6 +662,7 @@ def music_refresh(
         )
     path = music_ingest.refresh_dataset(max_results=max_results, region=region)
     music_cache.invalidate()
+    music_intelligence_cache.invalidate()
     return {"refreshed": True, "path": str(path), "overview": music_cache.report()["overview"]}
 
 
