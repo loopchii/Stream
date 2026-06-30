@@ -25,6 +25,8 @@ import pandas as pd
 
 
 BASE_DIR = Path(__file__).resolve().parent
+PUBLIC_SAMPLE_SIZES = [1000, 5000, 10000, 25000]
+SYNTHETIC_BASELINE_SEED = 42
 
 
 SYNTHETIC_FIELD_DOCS: Dict[str, Dict[str, str]] = {
@@ -268,6 +270,13 @@ def music_contract(df: pd.DataFrame, quality: Mapping[str, object]) -> dict:
             _check("Missing views after coercion", "pass" if missing_views == 0 else "fail", "View count is the core analytic measure and must be present after cleaning.", value=missing_views, target="0"),
             _check("Duration completeness", "pass" if missing_duration == 0 else "warn", "Duration is allowed to be median-imputed, but the working fact table should not expose nulls.", value=missing_duration, target="0"),
             _check("Publication-year coverage", "pass" if publication_rows > 0 else "warn", "Timeline charts only use rows with public upload dates.", value=publication_rows),
+            _check(
+                "Genre coverage",
+                "pass" if float(coverage.get("genre_known_share", 0.0) or 0.0) >= 0.6 else "warn",
+                "Genre labels should come from public metadata, text, and artist hints rather than leaving the majority of rows unclassified.",
+                value=round(float(coverage.get("genre_known_share", 0.0) or 0.0), 3),
+                target=">=0.60",
+            ),
             _check("Predictor hygiene", "pass", "The predictor set blocks virality_coefficient because it leaks the target.", value=str(rigor.get("blocked_from_prediction", []))),
         ],
         "source_audit": quality_source,
@@ -276,6 +285,7 @@ def music_contract(df: pd.DataFrame, quality: Mapping[str, object]) -> dict:
         "coverage": {
             "known_languages": int(coverage.get("known_languages", 0) or 0),
             "countries_mapped": int(coverage.get("countries_mapped", 0) or 0),
+            "genre_known_share": round(float(coverage.get("genre_known_share", 0.0) or 0.0), 3),
             "publication_year_min": coverage.get("publication_year_min"),
             "publication_year_max": coverage.get("publication_year_max"),
             "duplicate_titles_removed": int(coverage.get("duplicate_titles_removed", 0) or 0),
@@ -348,6 +358,41 @@ def build_data_engineering_snapshot(
             "refresh": "reads API when present, otherwise falls back to baked artifacts",
         },
     ]
+    reproducibility = {
+        "title": "Synthetic data catalog",
+        "seed": SYNTHETIC_BASELINE_SEED,
+        "algorithm_surface": "DataProcessor.generate_synthetic_data()",
+        "default_sample_sizes": PUBLIC_SAMPLE_SIZES,
+        "determinism_note": (
+            "The synthetic representation lane is seeded and version-stable by design. "
+            "The same code revision and sample size should reproduce the same synthetic rows."
+        ),
+        "year_span": "2015-2026",
+        "public_boundary": (
+            "This repository is self-contained: public Python pipeline, static exports, SQLite materialization, "
+            "and browser surface all run without private LOOPCHii platform dependencies."
+        ),
+        "artifact_contracts": [
+            "analysis_results.json",
+            "data/system/frontend-state.json",
+            "data/system/streaming-readiness.json",
+            "data/system/critical-spine.json",
+            "music_index.json",
+            "openapi.stream.json",
+        ],
+        "research_modes": [
+            {
+                "id": "synthetic",
+                "label": "Synthetic representation lane",
+                "purpose": "Teaches the method and keeps fairness math reproducible without overclaiming access to private catalogues.",
+            },
+            {
+                "id": "public_music",
+                "label": "Public music lane",
+                "purpose": "Pressure-tests the method against committed public-source data and makes source gaps visible.",
+            },
+        ],
+    }
     return {
         "generated_at": generated_at,
         "operating_model": {
@@ -409,7 +454,7 @@ def build_data_engineering_snapshot(
                 "name": "Serving contracts",
                 "color": "#f0779f",
                 "motion": "signal",
-                "purpose": "Expose the same gold outputs to FastAPI, static JSON, and the browser surface with the claim boundary still visible.",
+                "purpose": "Expose the same gold outputs to FastAPI, static JSON, and the browser surface while keeping the analytical scope visible.",
                 "artifacts": [
                     "app.py /api/* endpoints",
                     "build_static.py",
@@ -422,6 +467,7 @@ def build_data_engineering_snapshot(
             {"from": "silver", "to": "gold", "label": "metrics + confidence + model guardrails"},
             {"from": "gold", "to": "serving", "label": "API + static snapshots + UI"},
         ],
+        "reproducibility": reproducibility,
         "contracts": datasets,
         "quality_highlights": [
             {

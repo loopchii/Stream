@@ -1,18 +1,23 @@
 {
   "runtime": "stream_backend",
-  "generated_at": "2026-06-30T15:59:59+00:00",
+  "generated_at": "2026-06-30T19:22:15+00:00",
   "sample_size": 5000,
   "languages": [
     "python",
     "sqlite",
     "analytics",
     "music",
-    "governance"
+    "governance",
+    "drift-detection",
+    "signal-processing",
+    "a-b-testing",
+    "agentic-analysis"
   ],
   "targets": [
     "api",
     "static",
-    "sqlite"
+    "sqlite",
+    "doctor"
   ],
   "sqlite_path": "data/system/runtime/stream_runtime.sqlite3",
   "connectivity": {
@@ -20,7 +25,8 @@
     "swagger": "/docs",
     "openapi": "/openapi.json",
     "static_bundle": "data/system/*.json",
-    "offline_shell": "manifest.webmanifest + service-worker.js"
+    "offline_shell": "manifest.webmanifest + service-worker.js",
+    "doctor": "python -m stream_backend.cli.doctor"
   },
   "jobs": [
     {
@@ -39,6 +45,14 @@
       "depends_on": [
         "music_pipeline.load_enriched_dataset",
         "music_pipeline.full_report"
+      ]
+    },
+    {
+      "name": "decision_lab",
+      "description": "Cohort drift, controlled comparisons, and trust posture for the public music lane.",
+      "output_name": "data/music/decision-lab.json",
+      "depends_on": [
+        "music_decision_lab.build_decision_lab"
       ]
     },
     {
@@ -88,7 +102,8 @@
     "targets": [
       "api",
       "static",
-      "sqlite"
+      "sqlite",
+      "doctor"
     ],
     "sqlite_path": "data/system/runtime/stream_runtime.sqlite3",
     "sample_sizes": [
@@ -100,6 +115,8 @@
     "latest_run_id": null,
     "offline_assets": [
       "data/system/frontend-state.json",
+      "data/system/governance.json",
+      "data/system/streaming-readiness.json",
       "data/system/critical-spine.json",
       "data/system/comparatives.json",
       "data/system/runtime.json"
@@ -186,6 +203,7 @@
         "Fill missing subscriber counts with the source median so reach-adjusted comparisons remain stable.",
         "Map channel countries only when a public lookup exists; otherwise keep the value as Unknown instead of guessing.",
         "Carry publication years directly from public date fields, and only infer a year from free text when a single recent year or copyright marker is unambiguous.",
+        "Recover genre hints from public tags, title language, artist/channel entities, and supplemental public descriptions before labeling a row as unclassified.",
         "Keep the top-100 cohort separate from the enriched context so broad structural claims do not overwrite the core leaderboard."
       ],
       "guardrails": [
@@ -194,7 +212,8 @@
         "Power-law confidence intervals use 500 bootstrap resamples over the fitted tail only.",
         "Correlation rows include partial Spearman checks so raw associations are not mistaken for independent effects.",
         "Publication timelines are shown only for rows with explicit public dates or conservative text-resolved year hints; missing years are not backfilled.",
-        "Years inferred from description text are marked separately from explicit upload dates so time claims stay auditable."
+        "Years inferred from description text are marked separately from explicit upload dates so time claims stay auditable.",
+        "Embodied and vitality signals are public proxies from duration, engagement, virality, packaging, language spread, and release timing; they are not biometric or waveform claims."
       ],
       "model_rigor": {
         "target": "log1p(view_count)",
@@ -218,11 +237,27 @@
         "known_languages": 5,
         "countries_mapped": 6,
         "publication_year_min": 2009,
-        "publication_year_max": 2025,
+        "publication_year_max": 2026,
         "publication_year_explicit_rows": 123,
-        "publication_year_inferred_rows": 45,
+        "publication_year_inferred_rows": 53,
         "publication_year_explicit_share": 0.193,
-        "publication_year_inferred_share": 0.071,
+        "publication_year_inferred_share": 0.083,
+        "genre_known_rows": 554,
+        "genre_known_share": 0.871,
+        "genre_signal_sources": {
+          "keyword:rap": 69,
+          "keyword:pop": 26,
+          "keyword:remix": 18,
+          "keyword:dj": 13,
+          "keyword:alt": 11,
+          "entity:bad bunny": 11,
+          "keyword:rock": 10,
+          "entity:maluma": 9,
+          "entity:ozuna": 9,
+          "entity:ariana grande": 9,
+          "pattern:mix": 8,
+          "entity:bruno mars": 8
+        },
         "duplicate_titles_removed": 21
       },
       "feature_manifest": [

@@ -31,6 +31,22 @@ def build_runtime_artifacts(
             note="Per-visual guidance explaining purpose, limits, and next checks.",
         ),
         RuntimeArtifact(
+            name="streaming_readiness",
+            kind="json",
+            path=str((system_dir / "streaming-readiness.json").relative_to(base_dir)),
+            freshness_label=frontend_state.get("generated_at", ""),
+            row_count=0,
+            note="Candid principal-engineer review of current streaming posture and missing guarantees.",
+        ),
+        RuntimeArtifact(
+            name="governance_surface",
+            kind="json",
+            path=str((system_dir / "governance.json").relative_to(base_dir)),
+            freshness_label=frontend_state.get("generated_at", ""),
+            row_count=0,
+            note="Public governance contract for fairness, review posture, and claim boundaries.",
+        ),
+        RuntimeArtifact(
             name="runtime_surface",
             kind="markdown",
             path=str((system_dir / "runtime_surface.md").relative_to(base_dir)),

@@ -1,11 +1,11 @@
 # Stream
 
 <p align="center">
-  <strong>LOOPCHii Stream</strong> is a public research repository for media bias, music virality, cultural attention, and inspectable analysis.
+  <strong>LOOPCHii Stream</strong> is an open-source engineering repository for inspectable media analysis, public music intelligence, and reproducible analytical systems.
 </p>
 
 <p align="center">
-  It is meant to be readable, checkable, and useful without pretending public research and private runtime systems are the same thing.
+  It is built so people can inspect the field, question the method, and improve the system without confusing open-source analysis with private runtime work.
 </p>
 
 <p align="center">
@@ -17,28 +17,40 @@
 </p>
 
 <p align="center">
-  <img src="https://img.shields.io/badge/LOOPCHii-Public%20Research%20Surface-5B55FF?style=for-the-badge" alt="LOOPCHii public research surface">
+  <img src="https://img.shields.io/badge/LOOPCHii-Open%20Engineering%20Research-5B55FF?style=for-the-badge" alt="LOOPCHii open engineering research">
   <img src="https://img.shields.io/badge/Media%20Analysis-Representation%20%26%20Attention-FF6F9F?style=for-the-badge" alt="Media analysis">
   <img src="https://img.shields.io/badge/Inspectable-Dashboard%20%26%20Methods-48C9C2?style=for-the-badge" alt="Inspectable dashboard and methods">
   <img src="https://img.shields.io/github/actions/workflow/status/loopchii/Stream/ci.yml?branch=main&style=for-the-badge&label=CI" alt="CI status">
   <img src="https://img.shields.io/github/license/loopchii/Stream?style=for-the-badge" alt="License">
 </p>
 
-> **Why this exists:** public work should not ask for trust before it shows its inputs, boundaries, and tradeoffs. Stream exists to make the work visible enough to inspect, challenge, and improve.
+> **Why this exists:** public work should not ask for trust before it shows its inputs, assumptions, and tradeoffs. Stream exists to make the work visible enough to inspect, challenge, improve, and use.
 
-Stream is where LOOPCHii publishes a bounded public surface: reproducible methods, readable visual reasoning, and a contribution path that does not depend on private infrastructure. Some lanes are synthetic and clearly labeled because they are here to teach the method. Some lanes are built from public music data because they are here to test what the method can actually hold when the inputs are real. The repo separates those two jobs on purpose.
+Stream is where LOOPCHii publishes reproducible methods, readable visual reasoning, and a contribution path that does not depend on private infrastructure. Some lanes are synthetic and clearly labeled because they teach the method. Some lanes are built from public music data because they test what the method can actually hold when the inputs are real. The separation matters: it keeps the public analytical scope honest while still making the repository useful.
 
 ## Start Here
 
-Pick the route that matches how you like to learn:
+Pick the first question you want answered, then take the route that matches it:
 
 | If you want to... | Go here | What you get |
 |---|---|---|
 | See the browser surface first | [Dashboard Preview](https://htmlpreview.github.io/?https://github.com/loopchii/Stream/blob/main/index.html) | The public UI with charts, story flow, the real-data music lane, and the clickable audit layer |
 | Read the processing choices first | [`StreamLen_processors.html`](https://htmlpreview.github.io/?https://github.com/loopchii/Stream/blob/main/StreamLen_processors.html) | A notebook-style walkthrough of how the data is cleaned, shaped, and measured |
+| Inspect the public governance boundary | `/api/system/governance` or the Learn tab | Fairness posture, discrimination pressure, public-data boundary, and the point where a human still has to decide |
+| Check the legal and data-use boundary | [docs/PRIVACY_AND_DATA.md](docs/PRIVACY_AND_DATA.md) | What data the repo uses, what it does not collect, and how attribution and privacy posture are handled |
 | Try the smallest working tool | `python lens_visualizer.py` | A terminal-first demo with public lens findings and instant visual feedback |
+| Check whether your machine is ready | `python -m stream_backend.cli.doctor` | A quick preflight for Python, imports, SQLite, static artifacts, and public music data health |
+| Pressure-test the architecture claim | [docs/STREAMING_FOUNDATION_REVIEW.md](docs/STREAMING_FOUNDATION_REVIEW.md) or `/api/system/streaming-readiness` | A candid principal-engineer style read on what is real, what is missing, and what would have to change for production streaming trust |
+| Benchmark the current public workload | `python benchmarks/analytics_scale.py --rows 1000000` | A reproducible scale baseline for the actual groupby-heavy workload this repo runs today |
 | Review the setup and contribution lanes | [contributing.md](contributing.md) | Local setup, accepted scopes, and how to add public value without overclaiming |
-| Start with the public scope | [What This Actually Does](#what-this-actually-does) | The quickest way to understand what this repo is for, what it is not, and how the data is bounded |
+| See which environments are expected to work | [docs/SUPPORT_MATRIX.md](docs/SUPPORT_MATRIX.md) | Supported operating systems, Python versions, runtime lanes, and common recovery moves |
+| Start with the public scope | [What This Actually Does](#what-this-actually-does) | The quickest way to understand what this repo is for, what it is not, and how the evidence is scoped |
+
+If you only have five minutes, do these three things in order:
+
+1. Open the [Dashboard Preview](https://htmlpreview.github.io/?https://github.com/loopchii/Stream/blob/main/index.html)
+2. Run `python -m stream_backend.cli.doctor`
+3. Read [Questions This Repo Answers Early](#questions-this-repo-answers-early)
 
 ## Navigation
 
@@ -47,21 +59,72 @@ Pick the route that matches how you like to learn:
 - [Public Lens SDK](#public-lens-sdk)
 - [Media Liability Lab](#media-liability-lab)
 - [Why Engineers Trust This Repo](#why-engineers-trust-this-repo)
+- [Engineering Depth At A Glance](#engineering-depth-at-a-glance)
+- [Streaming Readiness](#streaming-readiness)
+- [Preflight](#preflight)
 - [Music Virality Module — Real YouTube Data](#music-virality-module--real-youtube-data)
 - [Quick Start](#quick-start)
 - [What the Pipeline Surfaces](#what-the-pipeline-surfaces)
 - [The Interactive Dashboard](#the-interactive-dashboard)
 - [Project Structure](#project-structure)
 - [Data and Methods](#data-and-methods)
+- [Public Data, Ethics, and Governance](#public-data-ethics-and-governance)
 - [Contributing](#contributing)
 - [License and Citation](#license-and-citation)
 
 ## Why Engineers Trust This Repo
 
-- The claim boundary is explicit. Synthetic representation data is labeled throughout, and the real-data music lane is kept separate on purpose.
+- The analytical scope is explicit. Synthetic representation data is labeled throughout, and the real-data music lane is kept separate on purpose.
 - The artifacts are inspectable. The dashboard, methods notebook, static exports, and API surfaces all trace back to code in this repository.
 - The same pipeline feeds local runs, static JSON exports, and API responses. There is less room for the public story to drift away from what the code actually does.
+- The governance boundary is explicit. `/api/system/governance` and the Learn tab show where fairness signals are strong, where GDPR or consent claims would overreach, and where a person still needs to stay in the loop.
 - CI runs tests on push so contributors can change the repo without turning it into a slideshow of unverifiable screenshots.
+
+## Engineering Depth At A Glance
+
+This repo is strongest when it leads with the engineering facts:
+
+- `stream_backend/` is the shared backend spine for the live API, static exports, runtime snapshots, and browser-facing state.
+- `python -m stream_backend.cli.doctor` checks Python, imports, required files, SQLite writability, static artifacts, genre coverage, year coverage, and decision-lab generation before you trust a local run.
+- `benchmarks/analytics_scale.py` benchmarks the real public workload instead of a toy micro-example.
+- `build_static.py` regenerates the same contracts the browser reads when no live API is present.
+- `data/system/*.json` exposes machine-readable operating contracts, runtime posture, critical-spine notes, data-engineering metadata, and streaming-readiness limits.
+- The statistical layer is not decorative. The repo uses chi-square tests, Shannon entropy, NetworkX assortativity, Cramer's V, bootstrap confidence intervals, cross-validated RandomForest and GradientBoosting models, and counterfactual decision-lab experiments.
+- Validation is broad enough to matter: `pytest -q` currently covers 149 tests across pipeline logic, API behavior, music analysis, decision routing, and runtime checks.
+
+If you want the full topology and current operational posture in one place, read [docs/ENGINEERING_FOUNDATION.md](docs/ENGINEERING_FOUNDATION.md).
+
+## Streaming Readiness
+
+This repo now exposes a blunt self-audit for streaming and data-infrastructure readers.
+
+- `docs/STREAMING_FOUNDATION_REVIEW.md` is the written review.
+- `/api/system/streaming-readiness` is the machine-readable surface.
+- `benchmarks/analytics_scale.py` is the first scale benchmark for the public workload.
+
+The point is not to cosplay as Kafka or Flink before the backend earns that language. The point is to make the current boundary explicit, measurable, and improvable.
+
+## Preflight
+
+Before you decide whether the repo is useful, there are three fast checks:
+
+```bash
+python -m venv venv
+source venv/bin/activate
+pip install -r requirements-dev.txt
+python -m stream_backend.cli.doctor
+```
+
+That doctor is here for a reason. Good public repos answer the first skeptical questions early:
+
+- Does the environment actually work on this machine?
+- Are the required analysis packages present, including `scipy`?
+- Is the public music corpus healthy enough to support the timeline and comparison surfaces?
+- Are the static artifacts fresh, or am I looking at an out-of-date build?
+
+If you want the platform details behind those checks, see [docs/SUPPORT_MATRIX.md](docs/SUPPORT_MATRIX.md).
+
+Cross-platform commands for macOS, Linux, Windows PowerShell, and Docker are documented in [docs/SUPPORT_MATRIX.md](docs/SUPPORT_MATRIX.md) so the first install path does not depend on guesswork.
 
 ## Data Engineering Surface
 
@@ -72,12 +135,37 @@ Stream now exposes its public analytical operating model directly instead of hid
 - quality checks on nulls, uniqueness, domain control, and leakage
 - bronze → silver → gold → serving lineage
 - delivery parity across FastAPI, static JSON exports, and the browser surface
+- deterministic synthetic seed, public artifact contract, and self-contained runtime boundary
 
 This is deliberate. A chart should not be the first place someone learns how a system behaves. The pipeline, the contract boundary, and the publishing discipline should be visible before anyone is asked to trust the result.
 
+The repo now also exposes a separate public governance contract. That surface is intentionally practical: it spells out where discrimination pressure is still material, where the repo remains a public-scope research tool rather than a consent-management system, and when a conclusion is still too soft to automate.
+
+## Questions This Repo Answers Early
+
+Senior engineers, researchers, and media operators usually ask some version of the same things:
+
+- **How much of this is real data?**  
+  The streaming-media representation lane is synthetic and labeled as such. The music virality lane is built from committed public datasets and kept separate on purpose.
+
+- **Is the story just written into the front end?**  
+  No. The browser surface reads baked JSON or the live API, both generated by the same Python pipeline. The new decision lab and runtime doctor come from that same backend path.
+
+- **What happens when the evidence is thin?**  
+  The coverage posture is surfaced directly in the quality, timeline, and decision-lab outputs. Missing publication years and unlabeled fields stay visible instead of being smoothed away.
+
+- **Can I inspect the contract before I trust the charts?**  
+  Yes. `data/system/*.json`, `openapi.stream.json`, `/docs`, and the Learn tab all exist for that reason.
+
+- **Does this depend on a private LOOPCHii platform to work?**  
+  No. This repository ships its own public Python pipeline, static exports, SQLite materialization, browser surface, and API. It is intentionally self-contained.
+
+- **How do I know a weak conclusion is being treated as weak?**  
+  Coverage, trust posture, missing publication years, labeled-share gaps, and cohort split notes are surfaced directly in the music lane and the decision lab. Stream is more useful when it says “not enough here yet” than when it smooths uncertainty away.
+
 ## Backend Runtime Spine
 
-The repo is no longer just a front-end shell with a Python API bolted on. The public surface now runs through a package-based backend spine in `stream_backend/` that does four jobs:
+The repo is no longer just a front-end shell with a Python API bolted on. The public interface now runs through a package-based backend spine in `stream_backend/` that does four jobs:
 
 - computes role-aware analytical state for the browser instead of leaving those numbers trapped in `index.html`
 - materializes a repeatable public runtime snapshot into `data/system/*.json`
@@ -91,7 +179,7 @@ Recent additions make that spine easier to verify:
 - `manifest.webmanifest` and `service-worker.js` keep the static surface usable as a lightweight offline shell
 - `Dockerfile` bakes the static exports first, then serves the live API from the same repository state
 
-The result is intentionally polyglot but still bounded: Python drives the analysis and orchestration, JavaScript renders the public browser surface, and the repo's existing Rust/WASM lane remains available for lighter-weight public demos. The public value is in the connective tissue between those layers, not in any one language by itself.
+The result is intentionally polyglot: Python drives the analysis and orchestration, JavaScript renders the public browser surface, and the repo's existing Rust/WASM lane remains available for lighter-weight public demos. The public value is in the connective tissue between those layers, not in any one language by itself.
 
 ## Choose Your Path
 
@@ -122,7 +210,7 @@ The interactive dashboard lets you inspect those patterns across seven tabs — 
 
 - It is not a hidden proprietary LOOPCHii runtime.
 - It is not a claim about private studio catalogues, internal platform data, or undisclosed production systems.
-- It is not a generic “AI for media” wrapper. The value here is in clear methods, bounded interpretation, and visible public artifacts.
+- It is not a generic “AI for media” wrapper. The value here is in clear methods, disciplined interpretation, and visible public artifacts.
 
 ## Browser Playground
 
@@ -134,7 +222,7 @@ What it gives you immediately:
 - a tiny public wrapper surface in [`packages/loopchii-lite`](packages/loopchii-lite) for contributors who want something they can inspect and adapt in minutes
 - a deterministic set of nuisance cases that map to ordinary engineering headaches: direct identifiers, leaked secrets, protected text, and unsafe retention prompts
 
-The playground is intentionally public and bounded. It does **not** claim private runtime enforcement, hardware binding, or proprietary LOOPCHii internals. Its job is adoption: prove usefulness quickly, invite contribution honestly, and give engineers something concrete to extend.
+The playground is intentionally public. It does **not** claim private runtime enforcement, hardware binding, or proprietary LOOPCHii internals. Its job is adoption: prove usefulness quickly, invite contribution honestly, and give engineers something concrete to extend.
 
 Minimal public example:
 
@@ -197,8 +285,8 @@ The newest module goes beyond synthetic data entirely. It analyses the **100 mos
 | **Viral archetypes** | K-means (k=5) on log-views, virality, channel size, duration → named strategies | Movement 04 — scatter coloured by cluster |
 | **Tag co-occurrence network** | NetworkX graph of shared tags, greedy-modularity communities, density | Movement 05 — D3 force-directed graph |
 | **Predictability** | RandomForest + GradientBoosting ensemble, 5-fold cross-validated R² | Movement 06 — skill-vs-luck gauge + importances |
-| **What-If virality predictor** | Trained model maps hypothetical (duration, subscribers, tags, official) → percentile | Movement 07 — slider controls + grade gauge |
-| **Resonance mapper** | Public proxy for repetition, release pressure, and attention oscillation across the real music catalog | Movement 08 — 3D resonance core + clickable track list |
+| **Release scenario lab** | Trained model maps hypothetical (duration, subscribers, tags, official) → percentile | Movement 09 — slider controls + grade gauge |
+| **Repeat pressure map** | Public proxy for repetition, release pressure, and attention oscillation across the real music catalog | Movement 07 — 3D resonance core + clickable track list |
 | **Bias analysis** | Gender parity, genre concentration (Gini), collaboration patterns, duration bias, attention concentration, per-genre breakdowns, and a publication timeline drawn from public upload dates | Movement 09 — equity grade + 7 charts + genre table |
 | **3D virality landscape** | Plotly 3D scatter of views × virality × subscribers, coloured by archetype cluster | Movement 10 — interactive 3D orbit |
 | **Real songs explorer** | Sortable, searchable table of all 100 tracks with computed features | Movement 11 — sortable table |
@@ -215,7 +303,7 @@ The repo now includes a separate harvest layer for score and notation work:
 - `music_index.json` and `music_index.csv` export the piece-level index.
 - `music_analysis_report.md` summarizes what is actually linked today.
 
-This layer keeps the claim boundary strict:
+This layer keeps the scope strict:
 
 - the public song catalog and the score layer are separate on purpose
 - note and chord claims appear only when the repository contains notation-bearing files
@@ -637,6 +725,27 @@ Media shapes culture. When most action heroes are male, when women of color rare
 
 Stream exists to make those patterns measurable and readable at the same time. The Bias Library names documented patterns so you can spot them; the Learn tab explains the math so you can verify it; the Explore tab hands you the raw rows so you never have to trust a summary by default.
 
+## Public Data, Ethics, and Governance
+
+This repository is easier to trust when its boundaries are easy to find.
+
+Start with these documents:
+
+- [docs/PRIVACY_AND_DATA.md](docs/PRIVACY_AND_DATA.md) for the public-data boundary, attribution posture, privacy scope, and what the repo does not collect
+- [docs/ETHICS.md](docs/ETHICS.md) for the human-consequence and uncertainty standards behind the analysis surfaces
+- [GOVERNANCE.md](GOVERNANCE.md) for maintainership, claim-boundary rules, and merge discipline
+- [TERMS.md](TERMS.md) for repository use terms and third-party source caution
+- [data/README.md](data/README.md) for the current input and artifact structure across synthetic, music, and system surfaces
+- [CODE_OF_CONDUCT.md](CODE_OF_CONDUCT.md) for contributor behavior expectations
+
+The short version is simple:
+
+- code is MIT licensed
+- synthetic data stays labeled as synthetic
+- public music analysis stays tied to documented public-source inputs
+- private LOOPCHii systems stay out of this repository
+- uncertainty should remain visible instead of being polished away
+
 <div align="center">
   
 ![separator](https://img.shields.io/badge/-FFE4E1?style=flat&color=FFE4E1)
@@ -647,14 +756,21 @@ Stream exists to make those patterns measurable and readable at the same time. T
 
 ## Contributing
 
-I'd love help making this better. Areas where I particularly need assistance:
+If you want to help make Stream better, the strongest contributions usually improve one of these:
 
 - **Data Collection**: More international content, more platforms
 - **Statistical Methods**: Always room for improvement in bias detection
 - **Visualization**: Making complex patterns more intuitive
 - **Documentation**: Explaining the math in simpler terms
 
-Check out [contributing.md](contributing.md) for guidelines. The repo also ships issue templates for bugs, feature requests, and data/source improvements so contributors can plug in without guessing the expected shape.
+Before opening a pull request, read:
+
+- [contributing.md](contributing.md)
+- [CODE_OF_CONDUCT.md](CODE_OF_CONDUCT.md)
+- [GOVERNANCE.md](GOVERNANCE.md)
+- [docs/PRIVACY_AND_DATA.md](docs/PRIVACY_AND_DATA.md)
+
+The repo also ships issue templates for bugs, feature requests, and data/source improvements so contributors can plug in without guessing the expected shape.
 
 <div align="center">
   
@@ -679,7 +795,7 @@ Check out [contributing.md](contributing.md) for guidelines. The repo also ships
 </tr>
 <tr style="background-color:#F0F8FF;">
 <td><strong>Test Coverage</strong></td>
-<td>111 pytest tests (pipeline + API + music + public lens SDK + media liability lab)</td>
+<td>149 pytest tests (pipeline + API + music + decision lab + runtime doctor + public lens SDK + media liability lab)</td>
 <td>Run with <code>pytest tests -q</code>; CI on Python 3.11/3.12</td>
 </tr>
 <tr>
@@ -709,15 +825,29 @@ Check out [contributing.md](contributing.md) for guidelines. The repo also ships
 
 ## License and Citation
 
-MIT License - use this code for anything you want. If you find something interesting or build on this work, I'd love to hear about it.
+Stream is released under the [MIT License](LICENSE).
+
+The code is open. The source boundary is still important:
+
+- repository code and documentation are MIT licensed
+- third-party data sources keep their own licenses or platform terms
+- committed public analysis artifacts should stay attributed and clearly scoped
+
+For the legal, privacy, ethics, and governance surfaces, see:
+
+- [docs/PRIVACY_AND_DATA.md](docs/PRIVACY_AND_DATA.md)
+- [docs/ETHICS.md](docs/ETHICS.md)
+- [GOVERNANCE.md](GOVERNANCE.md)
+- [TERMS.md](TERMS.md)
+- [data/README.md](data/README.md)
 
 If you use Stream in research:
 
 ```bibtex
-@software{streamlens2025,
-  title = {Stream: LOOPCHii Public Research Surface for Media Bias and Attention Analysis},
+@software{streamlens2026,
+  title = {Stream: LOOPCHii Open Repository for Media Bias and Attention Analysis},
   author = {Aporbo, Cazandra},
-  year = {2025},
+  year = {2026},
   url = {https://github.com/loopchii/Stream}
 }
 ```

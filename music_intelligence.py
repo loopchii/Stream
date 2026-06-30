@@ -780,9 +780,21 @@ def maybe_live_enrich(title: str, artist: Optional[str], enable_live: bool, last
 
 def default_catalog_rows() -> List[Dict[str, object]]:
     df = music_pipeline.load_enriched_dataset().copy()
+    if "genre" not in df.columns:
+        df["genre"] = [
+            music_pipeline._classify_genre(tags, title, channel, description, language)[0]
+            for tags, title, channel, description, language in zip(
+                df.get("_raw_tags", pd.Series([""] * len(df))),
+                df["title"],
+                df["channel"],
+                df.get("description", pd.Series([""] * len(df))),
+                df.get("detected_language", pd.Series([""] * len(df))),
+            )
+        ]
     keep = [
         "title",
         "channel",
+        "genre",
         "view_count",
         "duration_min",
         "channel_follower_count",
@@ -908,6 +920,9 @@ def build_music_data_package(
     for row in rows:
         title = str(row.get("title") or "").strip()
         artist = str(row.get("channel") or "").strip() or None
+        genre_value = row.get("genre")
+        if genre_value is None or (isinstance(genre_value, float) and genre_value != genre_value):
+            genre_value = None
         variants = title_variants(title, artist)
         matched_assets: List[Dict[str, object]] = []
         for variant in variants:
@@ -933,7 +948,7 @@ def build_music_data_package(
                 "tempo": bundle["tempo"],
                 "instrumentation": bundle["instrumentation"],
                 "difficulty": None,
-                "genre": None,
+                "genre": genre_value,
                 "structure": bundle["structure"],
                 "performance_notes": bundle["performance_notes"],
                 "note_profile": bundle["note_profile"],

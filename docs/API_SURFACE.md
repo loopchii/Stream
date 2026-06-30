@@ -11,7 +11,8 @@ This repository exposes the same public analytical surface through three paths:
 ```bash
 python -m venv venv
 source venv/bin/activate
-pip install -r requirements.txt
+pip install -r requirements-dev.txt
+python -m stream_backend.cli.doctor
 python app.py
 ```
 
@@ -33,6 +34,7 @@ Main outputs:
 - `data/system/runtime.json`
 - `data/system/contracts.json`
 - `data/system/runtime_surface.md`
+- `data/music/decision-lab.json`
 
 These are generated from the same Python orchestration path used by the API so the static site does not drift into a different story.
 
@@ -50,3 +52,22 @@ The image runs `python build_static.py` during build, then serves the live API f
 - Synthetic representation data is for method testing and visual reasoning.
 - Public music data is a separate real-data lane and should be read with its own quality posture.
 - The repo is designed to help contributors inspect, challenge, and improve the public surface without pretending it contains private LOOPCHii runtime internals.
+
+## Policy surfaces
+
+If you need the non-code boundary before you trust the API, start here:
+
+- [PRIVACY_AND_DATA.md](PRIVACY_AND_DATA.md)
+- [ETHICS.md](ETHICS.md)
+- [../GOVERNANCE.md](../GOVERNANCE.md)
+- [../TERMS.md](../TERMS.md)
+- [../data/README.md](../data/README.md)
+
+## Music endpoints worth checking first
+
+- `/api/music/quality`
+- `/api/music/decision-lab`
+- `/api/music/timeline`
+- `/api/music/intelligence`
+
+These four routes are the quickest way to understand whether the current public corpus is broad enough, current enough, and well-labeled enough to support the story the UI is telling.

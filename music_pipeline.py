@@ -29,6 +29,7 @@ from __future__ import annotations
 
 import math
 import re
+import html
 from collections import Counter
 from datetime import date
 from functools import lru_cache
@@ -40,6 +41,12 @@ import pandas as pd
 from scipy.stats import spearmanr
 
 from advanced_metrics import bootstrap_ci, gini, letter_grade, lorenz_points, theil_index
+from music_decision_lab import build_decision_lab
+from music_field_proxies import (
+    build_living_media_surface,
+    build_public_music_proxy_table,
+    vitality_signature_labels,
+)
 
 try:  # pragma: no cover - optional dependency in the preview venv
     import networkx as nx  # type: ignore
@@ -229,6 +236,8 @@ RECENT_PUBLIC_YEAR_MIN = 2018
 
 _YEAR_HINT_RE = re.compile(r"(?<!\d)(20\d{2})(?!\d)")
 _COPYRIGHT_YEAR_RE = re.compile(r"[©℗]\s*(20\d{2})")
+_HTML_TAG_RE = re.compile(r"<[^>]+>")
+_WHITESPACE_RE = re.compile(r"\s+")
 
 # Human-readable labels and tooltips for every engineered feature, reused by the
 # API and the front end so the meaning of each number is never ambiguous.
@@ -354,12 +363,32 @@ def _infer_publication_year_from_text(*fields: object) -> Tuple[int, str]:
     return 0, "unknown"
 
 
+def _clean_public_text(value: object) -> str:
+    if value is None or (isinstance(value, float) and math.isnan(value)):
+        return ""
+    text = html.unescape(str(value))
+    text = _HTML_TAG_RE.sub(" ", text)
+    text = text.replace("|", " ")
+    text = text.replace("/", " ")
+    text = text.replace("&", " and ")
+    return _WHITESPACE_RE.sub(" ", text).strip()
+
+
+def _genre_hint_blob(*fields: object) -> str:
+    return " ".join(
+        cleaned.lower()
+        for cleaned in (_clean_public_text(field) for field in fields)
+        if cleaned
+    )
+
+
 def engineer_features(df: pd.DataFrame) -> pd.DataFrame:
     """Derive the modelling features from the raw scraped columns."""
     out = pd.DataFrame()
     out["title"] = df["title"].astype(str)
     out["channel"] = df["channel"].astype(str)
     out["view_count"] = pd.to_numeric(df["view_count"], errors="coerce")
+    out["description"] = df.get("description", pd.Series([""] * len(df))).astype(str)
 
     duration = pd.to_numeric(df.get("duration"), errors="coerce")
     out["duration_sec"] = duration
@@ -459,6 +488,15 @@ def _load_supplement_most_viewed() -> pd.DataFrame:
     out["detected_language"] = music.get(
         "detected_language", pd.Series(["Unknown"] * len(music))
     ).astype(str)
+    out["tags"] = music.apply(
+        lambda row: _genre_hint_blob(
+            row.get("title"),
+            row.get("content_type"),
+            row.get("detected_language"),
+        ),
+        axis=1,
+    )
+    out["description"] = out["tags"]
     out["has_hashtags"] = music.get("has_hashtags", 0)
     out["source"] = "most_viewed_2026"
     return out.reset_index(drop=True)
@@ -480,6 +518,16 @@ def _load_supplement_music_data() -> pd.DataFrame:
     out["channel_follower_count"] = pd.to_numeric(
         df["numberOfSubscribers"], errors="coerce"
     )
+    text_col = df.get("text", pd.Series([""] * len(df), index=df.index))
+    details_col = df.get("details", pd.Series([""] * len(df), index=df.index))
+    out["tags"] = [
+        _genre_hint_blob(title, text, details)
+        for title, text, details in zip(df["title"], text_col, details_col)
+    ]
+    out["description"] = [
+        _genre_hint_blob(text, details)
+        for text, details in zip(text_col, details_col)
+    ]
     if "date" in df.columns:
         parsed = pd.to_datetime(df["date"], errors="coerce", utc=True)
         out["published_at"] = parsed.dt.strftime("%Y-%m-%d").fillna("")
@@ -603,6 +651,14 @@ def load_enriched_dataset() -> pd.DataFrame:
             )
         if "source" in combined_extras:
             sup_eng["source"] = combined_extras["source"]
+        if "description" in combined_extras:
+            sup_eng["description"] = combined_extras["description"].fillna("").astype(str)
+        else:
+            sup_eng["description"] = ""
+        if "tags" in combined_extras:
+            sup_eng["_raw_tags"] = combined_extras["tags"].fillna("").astype(str)
+        else:
+            sup_eng["_raw_tags"] = ""
 
         # Mark primary rows
         primary_out = primary.copy()
@@ -617,6 +673,8 @@ def load_enriched_dataset() -> pd.DataFrame:
         if "published_year_source" not in primary_out.columns:
             primary_out["published_year_source"] = "unknown"
         primary_out["source"] = "primary_top100"
+        if "description" not in primary_out.columns:
+            primary_out["description"] = ""
 
         merged = pd.concat(
             [primary_out, sup_eng], ignore_index=True
@@ -634,6 +692,57 @@ def load_enriched_dataset() -> pd.DataFrame:
             merged["published_year"] = 0
         if "published_year_source" not in merged.columns:
             merged["published_year_source"] = "unknown"
+        if "description" not in merged.columns:
+            merged["description"] = ""
+
+    # --- Repair row-level public metadata so the song table can carry the same
+    # structural evidence that the aggregate bias surfaces already use. ---
+    if "genre" not in merged.columns:
+        merged["genre"] = "Unknown"
+    existing_genres = merged["genre"].fillna("Unknown").astype(str)
+    genre_needs_fill = existing_genres.str.strip().str.lower().isin(
+        {"", "unknown", "other/unclassified"}
+    )
+    genre_pairs = [
+        _classify_genre(tags, title, channel, description, language)
+        for tags, title, channel, description, language in zip(
+            merged.get("_raw_tags", pd.Series([""] * len(merged))),
+            merged["title"],
+            merged["channel"],
+            merged.get("description", pd.Series([""] * len(merged))),
+            merged.get("detected_language", pd.Series(["Unknown"] * len(merged))),
+        )
+    ]
+    inferred_genres = pd.Series([label for label, _ in genre_pairs], index=merged.index)
+    inferred_genre_sources = pd.Series([source for _, source in genre_pairs], index=merged.index)
+    merged["genre"] = existing_genres.where(~genre_needs_fill, inferred_genres)
+    merged["genre_source"] = np.where(
+        genre_needs_fill,
+        inferred_genre_sources,
+        merged.get("genre_source", pd.Series(["existing"] * len(merged))).fillna("existing"),
+    )
+
+    if "published_year" not in merged.columns:
+        merged["published_year"] = 0
+    if "published_year_source" not in merged.columns:
+        merged["published_year_source"] = "unknown"
+    existing_years = pd.to_numeric(merged["published_year"], errors="coerce").fillna(0).astype(int)
+    existing_year_sources = merged["published_year_source"].fillna("unknown").astype(str)
+    inferred_year_pairs = merged.apply(
+        lambda row: _infer_publication_year_from_text(
+            row.get("published_at"),
+            row.get("title"),
+            row.get("fulltitle"),
+            row.get("description"),
+        ),
+        axis=1,
+    )
+    inferred_years = inferred_year_pairs.apply(lambda item: int(item[0] or 0)).astype(int)
+    inferred_year_sources = inferred_year_pairs.apply(lambda item: str(item[1] or "unknown"))
+    year_needs_fill = existing_years.le(0)
+    inferred_year_mask = year_needs_fill & inferred_years.gt(0)
+    merged["published_year"] = existing_years.where(~inferred_year_mask, inferred_years)
+    merged["published_year_source"] = existing_year_sources.where(~inferred_year_mask, inferred_year_sources)
 
     # --- Enrich with channel country from DS3 ---
     countries = _load_channel_countries()
@@ -731,6 +840,21 @@ def quality_report(df: Optional[pd.DataFrame] = None) -> Dict[str, object]:
             .nunique()
         )
 
+    genre_probe = [
+        _classify_genre(tags, title, channel, description, language)
+        for tags, title, channel, description, language in zip(
+            enriched.get("_raw_tags", pd.Series([""] * len(enriched))),
+            enriched["title"],
+            enriched["channel"],
+            enriched.get("description", pd.Series([""] * len(enriched))),
+            enriched.get("detected_language", pd.Series([""] * len(enriched))),
+        )
+    ]
+    known_genre_rows = int(sum(1 for label, _ in genre_probe if label != "Other/Unclassified"))
+    genre_source_counts = Counter(
+        source for label, source in genre_probe if label != "Other/Unclassified"
+    )
+
     published_years = pd.to_numeric(
         enriched.get("published_year", pd.Series([0] * len(enriched))),
         errors="coerce",
@@ -814,6 +938,7 @@ def quality_report(df: Optional[pd.DataFrame] = None) -> Dict[str, object]:
             "Fill missing subscriber counts with the source median so reach-adjusted comparisons remain stable.",
             "Map channel countries only when a public lookup exists; otherwise keep the value as Unknown instead of guessing.",
             "Carry publication years directly from public date fields, and only infer a year from free text when a single recent year or copyright marker is unambiguous.",
+            "Recover genre hints from public tags, title language, artist/channel entities, and supplemental public descriptions before labeling a row as unclassified.",
             "Keep the top-100 cohort separate from the enriched context so broad structural claims do not overwrite the core leaderboard.",
         ],
         "guardrails": [
@@ -823,6 +948,7 @@ def quality_report(df: Optional[pd.DataFrame] = None) -> Dict[str, object]:
             "Correlation rows include partial Spearman checks so raw associations are not mistaken for independent effects.",
             "Publication timelines are shown only for rows with explicit public dates or conservative text-resolved year hints; missing years are not backfilled.",
             "Years inferred from description text are marked separately from explicit upload dates so time claims stay auditable.",
+            "Embodied and vitality signals are public proxies from duration, engagement, virality, packaging, language spread, and release timing; they are not biometric or waveform claims.",
         ],
         "model_rigor": {
             "target": "log1p(view_count)",
@@ -846,6 +972,9 @@ def quality_report(df: Optional[pd.DataFrame] = None) -> Dict[str, object]:
             "publication_year_inferred_rows": inferred_year_rows,
             "publication_year_explicit_share": round(float(explicit_year_rows) / len(enriched), 3) if len(enriched) else 0.0,
             "publication_year_inferred_share": round(float(inferred_year_rows) / len(enriched), 3) if len(enriched) else 0.0,
+            "genre_known_rows": known_genre_rows,
+            "genre_known_share": round(float(known_genre_rows) / len(enriched), 3) if len(enriched) else 0.0,
+            "genre_signal_sources": {str(k): int(v) for k, v in genre_source_counts.most_common(12)},
             "duplicate_titles_removed": int(sup1_deduped + sup2_deduped),
         },
         "feature_manifest": feature_manifest,
@@ -1277,13 +1406,199 @@ _ARTIST_GENDER: Dict[str, str] = {
 # Genre heuristics from tags and title keywords.
 _GENRE_KEYWORDS: Dict[str, List[str]] = {
     "K-Pop": ["k-pop", "kpop", "k pop", "yg entertainment", "blackpink", "jennie"],
-    "Pop": ["pop", "dance pop", "synth", "electropop"],
-    "Hip-Hop/Rap": ["hip hop", "rap", "trap", "hip-hop", "rapper"],
-    "R&B/Soul": ["r&b", "rnb", "soul", "r & b"],
-    "Rock/Alternative": ["rock", "alternative", "indie rock", "punk"],
-    "Electronic/Dance": ["edm", "electronic", "house", "techno", "dance", "dj"],
-    "Country": ["country", "americana", "cowboy"],
-    "Latin": ["latin", "reggaeton", "salsa", "bachata", "latino"],
+    "Latin": ["latin", "reggaeton", "salsa", "bachata", "latino", "corridos", "regional mexicano", "urbano latino"],
+    "Hip-Hop/Rap": ["hip hop", "hip-hop", "rap", "trap", "drill", "freestyle", "cypher", "disstrack", "diss track", "lyricist"],
+    "Electronic/Dance": ["edm", "electronic", "house", "techno", "dance", "dj", "remix", "club", "party mix", "festival", "amapiano"],
+    "Rock/Alternative": ["rock", "alternative", "alt", "indie rock", "punk", "grunge"],
+    "Country": ["country", "americana", "cowboy", "nashville"],
+    "Afrobeats/Amapiano": ["afrobeats", "afrobeat", "afro disco", "afropop", "amapiano"],
+    "R&B/Soul": ["r&b", "rnb", "soul", "r and b", "r & b", "neo soul"],
+    "Folk/Acoustic": ["acoustic", "folk", "singer songwriter", "singer-songwriter", "ballad"],
+    "Soundtrack/Family": ["soundtrack", "from moana", "dreamworks", "trolls", "disney", "animation"],
+    "Pop": ["pop", "dance pop", "synth", "electropop", "radio pop"],
+}
+
+_GENRE_ENTITY_HINTS: Dict[str, str] = {
+    "rosé": "K-Pop",
+    "jennie": "K-Pop",
+    "blackpink": "K-Pop",
+    "bts": "K-Pop",
+    "lady gaga": "Pop",
+    "billie eilish": "Pop",
+    "renee rapp": "Pop",
+    "reneé rapp": "Pop",
+    "ed sheeran": "Folk/Acoustic",
+    "a-ha": "Pop",
+    "alex warren": "Pop",
+    "lola young": "Pop",
+    "myles smith": "Folk/Acoustic",
+    "tate mcrae": "Pop",
+    "benson boone": "Pop",
+    "taylor swift": "Pop",
+    "miley cyrus": "Pop",
+    "charli xcx": "Pop",
+    "dua lipa": "Pop",
+    "ariana grande": "Pop",
+    "bruno mars": "Pop",
+    "kendrick lamar": "Hip-Hop/Rap",
+    "drake": "Hip-Hop/Rap",
+    "tommy richman": "Hip-Hop/Rap",
+    "doechii": "Hip-Hop/Rap",
+    "hoodtrophy bino": "Hip-Hop/Rap",
+    "nelly wap": "Hip-Hop/Rap",
+    "zillionaire doe": "Hip-Hop/Rap",
+    "french montana": "Hip-Hop/Rap",
+    "xxxtentacion": "Hip-Hop/Rap",
+    "migos": "Hip-Hop/Rap",
+    "lil pump": "Hip-Hop/Rap",
+    "cardi b": "Hip-Hop/Rap",
+    "juice wrld": "Hip-Hop/Rap",
+    "post malone": "Hip-Hop/Rap",
+    "lil huddy": "Rock/Alternative",
+    "the weeknd": "R&B/Soul",
+    "giveon": "R&B/Soul",
+    "ravyn lenae": "R&B/Soul",
+    "raahiim": "R&B/Soul",
+    "tyla": "Afrobeats/Amapiano",
+    "sevdaliza": "Electronic/Dance",
+    "david guetta": "Electronic/Dance",
+    "keinemusik": "Electronic/Dance",
+    "magic music": "Electronic/Dance",
+    "skrillex": "Electronic/Dance",
+    "diplo": "Electronic/Dance",
+    "aronchupa": "Electronic/Dance",
+    "stromae": "Electronic/Dance",
+    "niickii": "Electronic/Dance",
+    "adam port": "Electronic/Dance",
+    "coldplay": "Rock/Alternative",
+    "damiano david": "Rock/Alternative",
+    "imagine dragons": "Rock/Alternative",
+    "onerepublic": "Rock/Alternative",
+    "shaboozey": "Country",
+    "bebe rexha": "Country",
+    "morgan wallen": "Country",
+    "zach bryan": "Country",
+    "luis fonsi": "Latin",
+    "daddy yankee": "Latin",
+    "bad bunny": "Latin",
+    "karol g": "Latin",
+    "j balvin": "Latin",
+    "maluma": "Latin",
+    "ozuna": "Latin",
+    "anitta": "Latin",
+    "shakira": "Latin",
+    "wiz khalifa": "Hip-Hop/Rap",
+    "crazy frog": "Electronic/Dance",
+    "el chombo": "Latin",
+    "maroon 5": "Pop",
+    "katy perry": "Pop",
+    "passenger": "Folk/Acoustic",
+    "enrique iglesias": "Latin",
+    "charlie puth": "Pop",
+    "the chainsmokers": "Electronic/Dance",
+    "adele": "Pop",
+    "twenty one pilots": "Rock/Alternative",
+    "eminem": "Hip-Hop/Rap",
+    "fifth harmony": "Pop",
+    "calvin harris": "Electronic/Dance",
+    "sia": "Pop",
+    "christina perri": "Pop",
+    "meghan trainor": "Pop",
+    "marshmello": "Electronic/Dance",
+    "john legend": "R&B/Soul",
+    "magic!": "Pop",
+    "gotye": "Pop",
+    "avicii": "Electronic/Dance",
+    "ellie goulding": "Pop",
+    "los ángeles azules": "Latin",
+    "romeo santos": "Latin",
+    "prince royce": "Latin",
+    "nicky jam": "Latin",
+    "becky g": "Latin",
+    "natti natasha": "Latin",
+    "piso 21": "Latin",
+    "j. balvin": "Latin",
+    "j balvin": "Latin",
+    "ricky martin": "Latin",
+    "arcángel": "Latin",
+    "arcangel": "Latin",
+    "marc anthony": "Latin",
+    "melendi": "Latin",
+    "michel teló": "Latin",
+    "michel telo": "Latin",
+    "grupo frontera": "Latin",
+    "grupo firme": "Latin",
+    "yiyo sarante": "Latin",
+    "willy william": "Latin",
+    "rag'n'bone man": "R&B/Soul",
+    "nirvana": "Rock/Alternative",
+    "4 non blondes": "Rock/Alternative",
+    "manuel turizo": "Latin",
+    "michael jackson": "Pop",
+    "camila cabello": "Pop",
+    "queen": "Rock/Alternative",
+    "p!nk": "Pop",
+    "pink": "Pop",
+    "coolio": "Hip-Hop/Rap",
+    "macklemore": "Hip-Hop/Rap",
+    "justin timberlake": "Pop",
+    "carlos vives": "Latin",
+    "sebastián yatra": "Latin",
+    "sebastian yatra": "Latin",
+    "mc fioti": "Latin",
+    "guns n' roses": "Rock/Alternative",
+    "martin garrix": "Electronic/Dance",
+    "dwayne johnson": "Soundtrack/Family",
+    "the cranberries": "Rock/Alternative",
+    "nelly": "Hip-Hop/Rap",
+    "sam smith": "Pop",
+    "tyga": "Hip-Hop/Rap",
+    "rick astley": "Pop",
+    "lukas graham": "Pop",
+    "gente de zona": "Latin",
+    "ac/dc": "Rock/Alternative",
+    "shawn mendes": "Pop",
+    "evanescence": "Rock/Alternative",
+    "aqua": "Pop",
+    "one direction": "Pop",
+    "dr. dre": "Hip-Hop/Rap",
+    "don omar": "Latin",
+    "christian nodal": "Latin",
+    "pitbull": "Latin",
+    "george michael": "Pop",
+    "harry styles": "Pop",
+    "audioslave": "Rock/Alternative",
+    "auli'i cravalho": "Soundtrack/Family",
+    "ricardo arjona": "Latin",
+    "lil nas x": "Country",
+    "clean bandit": "Electronic/Dance",
+    "r.e.m.": "Rock/Alternative",
+    "metallica": "Rock/Alternative",
+    "the police": "Rock/Alternative",
+    "bon jovi": "Rock/Alternative",
+    "europe": "Rock/Alternative",
+    "arctic monkeys": "Rock/Alternative",
+    "linkin park": "Rock/Alternative",
+    "chris brown": "R&B/Soul",
+    "pharrell williams": "Pop",
+    "akon": "R&B/Soul",
+    "6ix9ine": "Hip-Hop/Rap",
+    "jason derulo": "Pop",
+    "jass manak": "Pop",
+    "indila": "Pop",
+    "calum scott": "Pop",
+    "bonnie tyler": "Pop",
+    "the black eyed peas": "Pop",
+    "zayn": "Pop",
+    "rihanna": "Pop",
+    "justin bieber": "Pop",
+    "foster the people": "Rock/Alternative",
+    "hoobastank": "Rock/Alternative",
+    "scorpions": "Rock/Alternative",
+    "usher": "R&B/Soul",
+    "rema": "Afrobeats/Amapiano",
+    "khalid": "R&B/Soul",
+    "ylvis": "Pop",
 }
 
 
@@ -1291,13 +1606,28 @@ def _classify_gender(channel: str) -> str:
     return _ARTIST_GENDER.get(channel.strip(), "unknown")
 
 
-def _classify_genre(tags: object, title: object) -> str:
-    blob = f"{tags} {title}".lower()
+def _classify_genre(
+    tags: object,
+    title: object,
+    channel: object = "",
+    description: object = "",
+    detected_language: object = "",
+) -> Tuple[str, str]:
+    blob = _genre_hint_blob(tags, title, channel, description, detected_language)
+    if not blob:
+        return "Other/Unclassified", "fallback"
     for genre, keywords in _GENRE_KEYWORDS.items():
         for kw in keywords:
             if kw in blob:
-                return genre
-    return "Other/Unclassified"
+                return genre, f"keyword:{kw}"
+    for entity, genre in _GENRE_ENTITY_HINTS.items():
+        if entity in blob:
+            return genre, f"entity:{entity}"
+    if re.search(r"\b(mix|playlist|remix|edit|visualizer|visualiser|dj)\b", blob):
+        return "Electronic/Dance", "pattern:mix"
+    if re.search(r"\b(acoustic|ballad|stripped)\b", blob):
+        return "Folk/Acoustic", "pattern:acoustic"
+    return "Other/Unclassified", "fallback"
 
 
 def _detect_collab(title: str) -> bool:
@@ -1347,9 +1677,14 @@ def bias_analysis(df: Optional[pd.DataFrame] = None) -> Dict[str, object]:
 
     # --- Genre concentration ---
     tags_col = analysis_df["_raw_tags"].fillna("") if "_raw_tags" in analysis_df.columns else pd.Series([""] * len(analysis_df))
-    analysis_df["genre"] = [
-        _classify_genre(t, ti) for t, ti in zip(tags_col, analysis_df["title"])
+    desc_col = analysis_df.get("description", pd.Series([""] * len(analysis_df)))
+    lang_col = analysis_df.get("detected_language", pd.Series([""] * len(analysis_df)))
+    genre_pairs = [
+        _classify_genre(t, ti, ch, desc, lang)
+        for t, ti, ch, desc, lang in zip(tags_col, analysis_df["title"], analysis_df["channel"], desc_col, lang_col)
     ]
+    analysis_df["genre"] = [label for label, _ in genre_pairs]
+    analysis_df["genre_source"] = [source for _, source in genre_pairs]
     genre_counts_dict = analysis_df["genre"].value_counts().to_dict()
     genre_views_dict: Dict[str, float] = {}
     genre_breakdown = []
@@ -1624,11 +1959,34 @@ def bias_analysis(df: Optional[pd.DataFrame] = None) -> Dict[str, object]:
                 f"share of visible attention, the strongest duration pocket is {best_duration_label}, and collaboration helps most when "
                 f"it expands reach without making the track anonymous."
             ),
+            "question": (
+                "Where does the field still leave room for a release to feel distinct instead of merely legible to an existing machine?"
+            ),
             "signals": [
                 {"label": "Known-genre leader", "value": best_genre},
                 {"label": "Collab view share", "value": f"{collab_view_share * 100:.1f}%"},
                 {"label": "Known-genre diversity", "value": f"{classified_genre_diversity:.3f}"},
                 {"label": "Top duration band", "value": best_duration_label},
+            ],
+            "next_moves": [
+                {
+                    "label": "Study release archetypes",
+                    "note": "See the distinct ways tracks reached the field before turning one winner into a universal template.",
+                    "tab": "music",
+                    "target": "mvArchetypes",
+                },
+                {
+                    "label": "Test a hypothetical upload",
+                    "note": "Change duration, packaging, tags, and channel size to see what moves the percentile story.",
+                    "tab": "music",
+                    "target": "mvWhatIf",
+                },
+                {
+                    "label": "Walk the source rows",
+                    "note": "Drop back to the songs themselves before borrowing a pattern into a real release decision.",
+                    "tab": "music",
+                    "target": "mvSongsExplorer",
+                },
             ],
             "takeaway": (
                 "The practical question is not which genre is supposedly 'best.' It is whether your release shape can still find oxygen once "
@@ -1642,11 +2000,34 @@ def bias_analysis(df: Optional[pd.DataFrame] = None) -> Dict[str, object]:
                 f"{earliest_year} to {latest_year}, but only {publication_year_coverage * 100:.0f}% of rows carry public year data, which "
                 f"means breadth has to be read with some caution."
             ),
+            "question": (
+                "Is this field genuinely broad, or does it only feel broad because the same corridor keeps repainting itself in new colors?"
+            ),
             "signals": [
                 {"label": "Languages detected", "value": str(language_bias.get("n_languages", 0))},
                 {"label": "English share", "value": f"{language_bias.get('english_share', 0) * 100:.1f}%"},
                 {"label": "Known-genre coverage", "value": f"{classified_genre_share * 100:.0f}%"},
                 {"label": "Publication span", "value": f"{earliest_year or '—'}–{latest_year or '—'}"},
+            ],
+            "next_moves": [
+                {
+                    "label": "Trace the tag universe",
+                    "note": "See whether discovery is wide or still circling inside a tight tag neighborhood.",
+                    "tab": "music",
+                    "target": "mvNetwork",
+                },
+                {
+                    "label": "Read the bias surface",
+                    "note": "Check who gets the front row once language, genre, and collaboration are counted together.",
+                    "tab": "music",
+                    "target": "mvBias",
+                },
+                {
+                    "label": "Inspect the public rows",
+                    "note": "Stay close to the songs when the discovery story starts sounding too polished.",
+                    "tab": "music",
+                    "target": "mvSongsExplorer",
+                },
             ],
             "takeaway": (
                 "A healthy discovery system should feel broader than its hit list. If the surface feels repetitive, the numbers suggest you may not be imagining it."
@@ -1659,10 +2040,33 @@ def bias_analysis(df: Optional[pd.DataFrame] = None) -> Dict[str, object]:
                 f"{top5_share * 100:.1f}% of views and the top 10 hold {top10_share * 100:.1f}%, which is useful if you need to separate repeatable "
                 f"distribution logic from one-off mythology."
             ),
+            "question": (
+                "Which signals still move the market after inherited scale is discounted, and which ones only look strong because the room was preloaded?"
+            ),
             "signals": [
                 {"label": "Top 5 concentration", "value": f"{top5_share * 100:.1f}%"},
                 {"label": "Coverage confidence", "value": f"{coverage_confidence * 100:.0f}%"},
                 {"label": "Views parity", "value": f"{views_parity:.2f}x"},
+            ],
+            "next_moves": [
+                {
+                    "label": "Pressure-test predictability",
+                    "note": "Separate controllable lift from folklore by checking what the ensemble can explain.",
+                    "tab": "music",
+                    "target": "mvPredictability",
+                },
+                {
+                    "label": "Inspect raw vs partial signals",
+                    "note": "See which correlations survive after channel size stops dominating the picture.",
+                    "tab": "music",
+                    "target": "mvCorrelation",
+                },
+                {
+                    "label": "Read the cultural field",
+                    "note": "Move into corridor balance, inheritance pressure, and authenticity posture before productizing the conclusion.",
+                    "tab": "music",
+                    "target": "mvSongsExplorer",
+                },
             ],
             "takeaway": (
                 "The value is not 'which song went viral.' It is which conditions keep narrowing or opening the market across multiple cohorts."
@@ -1674,10 +2078,33 @@ def bias_analysis(df: Optional[pd.DataFrame] = None) -> Dict[str, object]:
                 f"The useful question is not whether a pattern exists somewhere, but whether it survives classification gaps, coverage limits, and cohort changes. "
                 f"This lane is strongest when it keeps the leaderboard separate from the broader structural context instead of pretending they are the same thing."
             ),
+            "question": (
+                "Which claims shrink under coverage pressure, and which ones stay sharp enough to survive disagreement?"
+            ),
             "signals": [
                 {"label": "Genre Gini", "value": f"{genre_gini:.3f}"},
                 {"label": "Coverage confidence", "value": f"{coverage_confidence * 100:.0f}%"},
                 {"label": "Observed years", "value": f"{len(publication_timeline.get('observed_years', []))}"},
+            ],
+            "next_moves": [
+                {
+                    "label": "Audit the dated field",
+                    "note": "Check timeline gaps, known-year share, and whether a temporal story is carrying more certainty than the rows allow.",
+                    "tab": "music",
+                    "target": "mvBias",
+                },
+                {
+                    "label": "Inspect the row layer",
+                    "note": "Keep the conclusion close to the source rows instead of repeating an abstracted summary.",
+                    "tab": "music",
+                    "target": "mvSongsExplorer",
+                },
+                {
+                    "label": "Open the methods surface",
+                    "note": "Cross-check assumptions, quality gates, and contract posture before treating the output as settled.",
+                    "tab": "learn",
+                    "target": "learnDataSystem",
+                },
             ],
             "takeaway": (
                 "The method earns trust when the story gets smaller where coverage is weak, and sharper where multiple checks agree."
@@ -1771,12 +2198,15 @@ def resonance_analysis(df: Optional[pd.DataFrame] = None) -> Dict[str, object]:
                 "oscillation": 0,
                 "friction": 0,
                 "stability": 0,
+                "vitality": 0,
+                "communal_carry": 0,
+                "novelty_room": 0,
                 "wattage_variance_proxy": 0,
                 "halt_window_ms": 0,
             },
             "top_tracks": [],
             "genre_pressure": [],
-            "year_profile": {"years": [], "oscillation": [], "friction": []},
+            "year_profile": {"years": [], "oscillation": [], "friction": [], "vitality": [], "song_count": []},
             "interpretation": "No songs are available for resonance analysis.",
         }
 
@@ -1789,65 +2219,79 @@ def resonance_analysis(df: Optional[pd.DataFrame] = None) -> Dict[str, object]:
         working["published_year"] = 0
     if "channel_follower_count" not in working.columns:
         working["channel_follower_count"] = 0
-
-    years = pd.to_numeric(working["published_year"], errors="coerce").fillna(0).astype(int)
-    year_min = int(years[years > 0].min()) if (years > 0).any() else 0
-    year_max = int(years.max()) if len(years) else 0
-    year_span = max(year_max - year_min, 1)
-    genre_share = working["genre"].value_counts(normalize=True).to_dict() if "genre" in working.columns else {}
+    proxy = build_public_music_proxy_table(working)
+    genre_share = proxy["genre"].value_counts(normalize=True).to_dict() if "genre" in proxy.columns else {}
 
     resonance_rows = []
-    for _, row in working.iterrows():
-        title_tokens = _music_tokens(row.get("title", ""))
-        tag_tokens = _music_tokens(row.get("tags", ""))
-        shared = len(set(title_tokens) & set(tag_tokens))
-        title_repeat = shared / max(len(set(title_tokens)), 1)
+    for _, row in proxy.iterrows():
         duration = float(row.get("duration_min", 0.0) or 0.0)
-        duration_fit = float(np.exp(-((duration - 3.25) / 1.15) ** 2))
-        attention_fit = float(min(np.log1p(max(float(row.get("view_count", 0.0) or 0.0), 0.0)) / 24.0, 1.0))
-        reach_fit = float(min(np.log1p(max(float(row.get("channel_follower_count", 0.0) or 0.0), 0.0)) / 20.0, 1.0))
+        duration_fit = float(row.get("duration_fit", 0.0) or 0.0)
+        title_repeat = float(row.get("title_echo", 0.0) or 0.0)
+        attention_fit = float(row.get("views_norm", 0.0) or 0.0)
+        reach_fit = float(row.get("reach_norm", 0.0) or 0.0)
+        engagement_fit = float(row.get("engagement_norm", 0.0) or 0.0)
+        recency_fit = float(row.get("recency_norm", 0.0) or 0.0)
+        somatic_pull = float(row.get("somatic_pull", 0.0) or 0.0)
+        communal_carry = float(row.get("communal_carry", 0.0) or 0.0)
+        novelty_room = float(row.get("novelty_room", 0.0) or 0.0)
+        inheritance_pressure = float(row.get("inheritance_pressure", 0.0) or 0.0)
+        vitality_score = float(row.get("vitality_score", 0.0) or 0.0)
         genre = str(row.get("genre", "Unknown"))
         genre_pressure = float(genre_share.get(genre, 0.0))
         published_year = int(row.get("published_year", 0) or 0)
-        year_fit = 0.5 if not published_year else float(np.clip((published_year - year_min) / year_span, 0.0, 1.0))
         oscillation = float(np.clip(
-            0.30 * duration_fit +
-            0.24 * attention_fit +
-            0.20 * reach_fit +
-            0.16 * title_repeat +
-            0.10 * genre_pressure,
+            0.28 * somatic_pull +
+            0.22 * attention_fit +
+            0.18 * title_repeat +
+            0.18 * communal_carry +
+            0.14 * recency_fit,
             0.0, 1.0
         ))
         friction = float(np.clip(
-            0.32 * (1.0 - duration_fit) +
-            0.28 * genre_pressure +
-            0.20 * (1.0 - title_repeat) +
-            0.12 * (1.0 - year_fit) +
-            0.08 * (1.0 - attention_fit),
+            0.34 * inheritance_pressure +
+            0.24 * (1.0 - novelty_room) +
+            0.22 * genre_pressure +
+            0.20 * (1.0 - duration_fit),
             0.0, 1.0
         ))
         stability = float(np.clip(
-            1.0 - np.std([duration_fit, attention_fit, reach_fit, title_repeat]),
+            1.0 - np.std([duration_fit, somatic_pull, communal_carry, novelty_room, title_repeat]),
             0.0, 1.0
         ))
-        variance_proxy = float(np.std([duration_fit, attention_fit, reach_fit, title_repeat, year_fit]))
-        resonance_score = float(np.clip((oscillation * 0.55) + (friction * 0.25) + ((1.0 - stability) * 0.20), 0.0, 1.0))
+        variance_proxy = float(np.std([duration_fit, attention_fit, reach_fit, title_repeat, vitality_score]))
+        resonance_score = float(np.clip(
+            0.42 * somatic_pull +
+            0.18 * communal_carry +
+            0.18 * attention_fit +
+            0.12 * (1.0 - friction) +
+            0.10 * stability,
+            0.0, 1.0
+        ))
+        signature = vitality_signature_labels(row)
         resonance_rows.append({
             "title": str(row.get("title", "")),
             "channel": str(row.get("channel", "")),
             "genre": genre,
+            "language": str(row.get("detected_language", "Unknown")),
             "published_year": published_year,
             "view_count": float(row.get("view_count", 0.0) or 0.0),
             "duration_min": duration,
             "oscillation": round(oscillation, 3),
             "friction": round(friction, 3),
             "stability": round(stability, 3),
+            "somatic_pull": round(somatic_pull, 3),
+            "communal_carry": round(communal_carry, 3),
+            "novelty_room": round(novelty_room, 3),
+            "inheritance_pressure": round(inheritance_pressure, 3),
+            "vitality_score": round(vitality_score, 3),
+            "cultural_corridor": str(row.get("cultural_corridor", "Unlabeled corridor")),
             "wattage_variance_proxy": round(variance_proxy, 3),
             "resonance_score": round(resonance_score, 3),
+            "signature": signature,
             "signals": [
                 f"duration fit {duration_fit:.2f}",
-                f"attention fit {attention_fit:.2f}",
-                f"reach fit {reach_fit:.2f}",
+                f"engagement fit {engagement_fit:.2f}",
+                f"novelty room {novelty_room:.2f}",
                 f"title/tag echo {title_repeat:.2f}",
             ],
         })
@@ -1855,44 +2299,53 @@ def resonance_analysis(df: Optional[pd.DataFrame] = None) -> Dict[str, object]:
     resonance_rows.sort(key=lambda r: r["resonance_score"], reverse=True)
     top_tracks = resonance_rows[:8]
     genre_pressure = []
-    for genre, group in working.groupby("genre"):
+    for genre, group in proxy.groupby("genre"):
         local_years = pd.to_numeric(group["published_year"], errors="coerce").fillna(0).astype(int)
         year_density = float((local_years > 0).mean()) if len(group) else 0.0
         resonance_pressure = float(np.mean([r["resonance_score"] for r in resonance_rows if r["genre"] == genre])) if genre else 0.0
         genre_pressure.append({
             "genre": str(genre),
             "song_count": int(len(group)),
-            "view_share": round(float(group["view_count"].sum()) / float(working["view_count"].sum()), 4) if float(working["view_count"].sum()) > 0 else 0.0,
+            "view_share": round(float(group["view_count"].sum()) / float(proxy["view_count"].sum()), 4) if float(proxy["view_count"].sum()) > 0 else 0.0,
             "avg_resonance": round(resonance_pressure, 3),
+            "avg_vitality": round(float(group["vitality_score"].mean()), 3),
             "stability": round(max(0.0, min(1.0, year_density + 0.15 * (1.0 - resonance_pressure))), 3),
         })
     genre_pressure.sort(key=lambda r: r["avg_resonance"], reverse=True)
 
-    years_group = working[working["published_year"].astype(int) > 0].copy()
+    years_group = pd.DataFrame(resonance_rows)
+    years_group = years_group[years_group["published_year"].astype(int) > 0].copy()
     if not years_group.empty:
         years_group["published_year"] = pd.to_numeric(years_group["published_year"], errors="coerce").fillna(0).astype(int)
         year_stats = years_group.groupby("published_year").agg(
-            oscillation=("view_count", "mean"),
-            friction=("view_count", "median"),
+            oscillation=("oscillation", "mean"),
+            friction=("friction", "mean"),
+            vitality=("vitality_score", "mean"),
+            song_count=("title", "count"),
         ).reset_index().sort_values("published_year")
         year_profile = {
             "years": year_stats["published_year"].astype(int).tolist(),
             "oscillation": [round(float(v), 3) for v in year_stats["oscillation"].tolist()],
             "friction": [round(float(v), 3) for v in year_stats["friction"].tolist()],
+            "vitality": [round(float(v), 3) for v in year_stats["vitality"].tolist()],
+            "song_count": [int(v) for v in year_stats["song_count"].tolist()],
         }
     else:
-        year_profile = {"years": [], "oscillation": [], "friction": []}
+        year_profile = {"years": [], "oscillation": [], "friction": [], "vitality": [], "song_count": []}
 
     avg_oscillation = float(np.mean([r["oscillation"] for r in resonance_rows])) if resonance_rows else 0.0
     avg_friction = float(np.mean([r["friction"] for r in resonance_rows])) if resonance_rows else 0.0
     avg_stability = float(np.mean([r["stability"] for r in resonance_rows])) if resonance_rows else 0.0
+    avg_vitality = float(np.mean([r["vitality_score"] for r in resonance_rows])) if resonance_rows else 0.0
+    avg_communal = float(np.mean([r["communal_carry"] for r in resonance_rows])) if resonance_rows else 0.0
+    avg_novelty = float(np.mean([r["novelty_room"] for r in resonance_rows])) if resonance_rows else 0.0
     avg_variance = float(np.mean([r["wattage_variance_proxy"] for r in resonance_rows])) if resonance_rows else 0.0
     halt_window_ms = int(round(4 + (avg_oscillation + avg_friction) * 12))
     strongest = top_tracks[0] if top_tracks else {}
     interpretation = (
-        f"Resonance is highest where duration, attention, and channel reach line up without much variation. "
-        f"{strongest.get('title', 'The lead track')} is the clearest proxy for a tight oscillation loop, while "
-        f"{strongest.get('genre', 'the dominant genre')} carries the most pressure across the catalog."
+        f"Resonance is highest where public bodily pull, communal carry, and attention fit line up without collapsing entirely into inherited scale. "
+        f"{strongest.get('title', 'The lead track')} is the clearest proxy for a tight repeat-attention loop, while "
+        f"{strongest.get('cultural_corridor', strongest.get('genre', 'the dominant corridor'))} carries the strongest visible pressure."
     )
 
     return {
@@ -1900,6 +2353,9 @@ def resonance_analysis(df: Optional[pd.DataFrame] = None) -> Dict[str, object]:
             "oscillation": round(avg_oscillation, 3),
             "friction": round(avg_friction, 3),
             "stability": round(avg_stability, 3),
+            "vitality": round(avg_vitality, 3),
+            "communal_carry": round(avg_communal, 3),
+            "novelty_room": round(avg_novelty, 3),
             "wattage_variance_proxy": round(avg_variance, 3),
             "halt_window_ms": halt_window_ms,
         },
@@ -2055,13 +2511,16 @@ def songs_table(
     df: Optional[pd.DataFrame] = None, limit: int = 700, sort_by: str = "view_count"
 ) -> List[Dict[str, object]]:
     df = load_enriched_dataset() if df is None else df
-    sort_col = sort_by if sort_by in df.columns else "view_count"
-    ordered = df.sort_values(sort_col, ascending=False).head(limit)
+    proxy = build_public_music_proxy_table(df)
+    sort_col = sort_by if sort_by in proxy.columns else "view_count"
+    ordered = proxy.sort_values(sort_col, ascending=False).head(limit)
     records = []
     for _, r in ordered.iterrows():
+        row = r.to_dict()
         records.append(
             {
                 "title": str(r["title"]),
+                "artist": str(r.get("artist") or r["channel"]),
                 "channel": str(r["channel"]),
                 "view_count": float(r["view_count"]),
                 "duration_min": round(float(r["duration_min"]), 2),
@@ -2073,6 +2532,20 @@ def songs_table(
                 "published_year": int(r.get("published_year", 0) or 0),
                 "published_year_source": str(r.get("published_year_source", "unknown")),
                 "detected_language": str(r.get("detected_language", "Unknown")),
+                "genre": str(r.get("genre", "Unknown")),
+                "cultural_corridor": str(r.get("cultural_corridor", "Unlabeled corridor")),
+                "somatic_pull": round(float(r.get("somatic_pull", 0.0) or 0.0), 4),
+                "communal_carry": round(float(r.get("communal_carry", 0.0) or 0.0), 4),
+                "novelty_room": round(float(r.get("novelty_room", 0.0) or 0.0), 4),
+                "inheritance_pressure": round(float(r.get("inheritance_pressure", 0.0) or 0.0), 4),
+                "vitality_score": round(float(r.get("vitality_score", 0.0) or 0.0), 4),
+                "distribution_fingerprint": round(float(r.get("distribution_fingerprint", 0.0) or 0.0), 4),
+                "organic_signature": round(float(r.get("organic_signature", 0.0) or 0.0), 4),
+                "engineered_signature": round(float(r.get("engineered_signature", 0.0) or 0.0), 4),
+                "velocity_anomaly": round(float(r.get("velocity_anomaly", 0.0) or 0.0), 4),
+                "longevity_potential": round(float(r.get("longevity_potential", 0.0) or 0.0), 4),
+                "authenticity_index": round(float(r.get("authenticity_index", 0.0) or 0.0), 4),
+                "signature": vitality_signature_labels(row),
             }
         )
     return records
@@ -2082,6 +2555,9 @@ def full_report(df: Optional[pd.DataFrame] = None) -> Dict[str, object]:
     """Everything in one payload - used to bake the static site."""
     df = load_dataset() if df is None else df
     enriched = load_enriched_dataset()
+    bias = bias_analysis(enriched)
+    resonance = resonance_analysis(enriched)
+    decision_lab = build_decision_lab(enriched)
     return {
         "overview": overview(df),
         "power_law": power_law_analysis(df),
@@ -2090,10 +2566,12 @@ def full_report(df: Optional[pd.DataFrame] = None) -> Dict[str, object]:
         "archetypes": archetype_analysis(df),
         "network": network_analysis(),
         "predictability": predictability_analysis(df),
-        "resonance": resonance_analysis(enriched),
+        "resonance": resonance,
         "songs": songs_table(enriched, limit=int(len(enriched))),
-        "bias": bias_analysis(enriched),
+        "bias": bias,
         "quality": quality_report(df),
+        "decision_lab": decision_lab,
+        "living_media": build_living_media_surface(enriched, bias=bias, resonance=resonance, decision_lab=decision_lab),
         "feature_labels": FEATURE_LABELS,
     }
 

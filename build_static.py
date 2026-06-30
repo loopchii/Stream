@@ -41,6 +41,7 @@ def build_data() -> None:
     write_json(DATA / "learn.json", backend.learn())
     write_json(DATA / "bias-library.json", backend.bias_library())
     write_json(DATA / "system" / "data-engineering.json", backend.data_engineering_surface())
+    write_json(DATA / "system" / "streaming-readiness.json", backend.system_streaming_readiness())
     write_json(DATA / "system" / "bias-propagation.json", backend.bias_propagation())
     write_json(DATA / "system" / "trojan-horse.json", backend.trojan_horse_surface())
     write_json(DATA / "system" / "catalog.json", backend.system_catalog())
@@ -63,6 +64,7 @@ def build_data() -> None:
         if n == DEFAULT_SIZE:
             write_json(out / "results.json", backend.results())
             write_json(DATA / "system" / "frontend-state.json", backend.system_frontend_state(sample_size=n))
+            write_json(DATA / "system" / "governance.json", backend.system_governance(sample_size=n))
             write_json(DATA / "system" / "critical-spine.json", backend.system_critical_spine(sample_size=n))
             write_json(DATA / "system" / "comparatives.json", backend.system_comparatives(sample_size=n))
             write_json(DATA / "system" / "runtime.json", backend.system_runtime(sample_size=n))
@@ -91,6 +93,8 @@ def build_music() -> None:
     write_json(out / "songs.json", report["songs"])
     write_json(out / "bias.json", report["bias"])
     write_json(out / "quality.json", report["quality"])
+    write_json(out / "decision-lab.json", report["decision_lab"])
+    write_json(out / "living-media.json", report["living_media"])
     write_json(out / "genres.json", report["bias"].get("genre_breakdown", []))
     write_json(out / "timeline.json", report["bias"].get("publication_timeline", {}))
     write_json(out / "status.json", {"live_available": False, "source": "bundled_csv",
@@ -100,6 +104,7 @@ def build_music() -> None:
         repo_root=BASE,
         enable_live_enrichment=False,
     )
+    intelligence["summary"]["living_media"] = report["living_media"]
     write_json(out / "intelligence.json", intelligence["summary"])
     write_json(out / "index.json", intelligence["pieces"])
     music_intelligence.write_package(

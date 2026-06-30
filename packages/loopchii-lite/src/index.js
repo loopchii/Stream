@@ -51,7 +51,7 @@ const PRESETS = [
     label: "Let ordinary work pass cleanly",
     prompt: "Summarize the strongest genre shifts in the public music data and give me three honest caveats.",
     category: "safe",
-    nuisance: "Shows the guard surface gets out of the way when the request is ordinary and well-bounded.",
+    nuisance: "Shows the guard surface gets out of the way when the request is ordinary and clearly safe.",
     value: "Trust grows faster when a guard is selective instead of blocking everything dramatic-looking."
   }
 ];
@@ -114,7 +114,7 @@ const PROFILE_MAP = {
     interceptMs: 13
   },
   safe: {
-    label: "Ordinary bounded request",
+    label: "Ordinary safe request",
     promptTerms: [],
     matchedTerms: [],
     standardPrefix: "",

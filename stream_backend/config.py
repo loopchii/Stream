@@ -21,8 +21,18 @@ class RuntimeConfig:
     dataset_family: str = "public_research_surface"
     music_lane_label: str = "public_music_lane"
     synthetic_lane_label: str = "synthetic_representation_lane"
-    tags: tuple[str, ...] = ("python", "sqlite", "analytics", "music", "governance")
-    build_targets: tuple[str, ...] = ("api", "static", "sqlite")
+    tags: tuple[str, ...] = (
+        "python",
+        "sqlite",
+        "analytics",
+        "music",
+        "governance",
+        "drift-detection",
+        "signal-processing",
+        "a-b-testing",
+        "agentic-analysis",
+    )
+    build_targets: tuple[str, ...] = ("api", "static", "sqlite", "doctor")
     cache_enabled: bool = True
     notes: tuple[str, ...] = field(
         default_factory=lambda: (

@@ -9,6 +9,7 @@ import pytest
 from fastapi.testclient import TestClient
 
 from app import app
+from music_decision_lab import build_decision_lab
 from music_pipeline import (
     archetype_analysis,
     bias_analysis,
@@ -150,6 +151,9 @@ class TestPipeline:
         assert len(songs) == 10
         assert songs[0]["view_count"] >= songs[1]["view_count"]
         assert "published_year_source" in songs[0]
+        assert "vitality_score" in songs[0]
+        assert "cultural_corridor" in songs[0]
+        assert len(songs[0]["signature"]) >= 2
 
     def test_bias_analysis(self, df):
         b = bias_analysis(df)
@@ -165,6 +169,9 @@ class TestPipeline:
         assert years == list(range(years[0], years[-1] + 1))
         assert "missing_years" in b["publication_timeline"]
         assert {'artist', 'consumer', 'business', 'research'} <= set(b["role_perspectives"])
+        assert b["role_perspectives"]["artist"]["question"]
+        assert len(b["role_perspectives"]["artist"]["next_moves"]) >= 2
+        assert b["role_perspectives"]["research"]["next_moves"][0]["target"]
         assert b["overall_grade"]
 
     def test_quality_report(self, df):
@@ -178,6 +185,8 @@ class TestPipeline:
         assert len(q["feature_manifest"]) >= 1
         assert q["coverage"]["publication_year_explicit_share"] >= 0.0
         assert q["coverage"]["publication_year_inferred_share"] >= 0.0
+        assert q["coverage"]["genre_known_share"] >= 0.8
+        assert len(q["coverage"]["genre_signal_sources"]) >= 2
 
     def test_primary_dataset_carries_year_hints(self, df):
         assert int((df["published_year"] > 0).sum()) >= 30
@@ -192,10 +201,20 @@ class TestPipeline:
         r = full_report(df)
         expected_keys = [
             "overview", "power_law", "inequality", "correlations",
-            "archetypes", "network", "predictability", "resonance", "songs", "bias", "quality",
+            "archetypes", "network", "predictability", "resonance", "songs", "bias", "quality", "living_media",
         ]
         for k in expected_keys:
             assert k in r
+        assert "metrics" in r["living_media"]
+        assert "origin_detector" in r["living_media"]
+        assert "bias_spectrum" in r["living_media"]
+        assert "authenticity_profiles" in r["living_media"]
+        assert "propagation_chain" in r["living_media"]
+        assert len(r["living_media"]["metrics"]) >= 5
+        assert len(r["living_media"]["origin_detector"]) >= 5
+        assert len(r["living_media"]["bias_spectrum"]) >= 6
+        assert len(r["living_media"]["somatic_profiles"]) >= 3
+        assert len(r["living_media"]["provocations"]) >= 2
 
     def test_resonance(self, df):
         r = resonance_analysis(df)
@@ -205,6 +224,30 @@ class TestPipeline:
         assert "year_profile" in r
         assert r["scorecard"]["oscillation"] >= 0.0
         assert r["scorecard"]["stability"] >= 0.0
+        assert "vitality" in r["scorecard"]
+        assert "song_count" in r["year_profile"]
+        assert "vitality" in r["year_profile"]
+        if r["top_tracks"]:
+            assert "somatic_pull" in r["top_tracks"][0]
+            assert "vitality_score" in r["top_tracks"][0]
+            assert "cultural_corridor" in r["top_tracks"][0]
+            assert len(r["top_tracks"][0]["signature"]) >= 2
+
+    def test_decision_lab(self, df):
+        d = build_decision_lab(df)
+        assert "drift" in d
+        assert "experiments" in d
+        assert "trust" in d
+        assert "embodied" in d
+        assert "cards" in d["experiments"]
+        assert len(d["experiments"]["cards"]) >= 4
+        assert "headline" in d["summary"]
+        assert "summary_cards" in d["embodied"]
+        assert "top_signatures" in d["embodied"]
+        assert "cultural_corridors" in d["embodied"]
+        assert "provocations" in d["embodied"]
+        assert len(d["embodied"]["summary_cards"]) >= 4
+        assert len(d["embodied"]["provocations"]) >= 2
 
 
 # --------------------------------------------------------------------------- #
@@ -256,7 +299,12 @@ class TestMusicAPI:
     def test_songs(self, client):
         res = client.get("/api/music/songs?limit=5")
         assert res.status_code == 200
-        assert len(res.json()) == 5
+        body = res.json()
+        assert len(body) == 5
+        assert "vitality_score" in body[0]
+        assert "cultural_corridor" in body[0]
+        assert "authenticity_index" in body[0]
+        assert "engineered_signature" in body[0]
 
     def test_simulate(self, client):
         res = client.get(
@@ -290,18 +338,54 @@ class TestMusicAPI:
         assert "source_audit" in body
         assert "guardrails" in body
 
+    def test_decision_lab_surface(self, client):
+        res = client.get("/api/music/decision-lab")
+        assert res.status_code == 200
+        body = res.json()
+        assert "drift" in body
+        assert "experiments" in body
+        assert "trust" in body
+        assert "embodied" in body
+
+    def test_living_media_surface(self, client):
+        res = client.get("/api/music/living-media")
+        assert res.status_code == 200
+        body = res.json()
+        assert "metrics" in body
+        assert "somatic_profiles" in body
+        assert "cultural_ecology" in body
+        assert "origin_detector" in body
+        assert "bias_spectrum" in body
+        assert "authenticity_profiles" in body
+        assert "propagation_chain" in body
+        assert len(body["metrics"]) >= 5
+
+        res = client.get("/api/music/intelligence")
+        assert res.status_code == 200
+        body = res.json()
+        assert "living_media" in body
+
     def test_genres(self, client):
         res = client.get("/api/music/genres")
         assert res.status_code == 200
         rows = res.json()
         assert len(rows) > 0
         assert {"genre", "song_count", "view_share", "avg_views", "avg_duration_min", "collab_share"} <= set(rows[0])
+        assert any(row["genre"] == "Latin" for row in rows)
+        assert any(row["genre"] == "Pop" for row in rows)
 
     def test_timeline(self, client):
         res = client.get("/api/music/timeline")
         assert res.status_code == 200
         body = res.json()
         assert "years" in body
+
+    def test_music_index_carries_genre(self, client):
+        res = client.get("/api/music/index", params={"limit": 10})
+        assert res.status_code == 200
+        body = res.json()
+        assert body["count"] == 10
+        assert any(item.get("genre") for item in body["items"])
 
     def test_refresh_no_key(self, client):
         res = client.post("/api/music/refresh")

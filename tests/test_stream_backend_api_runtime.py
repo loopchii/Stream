@@ -22,6 +22,8 @@ def test_system_frontend_state_endpoint():
     body = res.json()
     assert "hero" in body
     assert "roles" in body
+    assert "governance" in body
+    assert body["governance"]["summary"]["repository_mode"] == "independent_open_source_surface"
     assert "payload_hash" in body
 
 

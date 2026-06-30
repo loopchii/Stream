@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-06-30T16:00:01.844760+00:00",
+  "generated_at": "2026-06-30T19:22:15.774780+00:00",
   "operating_model": {
     "name": "Stream public data platform",
     "posture": "hybrid ETL + ELT research surface",
@@ -16,7 +16,7 @@
       "clear separation between synthetic representation data and public music data"
     ],
     "dataset_count": 2,
-    "quality_gate_count": 10,
+    "quality_gate_count": 11,
     "tracked_rows": 5636
   },
   "service_levels": [
@@ -31,7 +31,7 @@
       "id": "coverage",
       "name": "Contract coverage",
       "status": "pass",
-      "current": "2 contracted datasets with 10 visible quality gates.",
+      "current": "2 contracted datasets with 11 visible quality gates.",
       "target": "Every published lane ships with grain, key, partition, and quality posture before the chart layer."
     },
     {
@@ -114,7 +114,7 @@
       "name": "Serving contracts",
       "color": "#f0779f",
       "motion": "signal",
-      "purpose": "Expose the same gold outputs to FastAPI, static JSON, and the browser surface with the claim boundary still visible.",
+      "purpose": "Expose the same gold outputs to FastAPI, static JSON, and the browser surface while keeping the analytical scope visible.",
       "artifacts": [
         "app.py /api/* endpoints",
         "build_static.py",
@@ -139,6 +139,40 @@
       "label": "API + static snapshots + UI"
     }
   ],
+  "reproducibility": {
+    "title": "Synthetic data catalog",
+    "seed": 42,
+    "algorithm_surface": "DataProcessor.generate_synthetic_data()",
+    "default_sample_sizes": [
+      1000,
+      5000,
+      10000,
+      25000
+    ],
+    "determinism_note": "The synthetic representation lane is seeded and version-stable by design. The same code revision and sample size should reproduce the same synthetic rows.",
+    "year_span": "2015-2026",
+    "public_boundary": "This repository is self-contained: public Python pipeline, static exports, SQLite materialization, and browser surface all run without private LOOPCHii platform dependencies.",
+    "artifact_contracts": [
+      "analysis_results.json",
+      "data/system/frontend-state.json",
+      "data/system/streaming-readiness.json",
+      "data/system/critical-spine.json",
+      "music_index.json",
+      "openapi.stream.json"
+    ],
+    "research_modes": [
+      {
+        "id": "synthetic",
+        "label": "Synthetic representation lane",
+        "purpose": "Teaches the method and keeps fairness math reproducible without overclaiming access to private catalogues."
+      },
+      {
+        "id": "public_music",
+        "label": "Public music lane",
+        "purpose": "Pressure-tests the method against committed public-source data and makes source gaps visible."
+      }
+    ]
+  },
   "contracts": [
     {
       "dataset_id": "synthetic_character_fact",
@@ -360,7 +394,7 @@
       "update_mode": "bundled CSV by default, optionally refreshed through music_ingest.refresh_dataset() when a YouTube key exists",
       "freshness_sla": "manual refresh for public source pulls; static exports rebuilt with build_static.py",
       "row_count": 636,
-      "column_count": 23,
+      "column_count": 26,
       "semantic_outputs": [
         "top-100 leaderboard explorer",
         "power-law and inequality surfaces",
@@ -394,6 +428,13 @@
           "status": "pass",
           "detail": "Timeline charts only use rows with public upload dates.",
           "value": 636
+        },
+        {
+          "name": "Genre coverage",
+          "status": "pass",
+          "detail": "Genre labels should come from public metadata, text, and artist hints rather than leaving the majority of rows unclassified.",
+          "value": 0.871,
+          "target": ">=0.60"
         },
         {
           "name": "Predictor hygiene",
@@ -440,15 +481,15 @@
         }
       ],
       "schema_profile": {
-        "column_count": 16,
+        "column_count": 17,
         "nullable_columns": 1,
-        "strict_columns": 15,
+        "strict_columns": 16,
         "role_counts": {
           "entity": 2,
           "measure": 6,
           "derived_measure": 2,
+          "dimension": 3,
           "flag": 1,
-          "dimension": 2,
           "timestamp": 1,
           "partition": 1,
           "lineage_tag": 1
@@ -528,6 +569,15 @@
           "sample_value": 2336.0
         },
         {
+          "name": "genre",
+          "dtype": "string",
+          "nullable": false,
+          "null_count": 0,
+          "role": "dimension",
+          "description": "Genre inferred from tags, text, and supplements.",
+          "sample_value": "K-Pop"
+        },
+        {
           "name": "is_official",
           "dtype": "integer",
           "nullable": false,
@@ -603,8 +653,9 @@
       "coverage": {
         "known_languages": 5,
         "countries_mapped": 6,
+        "genre_known_share": 0.871,
         "publication_year_min": 2009,
-        "publication_year_max": 2025,
+        "publication_year_max": 2026,
         "duplicate_titles_removed": 21
       }
     }

@@ -1,4 +1,4 @@
-const CACHE_NAME = "loopchii-stream-v3";
+const CACHE_NAME = "loopchii-stream-v5";
 const CORE_ASSETS = [
   "./",
   "./index.html",
@@ -35,16 +35,13 @@ self.addEventListener("fetch", (event) => {
 
   if (url.origin === self.location.origin && (url.pathname.startsWith("/data/") || url.pathname.endsWith(".json"))) {
     event.respondWith(
-      caches.match(event.request).then((cached) => {
-        const networkFetch = fetch(event.request)
-          .then((response) => {
-            const clone = response.clone();
-            caches.open(CACHE_NAME).then((cache) => cache.put(event.request, clone));
-            return response;
-          })
-          .catch(() => cached);
-        return cached || networkFetch;
-      })
+      fetch(event.request)
+        .then((response) => {
+          const clone = response.clone();
+          caches.open(CACHE_NAME).then((cache) => cache.put(event.request, clone));
+          return response;
+        })
+        .catch(() => caches.match(event.request))
     );
     return;
   }

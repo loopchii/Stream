@@ -19,6 +19,8 @@ def build_backend_contract_surface(
         "latest_run_id": (latest_run or {}).get("run_id"),
         "offline_assets": [
             "data/system/frontend-state.json",
+            "data/system/governance.json",
+            "data/system/streaming-readiness.json",
             "data/system/critical-spine.json",
             "data/system/comparatives.json",
             "data/system/runtime.json",

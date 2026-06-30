@@ -12,6 +12,7 @@ def test_runtime_materializes_json_sqlite_and_markdown(tmp_path):
     assert "comparatives" in payload
     assert runtime.config.sqlite_path.exists()
     assert (tmp_path / "data" / "system" / "frontend-state.json").exists()
+    assert (tmp_path / "data" / "system" / "governance.json").exists()
     assert (tmp_path / "data" / "system" / "critical-spine.json").exists()
     assert (tmp_path / "data" / "system" / "comparatives.json").exists()
     assert (tmp_path / "data" / "system" / "runtime.json").exists()

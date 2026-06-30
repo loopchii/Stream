@@ -23,6 +23,7 @@ def build_orchestration_surface(
             "openapi": "/openapi.json",
             "static_bundle": "data/system/*.json",
             "offline_shell": "manifest.webmanifest + service-worker.js",
+            "doctor": "python -m stream_backend.cli.doctor",
         },
         "jobs": [
             {
@@ -36,6 +37,12 @@ def build_orchestration_surface(
                 "description": "Public music analysis and quality reporting.",
                 "output_name": "data/music/*.json",
                 "depends_on": ["music_pipeline.load_enriched_dataset", "music_pipeline.full_report"],
+            },
+            {
+                "name": "decision_lab",
+                "description": "Cohort drift, controlled comparisons, and trust posture for the public music lane.",
+                "output_name": "data/music/decision-lab.json",
+                "depends_on": ["music_decision_lab.build_decision_lab"],
             },
             {
                 "name": "music_intelligence",

@@ -3,20 +3,20 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Stream | LOOPCHii Research Surface for Media Bias and Attention Analysis</title>
-    <meta name="description" content="Stream is LOOPCHii’s public research surface for media bias, music virality, cultural attention, and data-quality-aware analysis. Inspect the methods, audit the data, and contribute publicly.">
+    <title>Stream | LOOPCHii Open Media Analysis Repository</title>
+    <meta name="description" content="Stream is LOOPCHii’s open-source media analysis repo for bias, music virality, cultural attention, and data-quality-aware research. Inspect the methods, audit the data, and contribute publicly.">
     <meta name="keywords" content="LOOPCHii Stream, media bias analysis, music virality analysis, cultural analytics, public research, ethical programming, YouTube music analysis, data quality, data engineering">
     <meta name="author" content="Cazandra Aporbo · LOOPCHii">
     <meta name="robots" content="index,follow,max-image-preview:large">
     <meta name="theme-color" content="#5b55ff">
-    <meta property="og:title" content="Stream | LOOPCHii Public Research Surface">
-    <meta property="og:description" content="A public LOOPCHii research surface for media bias, music virality, cultural pressure, and inspectable analysis.">
+    <meta property="og:title" content="Stream | LOOPCHii Open Media Analysis Repository">
+    <meta property="og:description" content="An open-source LOOPCHii media analysis repository for bias, music virality, cultural pressure, and inspectable research.">
     <meta property="og:type" content="website">
     <meta property="og:site_name" content="LOOPCHii Stream">
     <meta property="og:url" content="https://github.com/loopchii/Stream">
     <meta property="twitter:card" content="summary_large_image">
-    <meta property="twitter:title" content="Stream | LOOPCHii Public Research Surface">
-    <meta property="twitter:description" content="Inspect media bias, music virality, and data quality with a public LOOPCHii research surface built for contribution.">
+    <meta property="twitter:title" content="Stream | LOOPCHii Open Media Analysis Repository">
+    <meta property="twitter:description" content="Inspect media bias, music virality, and data quality with an open-source LOOPCHii analysis repo built for contribution.">
     <link rel="icon" type="image/svg+xml" href="./assets/loopchii.svg">
     <link rel="manifest" href="./manifest.webmanifest">
     <script type="application/ld+json">
@@ -24,7 +24,7 @@
             "@context": "https://schema.org",
             "@type": "SoftwareSourceCode",
             "name": "LOOPCHii Stream",
-            "description": "A public research surface for media bias, music virality, cultural pressure, and data-quality-aware analysis.",
+            "description": "An open-source media analysis repository for bias, music virality, cultural pressure, and data-quality-aware research.",
             "codeRepository": "https://github.com/loopchii/Stream",
             "author": {
                 "@type": "Person",
@@ -420,6 +420,8 @@
             font-weight: 700;
             letter-spacing: 0.06em;
             backdrop-filter: blur(18px);
+            position: relative;
+            z-index: 4;
         }
 
         .hero-note-marquee span {
@@ -752,6 +754,7 @@
 
         .hero-note-cluster {
             position: absolute;
+            z-index: 3;
             display: inline-flex;
             flex-direction: column;
             align-items: center;
@@ -1438,21 +1441,27 @@
             gap: 0.45rem;
             padding: 0.72rem 0.98rem;
             border-radius: 999px;
-            border: 1px solid rgba(255,255,255,0.12);
-            background: rgba(255,255,255,0.05);
-            color: var(--primary-text);
+            border: 1px solid rgba(255,224,190,0.28);
+            background:
+                linear-gradient(145deg, rgba(35,28,74,0.9), rgba(25,22,56,0.86)),
+                radial-gradient(circle at top right, rgba(255,200,222,0.18), transparent 44%);
+            color: rgba(255,244,224,0.96);
             text-decoration: none;
             font-weight: 700;
             cursor: pointer;
             appearance: none;
             font: inherit;
-            transition: transform 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease;
+            box-shadow: inset 0 1px 0 rgba(255,255,255,0.08), 0 8px 18px rgba(14, 12, 34, 0.16);
+            transition: transform 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease, background 0.2s ease;
         }
 
         .entry-link:hover {
             transform: translateY(-1px);
-            border-color: var(--primary-accent);
-            box-shadow: 0 10px 22px rgba(53, 60, 122, 0.12);
+            border-color: rgba(255,220,178,0.38);
+            box-shadow: inset 0 1px 0 rgba(255,255,255,0.1), 0 14px 26px rgba(53, 60, 122, 0.22);
+            background:
+                linear-gradient(145deg, rgba(48,35,96,0.94), rgba(28,25,66,0.9)),
+                radial-gradient(circle at top right, rgba(255,200,222,0.22), transparent 42%);
         }
 
         .intro-lane-grid {
@@ -1790,6 +1799,32 @@
             -webkit-text-fill-color: transparent;
             color: #f8f4ff;
             filter: drop-shadow(0 10px 24px rgba(85, 102, 246, 0.16));
+            animation: gradient 15.4s ease-in-out infinite;
+        }
+        .story-strip h3 { animation-delay: -2.1s; }
+        .research-card:nth-of-type(2n) h4,
+        .entry-card:nth-of-type(2n) h4,
+        .bias-card:nth-of-type(2n) h4,
+        .learn-card:nth-of-type(2n) h3,
+        .ops-stage-card:nth-of-type(2n) h4,
+        .ops-quality-card:nth-of-type(2n) h4,
+        .ops-control-card:nth-of-type(2n) h4,
+        .ops-contract-card:nth-of-type(2n) h4,
+        .mv-role-card:nth-of-type(2n) h4 {
+            animation-duration: 17.2s;
+            animation-delay: -3.2s;
+        }
+        .research-card:nth-of-type(3n) h4,
+        .entry-card:nth-of-type(3n) h4,
+        .bias-card:nth-of-type(3n) h4,
+        .learn-card:nth-of-type(3n) h3,
+        .ops-stage-card:nth-of-type(3n) h4,
+        .ops-quality-card:nth-of-type(3n) h4,
+        .ops-control-card:nth-of-type(3n) h4,
+        .ops-contract-card:nth-of-type(3n) h4,
+        .mv-role-card:nth-of-type(3n) h4 {
+            animation-duration: 19s;
+            animation-delay: -4.7s;
         }
 
         /* Info chip + hover tooltip: explains, in plain language, what a chart or
@@ -2429,6 +2464,7 @@
             text-transform: uppercase;
             color: rgba(255, 215, 157, 0.88);
             font-weight: 700;
+            text-shadow: 0 0 16px rgba(255, 199, 221, 0.1);
         }
 
         .footer-brand-copy .eyebrow::before {
@@ -2444,6 +2480,13 @@
             margin: 0;
             font-size: clamp(1.32rem, 2vw, 1.74rem);
             text-align: left;
+            background: linear-gradient(102deg, #fff0c8 0%, #ffc8de 30%, #d7d1ff 62%, #95e6df 100%);
+            background-size: 220% 220%;
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+            animation: gradient 17.6s ease-in-out infinite;
+            animation-delay: -3.3s;
         }
 
         .footer-support {
@@ -2814,7 +2857,14 @@
             top: 0.62rem;
             height: 1px;
             background: linear-gradient(90deg, rgba(146,229,222,0.14), rgba(154,167,255,0.32), rgba(255,191,202,0.18));
+            background-size: 220% 100%;
+            animation: atlasRailFlow 9s linear infinite;
             pointer-events: none;
+        }
+        @keyframes atlasRailFlow {
+            0% { background-position: 0% 50%; opacity: 0.48; }
+            50% { opacity: 0.92; }
+            100% { background-position: 100% 50%; opacity: 0.48; }
         }
 
         .analysis-atlas-linear .analysis-atlas-step {
@@ -2845,6 +2895,19 @@
         .analysis-atlas-linear .analysis-atlas-step.active {
             transform: translateY(-4px);
             box-shadow: 0 20px 34px rgba(31, 38, 88, 0.24);
+        }
+        .analysis-atlas-step,
+        .mv-role-action,
+        .mv-intel-route,
+        .trojan-preset {
+            content-visibility: auto;
+            contain: layout paint style;
+        }
+        .analysis-atlas-step .t::after {
+            content: ' ↗';
+            color: rgba(255, 232, 184, 0.76);
+            font-size: 0.8rem;
+            vertical-align: middle;
         }
         .viz-section.viz-scene-hidden {
             display: none !important;
@@ -4085,6 +4148,19 @@
             animation: fadeIn 0.8s ease both;
             box-shadow: 0 14px 36px rgba(53, 60, 122, 0.08);
         }
+        .story-strip::after {
+            content: '';
+            position: absolute;
+            left: 1.75rem;
+            right: 1.75rem;
+            bottom: 0.72rem;
+            height: 1px;
+            background: linear-gradient(90deg, rgba(255,255,255,0), rgba(255,223,171,0.5), rgba(154,167,255,0.42), rgba(145,231,223,0.48), rgba(255,255,255,0));
+            background-size: 220% 100%;
+            animation: atlasRailFlow 11s linear infinite;
+            opacity: 0.75;
+            pointer-events: none;
+        }
 
         @keyframes fadeIn {
             from { opacity: 0; transform: translateY(12px); }
@@ -4107,9 +4183,10 @@
             -webkit-background-clip: text;
             background-clip: text;
             -webkit-text-fill-color: transparent;
-            animation: gradient 10s ease infinite;
+            animation: gradient 13.4s ease-in-out infinite;
+            animation-delay: -2.1s;
         }
-        .story-strip p { color: var(--primary-text-dim); line-height: 1.7; margin: 0; }
+        .story-strip p { color: var(--primary-text-dim); line-height: 1.74; margin: 0; }
         .story-strip strong { color: var(--primary-text); font-weight: 700; }
 
         .chip-row { display: flex; gap: 0.5rem; flex-wrap: wrap; margin: 1rem 0; }
@@ -4677,6 +4754,13 @@
             line-height: 1.14;
             margin-bottom: 0.72rem;
             color: #f8f4ff;
+            background: linear-gradient(104deg, #ffe8ba 0%, #ffc8de 30%, #d7d1ff 64%, #93e7de 100%);
+            background-size: 220% 220%;
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+            animation: gradient 15.2s ease-in-out infinite;
+            animation-delay: -1.4s;
         }
 
         .dataops-copy p {
@@ -4899,6 +4983,13 @@
             font-size: 1.02rem;
             line-height: 1.35;
             margin-bottom: 0.42rem;
+            background: linear-gradient(102deg, #ffe5b2 0%, #ffc7dd 28%, #d9d2ff 62%, #98e8df 100%);
+            background-size: 220% 220%;
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+            animation: gradient 16.1s ease-in-out infinite;
+            animation-delay: -3.6s;
         }
 
         .ops-stage-card p,
@@ -5249,6 +5340,9 @@
             transform: translateY(-6px);
             box-shadow: 0 18px 40px rgba(108, 92, 231, 0.22);
         }
+        .grade-card {
+            cursor: pointer;
+        }
         .grade-card .platform-name {
             font-size: 0.78rem;
             text-transform: uppercase;
@@ -5270,6 +5364,39 @@
             font-size: 0.85rem;
             color: var(--primary-text-dim);
             margin-bottom: 0.8rem;
+        }
+        .grade-card-note {
+            margin: 0.3rem 0 0.85rem;
+            color: rgba(241,235,255,0.76);
+            font-size: 0.8rem;
+            line-height: 1.55;
+        }
+        .grade-card-actions {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.45rem;
+            margin-top: 0.8rem;
+        }
+        .grade-card-action {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.38rem;
+            border: 1px solid rgba(255,255,255,0.1);
+            background: linear-gradient(135deg, rgba(255,255,255,0.08), rgba(255,255,255,0.04));
+            color: #fff1d7;
+            padding: 0.42rem 0.7rem;
+            border-radius: 999px;
+            font-size: 0.73rem;
+            font-weight: 700;
+            letter-spacing: 0.04em;
+            cursor: pointer;
+            transition: transform 0.18s ease, border-color 0.18s ease, box-shadow 0.18s ease;
+        }
+        .grade-card-action:hover,
+        .grade-card-action:focus {
+            transform: translateY(-1px);
+            border-color: rgba(255, 226, 171, 0.38);
+            box-shadow: 0 10px 22px rgba(8, 12, 26, 0.2);
         }
         .subscore { margin: 0.5rem 0; }
         .subscore-head {
@@ -5433,6 +5560,7 @@
         if (!STATIC) return;
 
         var BASE = 'data/';
+        var BUILD_HINT = q.get('fresh') || q.get('v') || '';
         var state = { n: '5000' };
         var SIZES = ['1000', '5000', '10000', '25000'];
         function J(obj, status) {
@@ -5444,7 +5572,8 @@
         var STATIC_JSON_CACHE = Object.create(null);
         function load(path) {
             if (STATIC_JSON_CACHE[path]) return STATIC_JSON_CACHE[path];
-            STATIC_JSON_CACHE[path] = fetch(BASE + path).then(function (r) { return r.json(); });
+            var requestPath = BASE + path + (BUILD_HINT ? ('?v=' + encodeURIComponent(BUILD_HINT)) : '');
+            STATIC_JSON_CACHE[path] = fetch(requestPath).then(function (r) { return r.json(); });
             return STATIC_JSON_CACHE[path];
         }
         function grade(s) {
@@ -5486,6 +5615,7 @@
             if (path === '/api/metrics/scorecard') return load('n' + state.n + '/advanced.json').then(function (a) { return J(a.scorecard); });
             if (path === '/api/learn') return load('learn.json').then(J);
             if (path === '/api/system/data-engineering') return load('system/data-engineering.json').then(J);
+            if (path === '/api/system/governance') return load('system/governance.json').then(J);
             if (path === '/api/system/bias-propagation') return load('system/bias-propagation.json').then(J);
             if (path === '/api/system/trojan-horse') return load('system/trojan-horse.json').then(J);
             if (path === '/api/system/catalog') return load('system/catalog.json').then(J);
@@ -5541,7 +5671,9 @@
             if (path === '/api/music/status') return load('music/status.json').then(J);
             if (path === '/api/music/bias') return load('music/bias.json').then(J);
             if (path === '/api/music/quality') return load('music/quality.json').then(J);
+            if (path === '/api/music/decision-lab') return load('music/decision-lab.json').then(J);
             if (path === '/api/music/intelligence') return load('music/intelligence.json').then(J);
+            if (path === '/api/music/living-media') return load('music/living-media.json').then(J);
             if (path === '/api/music/index') {
                 return load('music/index.json').then(function (rows) {
                     var limit = parseInt(qs.limit || '60', 10);
@@ -5789,12 +5921,55 @@
         .mv-eyebrow { display: inline-flex; align-items: center; gap: 0.5rem; font-size: 0.72rem; letter-spacing: 0.22em; text-transform: uppercase; font-weight: 600; opacity: 0.92; }
         .mv-eyebrow .dot { width: 8px; height: 8px; border-radius: 50%; background: #fff; box-shadow: 0 0 0 4px rgba(255,255,255,0.25); animation: mvPulse 2.4s ease-in-out infinite; }
         @keyframes mvPulse { 0%,100% { opacity: 1; } 50% { opacity: 0.4; } }
-        .mv-hero h2 { font-family: 'Fraunces', Georgia, serif; font-weight: 600; font-size: clamp(2rem, 4.6vw, 3.4rem); line-height: 1.04; margin: 1rem 0 0.6rem; letter-spacing: -0.02em; }
+        .mv-hero h2 {
+            font-family: 'Fraunces', Georgia, serif;
+            font-weight: 600;
+            font-size: clamp(2rem, 4.6vw, 3.4rem);
+            line-height: 1.04;
+            margin: 1rem 0 0.6rem;
+            letter-spacing: -0.02em;
+            background: linear-gradient(102deg, #fff4cb 0%, #ffc8de 28%, #d6ceff 56%, #8de8dd 86%, #f8d089 100%);
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
         .mv-hero p.lede { font-size: clamp(0.98rem, 1.6vw, 1.15rem); max-width: 60ch; opacity: 0.95; line-height: 1.6; }
         .mv-statline { display: grid; grid-template-columns: repeat(4, 1fr); gap: 1px; margin-top: 1.4rem; background: rgba(255,255,255,0.22); border-radius: 18px; overflow: hidden; position: relative; z-index: 1; }
         .mv-statline .cell { background: rgba(255,255,255,0.10); padding: 1.1rem 1.2rem; backdrop-filter: blur(2px); }
         .mv-statline .num { font-family: 'Space Grotesk', monospace; font-size: clamp(1.3rem, 2.6vw, 2rem); font-weight: 600; letter-spacing: -0.01em; }
         .mv-statline .cap { font-size: 0.72rem; letter-spacing: 0.08em; text-transform: uppercase; opacity: 0.85; margin-top: 0.25rem; }
+        .mv-note-ribbon {
+            display: flex;
+            gap: 0.7rem;
+            flex-wrap: wrap;
+            margin-top: 1rem;
+            position: relative;
+            z-index: 3;
+        }
+        .mv-note-ribbon span {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.4rem;
+            padding: 0.46rem 0.74rem;
+            border-radius: 999px;
+            border: 1px solid rgba(255,255,255,0.1);
+            background:
+                linear-gradient(140deg, rgba(255,255,255,0.12), rgba(255,255,255,0.04)),
+                radial-gradient(circle at top right, rgba(255,214,170,0.18), transparent 42%);
+            color: rgba(247,239,255,0.9);
+            font-size: 0.78rem;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+            box-shadow: 0 12px 28px rgba(7, 9, 22, 0.18);
+            animation: mvRibbonFloat 7.5s ease-in-out infinite;
+            backdrop-filter: blur(14px);
+        }
+        .mv-note-ribbon span:nth-child(2n) { animation-delay: 0.8s; }
+        .mv-note-ribbon span:nth-child(3n) { animation-delay: 1.6s; }
+        @keyframes mvRibbonFloat {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-4px); }
+        }
         .mv-source { display: inline-flex; align-items: center; gap: 0.5rem; margin-top: 1.6rem; font-size: 0.8rem; background: rgba(0,0,0,0.18); padding: 0.4rem 0.85rem; border-radius: 999px; }
         .mv-source b { font-weight: 700; }
         .mv-audit-shell {
@@ -5832,8 +6007,14 @@
             margin: 0;
             font-family: 'Fraunces', Georgia, serif;
             font-size: clamp(1.2rem, 2.2vw, 1.7rem);
-            color: #fff;
             letter-spacing: -0.01em;
+            background: linear-gradient(104deg, #fff0c8 0%, #ffc8de 30%, #d7d1ff 62%, #95e6df 100%);
+            background-size: 220% 220%;
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+            animation: gradient 17.3s ease-in-out infinite;
+            animation-delay: -2.8s;
         }
         .mv-audit-copy p {
             margin: 0;
@@ -5926,9 +6107,14 @@
             color: rgba(241,235,255,0.74);
         }
         .mv-audit-topline strong {
-            color: #fff;
+            background: linear-gradient(102deg, #ffe9bf 0%, #ffd0de 34%, #d8d0ff 70%, #99e8df 100%);
+            background-size: 180% 180%;
             font-size: 1rem;
             font-family: 'Fraunces', Georgia, serif;
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+            animation: mvChromaticShift 16s ease-in-out infinite;
         }
         .mv-audit-tabs {
             display: inline-flex;
@@ -5950,6 +6136,8 @@
             font-weight: 700;
             cursor: pointer;
             transition: all 0.2s ease;
+            position: relative;
+            overflow: hidden;
         }
         .mv-audit-tabs button.active {
             background: linear-gradient(135deg, rgba(85,102,246,0.96), rgba(240,119,159,0.92));
@@ -5976,8 +6164,13 @@
         .mv-audit-card h4 {
             margin: 0 0 0.45rem;
             font-size: 0.98rem;
-            color: #fff;
+            background: linear-gradient(102deg, #fff0c8 0%, #fbc4d9 34%, #d2d4ff 70%, #94eadf 100%);
+            background-size: 180% 180%;
             font-family: 'Fraunces', Georgia, serif;
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+            animation: mvChromaticShift 16s ease-in-out infinite;
         }
         .mv-audit-card p,
         .mv-audit-card li,
@@ -6079,6 +6272,20 @@
             gap: 0.65rem;
             align-items: stretch;
             min-width: max-content;
+            position: relative;
+        }
+        .mv-route-track::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            right: 0;
+            top: 50%;
+            height: 1px;
+            transform: translateY(-50%);
+            background: linear-gradient(90deg, rgba(255,226,170,0) 0%, rgba(255,226,170,0.22) 12%, rgba(221,208,255,0.34) 46%, rgba(149,230,223,0.3) 76%, rgba(255,194,209,0) 100%);
+            background-size: 220% 100%;
+            animation: atlasRailFlow 10.5s linear infinite;
+            pointer-events: none;
         }
         .mv-route-actions {
             display: inline-flex;
@@ -6149,6 +6356,7 @@
             transform: translateY(-50%);
             font-size: 0.92rem;
             color: rgba(255,255,255,0.72);
+            transition: transform 0.22s ease, color 0.22s ease;
         }
         .mv-route-step:hover,
         .mv-route-step.active {
@@ -6188,7 +6396,15 @@
             line-height: 1.05;
             margin-bottom: 0.28rem;
             color: #fbf8ff;
+            background: linear-gradient(100deg, #fff0c8 0%, #ffc8de 34%, #d9d2ff 66%, #93e7de 100%);
+            background-size: 220% 220%;
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+            animation: gradient 14.2s ease-in-out infinite;
         }
+        .mv-route-step:nth-child(2n) .t { animation-duration: 16.8s; animation-delay: -2.6s; }
+        .mv-route-step:nth-child(3n) .t { animation-duration: 18.4s; animation-delay: -4.1s; }
         .mv-route-step .s {
             display: block;
             font-size: 0.8rem;
@@ -6199,6 +6415,11 @@
             0% { transform: translateX(-34%); opacity: 0.12; }
             50% { opacity: 0.4; }
             100% { transform: translateX(34%); opacity: 0.12; }
+        }
+        @keyframes mvChromaticShift {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
         }
 
         .mv-movement.mv-scene-hidden {
@@ -6260,9 +6481,12 @@
             font-size: clamp(1.18rem, 2.1vw, 1.7rem);
             letter-spacing: -0.01em;
             background: linear-gradient(96deg, #fff0c8 0%, #ddd0ff 34%, #95e6df 72%, #ffc2d1 100%);
+            background-size: 220% 220%;
             -webkit-background-clip: text;
             background-clip: text;
             -webkit-text-fill-color: transparent;
+            animation: gradient 16.1s ease-in-out infinite;
+            animation-delay: -1.6s;
         }
         .mv-fieldnote-stage {
             margin: 0.4rem 0 0.35rem;
@@ -6341,7 +6565,12 @@
         }
         .mv-fieldnote-card .v {
             display: block;
-            color: rgba(241,235,255,0.86);
+            background: linear-gradient(102deg, #ffe8ba 0%, #ffc5d6 34%, #d8d0ff 70%, #9ce9e0 100%);
+            background-size: 180% 180%;
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+            animation: mvChromaticShift 16s ease-in-out infinite;
             line-height: 1.55;
             font-size: 0.84rem;
         }
@@ -6409,6 +6638,37 @@
             background: linear-gradient(180deg, rgba(85,102,246,0.34), rgba(240,119,159,0.16), transparent 88%);
         }
         .mv-movement:last-of-type::after { display: none; }
+        .mv-movement {
+            position: relative;
+            overflow: visible;
+            --mv-shift-speed: 14.4s;
+            --mv-shift-delay: 0s;
+            --flow-shift: 0s;
+        }
+        .mv-movement::before {
+            content: '';
+            position: absolute;
+            left: -0.42rem;
+            top: 1.2rem;
+            width: 0.7rem;
+            height: 0.7rem;
+            border-radius: 999px;
+            background: radial-gradient(circle, rgba(255, 232, 184, 0.96) 0%, rgba(255, 193, 214, 0.88) 42%, rgba(154, 167, 255, 0.72) 72%, rgba(154, 167, 255, 0.02) 100%);
+            box-shadow: 0 0 0 4px rgba(255,255,255,0.04), 0 0 20px rgba(154, 167, 255, 0.32);
+            opacity: 0.7;
+            pointer-events: none;
+            animation: mvFlowPulse calc(7.6s + var(--flow-shift)) linear infinite;
+        }
+        .mv-movement:nth-of-type(2n) { --mv-shift-speed: 16.2s; --mv-shift-delay: -2.4s; --flow-shift: 0.9s; }
+        .mv-movement:nth-of-type(3n) { --mv-shift-speed: 12.8s; --mv-shift-delay: -4.8s; --flow-shift: 1.8s; }
+        .mv-movement:nth-of-type(4n) { --mv-shift-speed: 18.1s; --mv-shift-delay: -1.1s; --flow-shift: 2.7s; }
+        @keyframes mvFlowPulse {
+            0% { transform: translateY(0) scale(0.84); opacity: 0.18; }
+            10% { opacity: 0.9; }
+            58% { opacity: 0.32; }
+            78% { transform: translateY(calc(100% + 2rem)) scale(1.06); opacity: 0.04; }
+            100% { transform: translateY(calc(100% + 2rem)) scale(0.78); opacity: 0; }
+        }
         .mv-panel { transition: box-shadow 0.3s ease, transform 0.3s ease, border-color 0.3s ease; }
         .mv-panel:hover { transform: translateY(-2px); box-shadow: 0 22px 48px -24px rgba(40,46,86,0.55); border-color: rgba(167, 157, 255, 0.22); }
         .mv-mhead {
@@ -6440,11 +6700,51 @@
             letter-spacing: -0.01em;
             text-shadow: 0 12px 30px rgba(91,85,255,0.18);
             background: linear-gradient(96deg, var(--tone-a) 0%, var(--tone-b) 34%, var(--tone-c) 72%, var(--tone-d) 100%);
+            background-size: 180% 180%;
             -webkit-background-clip: text;
             background-clip: text;
             -webkit-text-fill-color: transparent;
+            animation: mvChromaticShift var(--mv-shift-speed) ease-in-out infinite;
+            animation-delay: var(--mv-shift-delay);
         }
-        .mv-lead { color: var(--ink-dim); max-width: 70ch; line-height: 1.65; margin: 0.9rem 0 1.4rem; font-size: 1rem; }
+        #tab-music .mv-movement .mv-panel h4,
+        #tab-music .mv-movement .mv-resonance-header h4,
+        #tab-music .mv-movement .mv-mini-stat span,
+        #tab-music .mv-movement .mv-res-track .title,
+        #tab-music .mv-movement .mv-embodied-track .title,
+        #tab-music .mv-movement .mv-embodied-corridor .t,
+        #tab-music .mv-movement .mv-provocation-card .t,
+        #tab-music .mv-movement .mv-role-action .v,
+        #tab-music .mv-movement .mv-role-scorecard .v,
+        #tab-music .mv-movement .mv-role-factor .v,
+        #tab-music .mv-movement .mv-role-bridge-head .v,
+        #tab-music .mv-movement .mv-role-bridge-card .v,
+        #tab-music .mv-movement .mv-intel-card .t,
+        #tab-music .mv-movement .mv-bias-grade .grade-label {
+            background: linear-gradient(102deg, var(--tone-a) 0%, var(--tone-b) 30%, var(--tone-c) 66%, var(--tone-d) 100%);
+            background-size: 180% 180%;
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+            animation: mvChromaticShift 15s ease-in-out infinite;
+            text-shadow: 0 10px 24px rgba(91, 85, 255, 0.14);
+        }
+        .mv-lead { color: var(--ink-dim); max-width: 70ch; line-height: 1.7; margin: 0.9rem 0 1.4rem; font-size: 1rem; }
+        .mv-lead strong,
+        .story-strip p strong,
+        .mv-takeaway strong,
+        .guide-card .v strong,
+        .mv-role-card p strong,
+        .mv-resonance-header p strong,
+        .mv-role-action .s strong {
+            background: linear-gradient(104deg, #ffe7b0 0%, #ffc6dc 32%, #d6cffd 64%, #94e6de 100%);
+            background-size: 220% 220%;
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+            animation: gradient 12.8s ease-in-out infinite;
+            font-weight: 700;
+        }
         .mv-takeaway { display: flex; gap: 0.7rem; align-items: flex-start; margin-top: 1.1rem; padding: 0.9rem 1.1rem; border-left: 3px solid var(--teal); background: linear-gradient(90deg, rgba(15,182,168,0.08), transparent); border-radius: 0 12px 12px 0; color: var(--ink); font-size: 0.95rem; line-height: 1.55; }
         .mv-takeaway b { color: var(--teal); }
         .mv-logic-grid {
@@ -6498,6 +6798,9 @@
             padding: 1.4rem;
             box-shadow: 0 18px 40px -28px rgba(40,46,86,0.45);
             will-change: transform;
+            content-visibility: auto;
+            contain: layout style paint;
+            contain-intrinsic-size: 460px;
         }
         .mv-panel::before {
             content: '';
@@ -6701,6 +7004,115 @@
             font-size: 0.88rem;
             line-height: 1.6;
         }
+        .mv-embodied-kicker {
+            font-size: 0.72rem;
+            text-transform: uppercase;
+            letter-spacing: 1.55px;
+            color: #ffd7ab;
+            font-weight: 800;
+            margin-bottom: 0.72rem;
+        }
+        .mv-embodied-list,
+        .mv-embodied-corridors {
+            display: grid;
+            gap: 0.68rem;
+        }
+        .mv-embodied-list {
+            max-height: 360px;
+            overflow: auto;
+            padding-right: 0.2rem;
+        }
+        .mv-embodied-track,
+        .mv-embodied-corridor,
+        .mv-provocation-card {
+            position: relative;
+            overflow: hidden;
+            border-radius: 18px;
+            border: 1px solid rgba(255,255,255,0.08);
+            background:
+                radial-gradient(circle at top right, rgba(255,255,255,0.06), transparent 34%),
+                linear-gradient(155deg, rgba(21,24,48,0.96), rgba(13,17,34,0.92));
+            padding: 0.9rem 0.95rem;
+            transition: transform 0.22s ease, border-color 0.22s ease, box-shadow 0.22s ease;
+        }
+        .mv-embodied-track {
+            cursor: pointer;
+            border-left: 4px solid rgba(240,119,159,0.62);
+        }
+        .mv-embodied-track:hover,
+        .mv-embodied-corridor:hover,
+        .mv-provocation-card:hover {
+            transform: translateY(-2px);
+            border-color: rgba(143,229,221,0.26);
+            box-shadow: 0 16px 28px rgba(12,18,34,0.18);
+        }
+        .mv-embodied-track.active {
+            border-color: rgba(240,119,159,0.52);
+            box-shadow: 0 16px 32px rgba(240,119,159,0.16);
+        }
+        .mv-embodied-track .head,
+        .mv-embodied-corridor .head {
+            display: flex;
+            justify-content: space-between;
+            gap: 0.8rem;
+            align-items: baseline;
+        }
+        .mv-embodied-track .title,
+        .mv-embodied-corridor .t,
+        .mv-provocation-card .t {
+            color: #fff2db;
+            font-weight: 700;
+            line-height: 1.42;
+        }
+        .mv-embodied-track .meta,
+        .mv-embodied-corridor .meta {
+            color: rgba(241,235,255,0.68);
+            font-size: 0.76rem;
+            text-transform: uppercase;
+            letter-spacing: 1.2px;
+        }
+        .mv-embodied-track .reading,
+        .mv-embodied-corridor .reading,
+        .mv-provocation-card .body {
+            margin-top: 0.48rem;
+            color: rgba(241,235,255,0.76);
+            font-size: 0.82rem;
+            line-height: 1.6;
+        }
+        .mv-embodied-track .statline,
+        .mv-embodied-corridor .statline {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.4rem;
+            margin-top: 0.58rem;
+        }
+        .mv-embodied-track .statline span,
+        .mv-embodied-corridor .statline span {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.28rem;
+            font-size: 0.72rem;
+            padding: 0.18rem 0.5rem;
+            border-radius: 999px;
+            background: rgba(255,255,255,0.06);
+            color: #ddd4ff;
+        }
+        .mv-provocation-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 0.72rem;
+        }
+        #tab-music .mv-movement .mv-mini-stat small,
+        #tab-music .mv-movement .mv-res-track .meta,
+        #tab-music .mv-movement .mv-role-action .k,
+        #tab-music .mv-movement .mv-role-scorecard .k,
+        #tab-music .mv-movement .mv-role-factor .k,
+        #tab-music .mv-movement .mv-role-bridge-head .k,
+        #tab-music .mv-movement .mv-role-bridge-card .k,
+        #tab-music .mv-movement .mv-intel-kicker,
+        #tab-music .mv-movement .mv-embodied-kicker {
+            color: var(--tone-c);
+        }
         @keyframes resonanceGlow {
             0%, 100% { transform: scale(0.96); opacity: 0.55; }
             50% { transform: scale(1.06); opacity: 0.95; }
@@ -6716,13 +7128,41 @@
         table.mv-table { width: 100%; border-collapse: collapse; font-size: 0.86rem; }
         table.mv-table th { text-align: left; padding: 0.8rem 1rem; background: linear-gradient(180deg, rgba(255,255,255,0.07), rgba(255,255,255,0.04)); color: var(--ink); font-weight: 600; cursor: pointer; white-space: nowrap; position: sticky; top: 0; }
         table.mv-table th:hover { background: rgba(85,102,246,0.12); }
+        #tab-music table.mv-table th:nth-child(4n + 1) { color: #ffe3ae; }
+        #tab-music table.mv-table th:nth-child(4n + 2) { color: #ffc8d9; }
+        #tab-music table.mv-table th:nth-child(4n + 3) { color: #d7d0ff; }
+        #tab-music table.mv-table th:nth-child(4n + 4) { color: #9ae8df; }
         table.mv-table th .ar { opacity: 0.5; font-size: 0.72rem; }
         table.mv-table td { padding: 0.7rem 1rem; border-top: 1px solid var(--line); color: var(--ink); white-space: nowrap; }
         table.mv-table td.t { white-space: normal; min-width: 16rem; color: var(--ink); font-weight: 500; }
+        #tab-music table.mv-table td[colspan] {
+            text-align: center;
+            color: rgba(236, 230, 255, 0.86);
+            background: linear-gradient(90deg, rgba(85,102,246,0.07), rgba(240,119,159,0.06), rgba(15,182,168,0.07));
+        }
         table.mv-table tr:hover td { background: rgba(15,182,168,0.05); }
         .mv-num { font-family: 'Space Grotesk', monospace; }
         .mv-tag { display: inline-block; font-size: 0.68rem; padding: 0.1rem 0.45rem; border-radius: 6px; background: rgba(85,102,246,0.12); color: var(--indigo); font-weight: 600; }
-        .mv-search { width: 100%; max-width: 22rem; padding: 0.6rem 0.9rem; border: 1px solid var(--line); border-radius: 12px; font-size: 0.9rem; margin-bottom: 1rem; background: rgba(255,255,255,0.05); color: var(--ink); }
+        .mv-search,
+        .mv-filter-select {
+            width: 100%;
+            padding: 0.6rem 0.9rem;
+            border: 1px solid var(--line);
+            border-radius: 12px;
+            font-size: 0.9rem;
+            background: linear-gradient(155deg, rgba(18,22,44,0.96), rgba(12,18,38,0.92));
+            color: var(--ink);
+            box-shadow: inset 0 1px 0 rgba(255,255,255,0.04);
+        }
+        .mv-search {
+            max-width: 24rem;
+            margin-bottom: 0;
+        }
+        .mv-search::placeholder { color: rgba(241,235,255,0.52); }
+        .mv-filter-select {
+            min-width: 10.5rem;
+            appearance: none;
+        }
         .mv-bias-grade { text-align: center; padding: 1.6rem 1rem; }
         .mv-bias-grade .grade-letter { font-family: 'Fraunces', serif; font-size: 3.6rem; font-weight: 600; line-height: 1; background: linear-gradient(135deg, var(--indigo), var(--teal)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
         .mv-bias-grade .grade-label { font-size: 1.05rem; font-weight: 600; color: var(--ink); margin-top: 0.3rem; }
@@ -6793,6 +7233,110 @@
         }
         .mv-role-signal .k { font-size: 0.7rem; text-transform: uppercase; letter-spacing: 1.3px; color: var(--ink-dim); font-weight: 700; }
         .mv-role-signal .v { font-size: 1rem; font-weight: 800; color: var(--ink); }
+        .mv-role-question {
+            margin-top: 0.85rem;
+            padding: 0.82rem 0.92rem;
+            border-radius: 15px;
+            border: 1px solid rgba(255,255,255,0.08);
+            background:
+                radial-gradient(circle at top right, rgba(255,255,255,0.08), transparent 36%),
+                linear-gradient(150deg, rgba(255,255,255,0.06), rgba(255,255,255,0.03));
+            color: rgba(241,235,255,0.84);
+            font-size: 0.88rem;
+            line-height: 1.62;
+        }
+        .mv-role-question b {
+            color: #fff0d2;
+            font-weight: 700;
+        }
+        .mv-role-actions {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            gap: 0.6rem;
+            margin-top: 0.85rem;
+        }
+        .mv-role-action {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+            text-align: left;
+            gap: 0.24rem;
+            width: 100%;
+            padding: 0.85rem 0.92rem;
+            border-radius: 16px;
+            border: 1px solid rgba(255,255,255,0.1);
+            background:
+                radial-gradient(circle at top right, rgba(255,255,255,0.08), transparent 34%),
+                linear-gradient(155deg, rgba(255,255,255,0.06), rgba(255,255,255,0.03));
+            color: inherit;
+            cursor: pointer;
+            transition: transform 0.18s ease, border-color 0.18s ease, box-shadow 0.18s ease;
+            position: relative;
+            overflow: hidden;
+        }
+        .mv-role-action::after {
+            content: '↗';
+            position: absolute;
+            top: 0.8rem;
+            right: 0.9rem;
+            color: rgba(255, 232, 184, 0.78);
+            font-size: 0.9rem;
+            transition: transform 0.2s ease, color 0.2s ease;
+        }
+        .mv-role-action::before,
+        .mv-intel-route::before,
+        .mv-song-source-switch button::before,
+        .mv-song-pager button::before,
+        .mv-audit-tabs button::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(118deg, transparent 0%, rgba(255,255,255,0.10) 48%, transparent 74%);
+            transform: translateX(-135%);
+            transition: transform 0.45s ease;
+            pointer-events: none;
+        }
+        .mv-role-action:hover,
+        .mv-role-action:focus {
+            transform: translateY(-2px);
+            border-color: rgba(255, 231, 188, 0.34);
+            box-shadow: 0 14px 28px rgba(8, 12, 26, 0.22);
+        }
+        .mv-role-action:hover::after,
+        .mv-role-action:focus::after {
+            transform: translate(2px, -2px);
+            color: #fff5cf;
+        }
+        .mv-role-action:hover::before,
+        .mv-role-action:focus::before,
+        .mv-intel-route:hover::before,
+        .mv-intel-route:focus::before,
+        .mv-song-source-switch button:hover::before,
+        .mv-song-source-switch button:focus::before,
+        .mv-song-pager button:hover::before,
+        .mv-song-pager button:focus::before,
+        .mv-audit-tabs button:hover::before,
+        .mv-audit-tabs button:focus::before {
+            transform: translateX(135%);
+        }
+        .mv-role-action .k {
+            font-size: 0.67rem;
+            text-transform: uppercase;
+            letter-spacing: 1.35px;
+            color: rgba(241,235,255,0.62);
+            font-weight: 700;
+        }
+        .mv-role-action .v {
+            font-size: 0.92rem;
+            font-weight: 800;
+            color: #fff2d7;
+            line-height: 1.35;
+        }
+        .mv-role-action .s {
+            color: rgba(241,235,255,0.78);
+            line-height: 1.56;
+            font-size: 0.79rem;
+        }
         .mv-role-scoregrid {
             display: grid;
             grid-template-columns: repeat(2, minmax(0, 1fr));
@@ -6883,7 +7427,7 @@
             position: absolute;
             inset: 0 auto 0 0;
             border-radius: inherit;
-            background: linear-gradient(90deg, rgba(255,226,170,0.96), rgba(240,119,159,0.94), rgba(146,229,222,0.96));
+            background: linear-gradient(90deg, var(--factor-start, rgba(255,226,170,0.96)), var(--factor-mid, rgba(240,119,159,0.94)), var(--factor-end, rgba(146,229,222,0.96)));
         }
         .mv-role-proof {
             margin-top: 0.78rem;
@@ -6966,6 +7510,23 @@
             line-height: 1.55;
         }
         .mv-role-takeaway { margin-top: 0.85rem; padding-left: 0.8rem; border-left: 3px solid var(--teal); color: var(--ink-dim); font-size: 0.9rem; line-height: 1.6; }
+        .section-pulse {
+            animation: sectionPulse 1.1s ease;
+        }
+        @keyframes sectionPulse {
+            0% {
+                box-shadow: 0 0 0 0 rgba(255, 220, 169, 0.0);
+                border-color: rgba(255,255,255,0.08);
+            }
+            30% {
+                box-shadow: 0 0 0 1px rgba(255, 220, 169, 0.36), 0 0 34px rgba(145, 233, 221, 0.18);
+                border-color: rgba(255, 220, 169, 0.42);
+            }
+            100% {
+                box-shadow: 0 0 0 0 rgba(255, 220, 169, 0.0);
+                border-color: rgba(255,255,255,0.08);
+            }
+        }
         .mv-chip { display: inline-flex; align-items: center; gap: 0.35rem; font-size: 0.78rem; padding: 0.2rem 0.6rem; border-radius: 8px; background: rgba(85,102,246,0.08); color: var(--ink); margin: 0.15rem; }
         .mv-chip .sw { width: 10px; height: 10px; border-radius: 50%; display: inline-block; }
         .mv-refresh { display: flex; align-items: center; gap: 0.8rem; flex-wrap: wrap; margin-top: 1rem; font-size: 0.85rem; color: var(--ink-dim); }
@@ -6977,6 +7538,13 @@
             gap: 0.9rem;
             align-items: end;
             margin-bottom: 0.2rem;
+        }
+        .mv-song-filterrail {
+            display: grid;
+            grid-template-columns: repeat(3, minmax(0, auto));
+            gap: 0.65rem;
+            align-items: end;
+            justify-content: end;
         }
         .mv-song-source-switch {
             display: inline-flex;
@@ -6996,6 +7564,8 @@
             font-weight: 700;
             cursor: pointer;
             transition: all 0.2s ease;
+            position: relative;
+            overflow: hidden;
         }
         .mv-song-source-switch button.active {
             background: linear-gradient(135deg, var(--indigo), var(--rose));
@@ -7012,6 +7582,34 @@
             color: var(--ink-dim);
             font-size: 0.82rem;
         }
+        #mvSongMeta,
+        #mvBiasSourceList {
+            color: rgba(240, 233, 252, 0.84);
+        }
+        .mv-source-summary {
+            font-size: 0.85rem;
+            color: var(--ink-dim);
+            text-align: center;
+        }
+        .mv-source-summary strong {
+            display: inline-block;
+            background: linear-gradient(102deg, #ffe8ba 0%, #ffc8dc 34%, #d7d0ff 70%, #9be8df 100%);
+            background-size: 180% 180%;
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+            animation: mvChromaticShift 16s ease-in-out infinite;
+            font-family: 'Fraunces', Georgia, serif;
+            font-size: 0.96rem;
+            letter-spacing: -0.01em;
+        }
+        .mv-source-summary span {
+            display: block;
+            margin-top: 0.35rem;
+            font-size: 0.78rem;
+            line-height: 1.6;
+            color: rgba(240, 233, 252, 0.8);
+        }
         .mv-score-layer {
             display: grid;
             gap: 1rem;
@@ -7027,9 +7625,13 @@
             font-size: 0.72rem;
             text-transform: uppercase;
             letter-spacing: 1.45px;
-            color: #ffd99d;
             font-weight: 800;
             margin-bottom: 0.6rem;
+            background: linear-gradient(100deg, #ffe8b8 0%, #ffbfd8 38%, #cfd8ff 70%, #9ae9dd 100%);
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+            color: #ffe8b8;
         }
         .mv-intel-queue {
             display: grid;
@@ -7043,6 +7645,36 @@
             background:
                 radial-gradient(circle at top right, rgba(255,255,255,0.06), transparent 34%),
                 linear-gradient(150deg, rgba(255,255,255,0.05), rgba(255,255,255,0.03));
+        }
+        .mv-intel-route {
+            width: 100%;
+            text-align: left;
+            cursor: pointer;
+            color: inherit;
+            font: inherit;
+            position: relative;
+            overflow: hidden;
+            border-color: rgba(255,255,255,0.1);
+        }
+        .mv-intel-route::after {
+            content: '↗';
+            position: absolute;
+            right: 0.9rem;
+            bottom: 0.82rem;
+            color: rgba(255, 231, 188, 0.74);
+            font-size: 0.92rem;
+            transition: transform 0.2s ease, color 0.2s ease;
+        }
+        .mv-intel-route:hover::after,
+        .mv-intel-route:focus::after {
+            transform: translate(2px, -2px);
+            color: #fff2cb;
+        }
+        .mv-intel-route:hover,
+        .mv-intel-route:focus {
+            transform: translateY(-2px);
+            border-color: rgba(255, 231, 188, 0.34);
+            box-shadow: 0 16px 28px rgba(8, 12, 26, 0.22);
         }
         .mv-intel-card .h {
             display: flex;
@@ -7068,6 +7700,45 @@
             color: rgba(240,233,252,0.78);
             font-size: 0.82rem;
             line-height: 1.58;
+        }
+        .mv-origin-badge,
+        .mv-spectrum-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.35rem;
+            width: fit-content;
+            padding: 0.28rem 0.55rem;
+            border-radius: 999px;
+            border: 1px solid rgba(255,255,255,0.08);
+            background: rgba(255,255,255,0.06);
+            color: rgba(255,243,214,0.88);
+            font-size: 0.68rem;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+            font-weight: 700;
+            margin-bottom: 0.48rem;
+        }
+        .mv-propagation-card .mv-intel-meter,
+        .mv-origin-card .mv-intel-meter,
+        .mv-spectrum-card .mv-intel-meter {
+            margin-top: 0.55rem;
+        }
+        .mv-intel-meter {
+            display: grid;
+            gap: 0.28rem;
+        }
+        .mv-intel-meterbar {
+            height: 0.44rem;
+            border-radius: 999px;
+            overflow: hidden;
+            background: rgba(255,255,255,0.08);
+        }
+        .mv-intel-meterbar span {
+            display: block;
+            height: 100%;
+            border-radius: 999px;
+            background: linear-gradient(90deg, #ffe1a7 0%, #f48cb3 40%, #7ea0ff 70%, #8de8dd 100%);
+            box-shadow: 0 0 18px rgba(255,255,255,0.12);
         }
         .mv-chart-fallback {
             min-height: inherit;
@@ -7182,6 +7853,8 @@
             cursor: pointer;
             font-size: 0.75rem;
             font-weight: 700;
+            position: relative;
+            overflow: hidden;
         }
         .mv-song-pager button:disabled {
             opacity: 0.42;
@@ -7266,6 +7939,11 @@
             transform: translateY(-2px);
             box-shadow: 0 18px 30px rgba(8, 11, 26, 0.2);
         }
+        .mv-route-step:hover::after,
+        .mv-route-step.active::after {
+            transform: translateY(-50%) translateX(3px);
+            color: #fff2cf;
+        }
 
         .mv-fieldnote-card:hover,
         .mv-role-factor:hover,
@@ -7305,7 +7983,15 @@
             .mv-mhead::after { left: 1.35rem; width: min(9rem, 64%); }
             .mv-logic-grid { grid-template-columns: 1fr; }
             .mv-role-scoregrid { grid-template-columns: 1fr; }
-            .mv-song-toolbar { grid-template-columns: 1fr; }
+            .mv-song-toolbar,
+            .mv-song-filterrail { grid-template-columns: 1fr; }
+            .mv-filter-select { min-width: 0; }
+            .mv-song-source-switch { justify-content: flex-start; border-radius: 18px; }
+            .mv-resonance-shell { grid-template-columns: 1fr; }
+            .mv-resonance-meta { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+            .mv-resonance-list { max-height: none; }
+            .mv-figures { grid-template-columns: 1fr; }
+            .mv-provocation-grid { grid-template-columns: 1fr; }
         }
 
         @media (prefers-reduced-motion: reduce), (max-width: 820px) {
@@ -7337,7 +8023,10 @@
             .journey-step:hover,
             .research-card:hover,
             .bias-card:hover,
-            .mv-res-track:hover {
+            .mv-res-track:hover,
+            .mv-embodied-track:hover,
+            .mv-embodied-corridor:hover,
+            .mv-provocation-card:hover {
                 transform: none;
             }
             .mv-panel,
@@ -8135,6 +8824,18 @@
                 padding: 0.34rem 0.4rem;
             }
 
+            .mv-resonance-meta {
+                grid-template-columns: 1fr 1fr;
+            }
+
+            .mv-route-track {
+                scroll-snap-type: x proximity;
+            }
+
+            .mv-route-step {
+                scroll-snap-align: start;
+            }
+
             .hero-note-cluster small {
                 font-size: 0.58rem;
             }
@@ -8198,7 +8899,7 @@
         </div>
         <div class="header-content">
             <div class="hero-copy">
-                <span class="header-kicker">LOOPCHii Research Surface</span>
+                <span class="header-kicker">LOOPCHii Open Media Lab</span>
                 <div class="hero-title-cluster">
                     <div class="hero-title-band">
                         <h1>Stream</h1>
@@ -8328,7 +9029,7 @@
                         <span>The preview, repository, and methods notebook stay close enough to check against each other instead of asking for blind trust.</span>
                     </div>
                     <div class="hero-proof-item">
-                        <strong>Keep the claim boundary visible</strong>
+                        <strong>Keep the analytical scope visible</strong>
                         <span>The synthetic base stays labeled throughout. The music field uses public source data and remains separate on purpose.</span>
                     </div>
                     <div class="hero-proof-item">
@@ -8372,7 +9073,7 @@
             <p>Open research should be useful, legible, and sturdy enough to argue with.</p>
         </div>
         <div class="research-card">
-            <h4>Bounded Honesty</h4>
+            <h4>Traceable Evidence</h4>
             <p>The synthetic lanes stay labeled. The public music lane stays separate. You should always know what kind of evidence you are looking at.</p>
         </div>
         <div class="research-card">
@@ -8742,7 +9443,7 @@
                 <div class="decision-copy">
                     <span class="analysis-kicker">Use Stream like a system</span>
                     <h2>Start with the decision you need, not the tab you happen to open first.</h2>
-                    <p>Most public research surfaces die at the exact moment someone asks what to do with them. This layer keeps Stream practical: choose who you are reading as, choose what you need next, and the surface will route you through the strongest evidence path already inside the repo.</p>
+                    <p>Most public analysis repos become hard to use the moment someone asks what to do next. This layer keeps Stream practical: choose who you are reading as, choose what you need next, and the surface will route you through the strongest evidence path already inside the repo.</p>
                     <div class="decision-note">This is not a chatbot and it is not guessing. It recomputes from the current slice you selected above, then sends you to the tabs and sections most likely to answer the question honestly.</div>
                     <div class="decision-meta-grid">
                         <div class="decision-meta-card">
@@ -9489,6 +10190,11 @@
                     <div class="ops-control-grid" id="dataOpsControlGrid">
                         <div class="ops-control-card"><p>Loading control plane…</p></div>
                     </div>
+                    <h3 class="section-subtitle" style="margin: 1.15rem 0 0.35rem;">Governance contract</h3>
+                    <p class="status-text" id="dataOpsGovNote">Reading fairness, review posture, and public-boundary signals…</p>
+                    <div class="ops-control-grid" id="dataOpsGovGrid">
+                        <div class="ops-control-card"><p>Loading governance contract…</p></div>
+                    </div>
                     <h3 class="section-subtitle" style="margin: 1.15rem 0 0.35rem;">Quality gates</h3>
                     <p class="status-text" id="dataOpsQualityNote">Checking contract health…</p>
                     <div class="ops-quality-grid" id="dataOpsQualityGrid">
@@ -9501,6 +10207,11 @@
                     </div>
                     <div class="ops-contract-detail" id="dataOpsContractDetail">
                         <div class="ops-contract-card"><p>Loading active contract…</p></div>
+                    </div>
+                    <h3 class="section-subtitle" style="margin: 1.15rem 0 0.35rem;">Reproducibility catalog</h3>
+                    <p class="status-text" id="dataOpsReproNote">Reading deterministic seeds, public-scope boundaries, and reproducible artifacts…</p>
+                    <div class="ops-control-grid" id="dataOpsReproGrid">
+                        <div class="ops-control-card"><p>Loading reproducibility catalog…</p></div>
                     </div>
                 </div>
                 <div class="learn-grid" id="learnGrid">
@@ -9614,7 +10325,7 @@
                     <div class="mv-hero-copy">
                         <div class="mv-eyebrow"><span class="dot"></span> Real YouTube Data</div>
                         <h2>Music Virality</h2>
-                        <p class="lede">A deep statistical read of the 100 most-watched music videos on YouTube in 2025, paired with a broader 636-song public context cohort so the structure is not mistaken for a leaderboard quirk. We look at more than the headline view number: channel size, duration, collaboration, language mix, publication timing, and tag structure all help explain why a track rose or stalled. Every number below is computed from public source rows in the repository, not synthesised.</p>
+                        <p class="lede">A deep statistical read of the 100 most-watched music videos on YouTube in 2025, paired with a broader 636-song public context cohort so the structure is not mistaken for a leaderboard quirk. We look at more than the headline view number: <strong>channel size</strong>, <strong>duration</strong>, <strong>collaboration</strong>, <strong>language mix</strong>, <strong>publication timing</strong>, and <strong>tag structure</strong> to explain why a track rose or stalled. Every number below is computed from <strong>public source rows</strong> in the repository, not synthesised.</p>
                         <div class="mv-source" id="mvSource"><b>Source:</b> <span>Loading&hellip;</span></div>
                     </div>
                     <div class="mv-hero-visual">
@@ -9633,6 +10344,14 @@
                     <div class="cell"><div class="num" id="mvChannels">--</div><div class="cap">Channels</div></div>
                     <div class="cell"><div class="num" id="mvTopSong">--</div><div class="cap">Top Song</div></div>
                 </div>
+                <div class="mv-note-ribbon" aria-hidden="true">
+                    <span>♩ resonance</span>
+                    <span>♪ corridor pressure</span>
+                    <span>♫ public memory</span>
+                    <span>♬ notation waiting</span>
+                    <span>♩ engineered lift</span>
+                    <span>♪ communal carry</span>
+                </div>
             </div>
             <div class="mv-route" id="mvRoute">
                 <div class="mv-route-label">Path</div>
@@ -9641,21 +10360,22 @@
                     <button class="mv-route-step" data-target="mvCorrelation" style="--route-wash:rgba(15,182,168,0.18)" onclick="MusicViz.jumpToSection('mvCorrelation')"><span class="n">02</span><span class="t">What actually travels</span><span class="s">Some signals disappear once scale is stripped away. The survivors matter.</span></button>
                     <button class="mv-route-step" data-target="mvArchetypes" style="--route-wash:rgba(240,119,159,0.18)" onclick="MusicViz.jumpToSection('mvArchetypes')"><span class="n">03</span><span class="t">Release archetypes</span><span class="s">Not every viral track wins the same way. Release shape matters.</span></button>
                     <button class="mv-route-step" data-target="mvResonance" style="--route-wash:rgba(244,162,89,0.18)" onclick="MusicViz.jumpToSection('mvResonance')"><span class="n">04</span><span class="t">Resonance map</span><span class="s">The repeats are often more revealing than the winners.</span></button>
-                    <button class="mv-route-step" data-target="mvBias" style="--route-wash:rgba(124,58,237,0.18)" onclick="MusicViz.jumpToSection('mvBias')"><span class="n">05</span><span class="t">Who benefits</span><span class="s">The same field lands differently for artists, buyers, listeners, and researchers.</span></button>
-                    <button class="mv-route-step" data-target="mvSongsExplorer" style="--route-wash:rgba(72,201,194,0.18)" onclick="MusicViz.jumpToSection('mvSongsExplorer')"><span class="n">06</span><span class="t">Source rows</span><span class="s">Every summary should be able to walk back down to the songs.</span></button>
+                    <button class="mv-route-step" data-target="mvEmbodied" style="--route-wash:rgba(255,182,193,0.18)" onclick="MusicViz.jumpToSection('mvEmbodied')"><span class="n">05</span><span class="t">Body & culture</span><span class="s">Go past winners and ask what kind of bodily invitation and cultural corridor the field keeps rewarding.</span></button>
+                    <button class="mv-route-step" data-target="mvBias" style="--route-wash:rgba(124,58,237,0.18)" onclick="MusicViz.jumpToSection('mvBias')"><span class="n">06</span><span class="t">Who benefits</span><span class="s">The same field lands differently for artists, buyers, listeners, and researchers.</span></button>
+                    <button class="mv-route-step" data-target="mvSongsExplorer" style="--route-wash:rgba(72,201,194,0.18)" onclick="MusicViz.jumpToSection('mvSongsExplorer')"><span class="n">07</span><span class="t">Source rows</span><span class="s">Every summary should be able to walk back down to the songs.</span></button>
                 </div>
             </div>
             <div class="mv-fieldnote" id="mvFieldnote">
                 <div class="mv-fieldnote-main">
                     <div class="mv-fieldnote-label">Live field note</div>
                     <h4 id="mvFieldnoteTitle">Read the attention curve before you read the winners.</h4>
-                    <div class="mv-fieldnote-stage" id="mvFieldnoteStage">Stage 1 of 11 · Attention curve</div>
+                    <div class="mv-fieldnote-stage" id="mvFieldnoteStage">Stage 1 of 12 · Attention curve</div>
                     <p class="mv-fieldnote-copy" id="mvFieldnoteCopy">The first job is not to celebrate the leader board. It is to understand what kind of market the leader board came from. If attention is brutally concentrated, every later conclusion needs to be read through that constraint.</p>
                     <div class="mv-fieldnote-meter">
                         <div class="mv-fieldnote-meterbar"><span class="mv-fieldnote-progress" id="mvFieldnoteProgress"></span></div>
                         <div class="mv-fieldnote-metertext">
                             <span id="mvFieldnoteSpan">Start with the shape of the field</span>
-                            <span id="mvFieldnoteIndex">01 / 11</span>
+                            <span id="mvFieldnoteIndex">01 / 12</span>
                         </div>
                     </div>
                 </div>
@@ -9724,7 +10444,7 @@
             <!-- I. Power Law -->
             <div class="mv-movement" id="mvPowerLaw" data-guide-key="mvPowerLaw">
                 <div class="mv-mhead"><span class="mv-mnum">01</span><h3>The Power Law of Attention</h3></div>
-                <p class="mv-lead">View counts are not normally distributed &mdash; they follow a power law where a tiny elite captures most of the attention. The complementary cumulative distribution (CCDF) on log-log axes reveals the heavy tail: a straight line means pure power-law behaviour. We care because discovery systems, ad revenue, and cultural memory all behave differently when attention is this concentrated.</p>
+                <p class="mv-lead">View counts are not normally distributed &mdash; they follow a <strong>power law</strong> where a tiny elite captures most of the attention. The <strong>complementary cumulative distribution (CCDF)</strong> on log-log axes reveals the <strong>heavy tail</strong>: a straight line means pure power-law behaviour. We care because discovery systems, ad revenue, and cultural memory all behave differently when attention is this concentrated.</p>
                 <div class="mv-grid-2">
                     <div class="mv-panel"><div class="mv-chart" id="mvPowerChart"></div></div>
                     <div>
@@ -9742,7 +10462,7 @@
             <!-- II. Inequality -->
             <div class="mv-movement" id="mvInequality" data-guide-key="mvInequality">
                 <div class="mv-mhead"><span class="mv-mnum">02</span><h3>The Inequality of Attention</h3></div>
-                <p class="mv-lead">A Lorenz curve shows how unevenly views are distributed across channels. The diagonal is perfect equality; the deeper the bow, the more a few mega-channels dominate. Gini (0 = equal, 1 = one takes all) and the Theil index quantify the gap, which matters because a supposedly “open” music field can still be governed by a very small set of accounts.</p>
+                <p class="mv-lead">A <strong>Lorenz curve</strong> shows how unevenly views are distributed across channels. The diagonal is perfect equality; the deeper the bow, the more a few mega-channels dominate. <strong>Gini</strong> (0 = equal, 1 = one takes all) and the <strong>Theil index</strong> quantify the gap, which matters because a supposedly “open” music field can still be governed by a very small set of accounts.</p>
                 <div class="mv-grid-2">
                     <div class="mv-panel"><div class="mv-chart" id="mvLorenzChart"></div></div>
                     <div>
@@ -9758,10 +10478,10 @@
                 <div class="mv-panel" style="margin-top:1.2rem;"><div class="mv-chart" id="mvTopChannelsChart" style="min-height:280px;"></div></div>
             </div>
 
-            <!-- III. Correlation Architecture -->
+            <!-- III. What Actually Moves with Reach -->
             <div class="mv-movement" id="mvCorrelation" data-guide-key="mvCorrelation">
-                <div class="mv-mhead"><span class="mv-mnum">03</span><h3>Correlation Architecture</h3></div>
-                <p class="mv-lead">What actually correlates with more views? Spearman rank correlations show raw associations; partial correlations strip out the effect of channel size so you can see what matters <em>independently</em> of how big the channel already is. That helps separate reach from structure, which is the difference between “popular because it is everywhere” and “popular because something about it travels.”</p>
+                <div class="mv-mhead"><span class="mv-mnum">03</span><h3>What Actually Moves with Reach</h3></div>
+                <p class="mv-lead">What actually correlates with more views? <strong>Spearman rank correlations</strong> show raw associations; <strong>partial correlations</strong> strip out the effect of <strong>channel size</strong> so you can see what matters <em>independently</em> of how big the channel already is. That helps separate reach from structure, which is the difference between “popular because it is everywhere” and “popular because something about it travels.”</p>
                 <div class="mv-toggle" id="mvCorrToggle">
                     <button class="active" onclick="MusicViz.toggleCorr('raw',this)">Raw Spearman</button>
                     <button onclick="MusicViz.toggleCorr('partial',this)">Partial (|channel size)</button>
@@ -9782,7 +10502,7 @@
 
             <!-- V. Tag Network -->
             <div class="mv-movement" id="mvNetwork" data-guide-key="mvNetwork">
-                <div class="mv-mhead"><span class="mv-mnum">05</span><h3>The Tag Universe</h3></div>
+                <div class="mv-mhead"><span class="mv-mnum">05</span><h3>How Tags Cluster</h3></div>
                 <p class="mv-lead">When two tags appear on the same video they share an edge. The resulting co-occurrence graph reveals genre neighbourhoods, cross-over bridges, and the tags that sit at the centre of the music ecosystem. That makes it easier to see whether discovery is actually broad or just moving inside a small loop of familiar labels.</p>
                 <div class="mv-grid-net">
                     <div class="mv-panel"><div class="mv-chart tall" id="mvNetworkChart"></div></div>
@@ -9801,7 +10521,7 @@
             <!-- VI. Predictability -->
             <div class="mv-movement" id="mvPredictability" data-guide-key="mvPredictability">
                 <div class="mv-mhead"><span class="mv-mnum">06</span><h3>How Predictable Is Virality?</h3></div>
-                <p class="mv-lead">An ensemble of RandomForest and GradientBoosting regressors, cross-validated on real data, tries to predict (log) view counts from pre-publication features alone. The honest R&sup2; shows how much is skill versus timing and luck, and the feature importances show which levers still mattered after the rest of the context was held constant.</p>
+                <p class="mv-lead">An ensemble of <strong>RandomForest</strong> and <strong>GradientBoosting</strong> regressors, cross-validated on real data, tries to predict (log) view counts from pre-publication features alone. The honest <strong>R&sup2;</strong> shows how much is skill versus timing and luck, and the feature importances show which levers still mattered after the rest of the context was held constant.</p>
                 <div class="mv-grid-2">
                     <div class="mv-panel"><div class="mv-chart" id="mvPredChart"></div></div>
                     <div>
@@ -9814,10 +10534,10 @@
                 </div>
             </div>
 
-            <!-- VII. Tensor Resonance Mapper -->
+            <!-- VII. Repeat Pressure Map -->
             <div class="mv-movement" id="mvResonance" data-guide-key="mvResonance">
-                <div class="mv-mhead"><span class="mv-mnum">07</span><h3>Tensor Resonance Mapper</h3></div>
-                <p class="mv-lead">This panel treats repeating attention as a public proxy for oscillation. It does not inspect audio waveforms or private hardware traces. It looks at the visible shape of the catalog - duration fit, attention concentration, release timing, and tag/title echo - and turns that into a live resonance map you can click through.</p>
+                <div class="mv-mhead"><span class="mv-mnum">07</span><h3>Repeat Pressure Map</h3></div>
+                <p class="mv-lead">This panel treats repeating attention as a public proxy for oscillation. It does not inspect audio waveforms or private hardware traces. It looks at the visible shape of the catalog - <strong>duration fit</strong>, <strong>attention concentration</strong>, <strong>release timing</strong>, and <strong>tag/title echo</strong> - and turns that into a live resonance map you can click through.</p>
                 <div class="mv-resonance-shell">
                     <div class="mv-panel mv-resonance-stage">
                         <div id="mvResonanceScene" class="mv-resonance-scene"></div>
@@ -9831,7 +10551,7 @@
                     </div>
                     <div class="mv-panel mv-resonance-side">
                         <div class="mv-resonance-header">
-                            <h4>Holographic Exhaust</h4>
+                            <h4>Interception Trace</h4>
                             <p>Click a track to focus the scene. The highest-resonance tracks are the ones whose attention pattern stays narrow, repeated, and durable.</p>
                         </div>
                         <div class="mv-resonance-list" id="mvResonanceList"></div>
@@ -9840,10 +10560,48 @@
                 </div>
             </div>
 
-            <!-- VIII. What-If Predictor -->
+            <!-- VIII. Cultural Travel -->
+            <div class="mv-movement" id="mvEmbodied" data-guide-key="mvEmbodied">
+                <div class="mv-mhead"><span class="mv-mnum">08</span><h3>How Songs Travel Through Culture</h3></div>
+                <p class="mv-lead">We do not pretend public rows can tell us heart rate, respiration, or hidden waveform physics. What they can show is whether the field keeps rewarding the same bodily invitation, the same <strong>corridor of circulation</strong>, and the same inherited distribution path. This section keeps those proxies explicit so the analysis can go deeper without becoming vague.</p>
+                <div class="mv-grid-2">
+                    <div class="mv-panel">
+                        <div class="mv-figures" id="mvEmbodiedSummary">
+                            <div class="mv-figure"><div class="k">—</div><div class="l">Preparing embodied summary</div></div>
+                        </div>
+                        <div class="mv-takeaway" id="mvEmbodiedBoundary">Loading embodied boundary…</div>
+                    </div>
+                    <div class="mv-panel">
+                        <div class="mv-embodied-kicker">Vitality signatures</div>
+                        <div class="mv-embodied-list" id="mvEmbodiedList">
+                            <div class="mv-embodied-track"><div class="title">Preparing signatures…</div></div>
+                        </div>
+                    </div>
+                </div>
+                <div class="mv-grid-2" style="margin-top:1rem;">
+                    <div class="mv-panel">
+                        <div class="mv-embodied-kicker">Selected signature</div>
+                        <div class="mv-chart" id="mvEmbodiedRadar" style="min-height:320px;"></div>
+                    </div>
+                    <div class="mv-panel">
+                        <div class="mv-embodied-kicker">Cultural corridors</div>
+                        <div class="mv-embodied-corridors" id="mvCorridorGrid">
+                            <div class="mv-embodied-corridor"><div class="t">Preparing corridors…</div></div>
+                        </div>
+                    </div>
+                </div>
+                <div class="mv-panel" style="margin-top:1rem;">
+                    <div class="mv-embodied-kicker">Research provocations</div>
+                    <div class="mv-provocation-grid" id="mvProvocations">
+                        <div class="mv-provocation-card"><div class="t">Loading provocations…</div></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- IX. Release Scenario Lab -->
             <div class="mv-movement" id="mvWhatIf" data-guide-key="mvWhatIf">
-                <div class="mv-mhead"><span class="mv-mnum">08</span><h3>What-If Virality Predictor</h3></div>
-                <p class="mv-lead">Set the parameters of a hypothetical music upload and the trained model predicts where it would rank among the real top 100. All predictions use the same RandomForest model trained on actual YouTube data, so you can see how a change in one variable shifts the whole ranking story.</p>
+                <div class="mv-mhead"><span class="mv-mnum">09</span><h3>Release Scenario Lab</h3></div>
+                <p class="mv-lead">Set the parameters of a hypothetical music upload and the trained model predicts where it would rank among the real top 100. All predictions use the same <strong>RandomForest</strong> model trained on <strong>actual YouTube data</strong>, so you can see how a change in one variable shifts the whole ranking story.</p>
                 <div class="mv-panel">
                     <div class="mv-whatif">
                         <div class="mv-controls">
@@ -9880,8 +10638,8 @@
 
             <!-- IX. Bias Analysis -->
             <div class="mv-movement" id="mvBias" data-guide-key="mvBias">
-                <div class="mv-mhead"><span class="mv-mnum">09</span><h3>Bias in the Top 100</h3></div>
-                <p class="mv-lead">Who accumulates the front row, and by what pattern? We measure gender representation, genre gatekeeping, collaboration patterns, language dominance, engagement disparities, and attention concentration across <strong id="mvBiasTotalSongs">636</strong> real songs from 3 public datasets. This section is less interested in blame than structure: where exposure gathers, which genre families keep inheriting the advantage, and which variables still tilt the field after the surface story changes.</p>
+                <div class="mv-mhead"><span class="mv-mnum">10</span><h3>Bias in the Top 100</h3></div>
+                <p class="mv-lead">Who accumulates the front row, and by what pattern? We measure <strong>gender representation</strong>, <strong>genre gatekeeping</strong>, collaboration patterns, <strong>language dominance</strong>, engagement disparities, and attention concentration across <strong id="mvBiasTotalSongs">636</strong> real songs from 3 public datasets. This section is less interested in blame than structure: where exposure gathers, which genre families keep inheriting the advantage, and which variables still tilt the field after the surface story changes.</p>
                 <div class="mv-panel">
                     <div class="mv-bias-grade" id="mvBiasGrade">
                         <div class="grade-letter" id="mvBiasGradeLetter">&mdash;</div>
@@ -9894,7 +10652,7 @@
                         <div class="mv-mhead" style="margin-bottom:0;">
                             <span class="mv-mnum">L</span><h3 style="font-size:1.05rem;">Role Lens</h3>
                         </div>
-                        <p class="mv-role-headline">The facts do not change when the reader changes, but the consequence does. A creator reads this for room to maneuver. A buyer reads it for repeatable demand. A listener reads it for breadth. A researcher reads it for falsifiable structure. Change the lens; keep the evidence.</p>
+                        <p class="mv-role-headline">The facts do not change when the reader changes, but the consequence does. A creator reads this for <strong>room to maneuver</strong>. A buyer reads it for <strong>repeatable demand</strong>. A listener reads it for <strong>breadth</strong>. A researcher reads it for <strong>falsifiable structure</strong>. Change the lens; keep the evidence.</p>
                         <div class="mv-role-switch" id="mvRoleSwitch">
                             <button type="button" class="active" data-role="artist" onclick="MusicViz.setRole('artist', this)">Artist</button>
                             <button type="button" data-role="consumer" onclick="MusicViz.setRole('consumer', this)">Consumer</button>
@@ -9927,6 +10685,14 @@
                             </div>
                             <div class="mv-role-proof" id="mvRoleProof">Waiting for coverage, classification, and stability notes from the live field.</div>
                             <div class="mv-role-signals" id="mvRoleSignals"></div>
+                            <div class="mv-role-question" id="mvRoleQuestion">Preparing the question this lens should force before anyone repeats the conclusion.</div>
+                            <div class="mv-role-actions" id="mvRoleActions">
+                                <button type="button" class="mv-role-action">
+                                    <span class="k">Next move</span>
+                                    <span class="v">Preparing route</span>
+                                    <span class="s">The strongest follow-up paths for this reader will appear here.</span>
+                                </button>
+                            </div>
                             <div class="mv-role-bridge" id="mvRoleBridge">
                                 <div class="mv-role-bridge-head">
                                     <span class="k">Score-aware bridge</span>
@@ -9990,9 +10756,9 @@
                         <div class="mv-takeaway" id="mvBiasTakeaway"></div>
                     </div>
                     <div class="mv-panel" style="display:flex;flex-direction:column;align-items:center;justify-content:center;">
-                        <div style="font-size:0.85rem;color:var(--muted);text-align:center;">
-                            <strong>Data Sources</strong><br>
-                            <span id="mvBiasSourceList" style="font-size:0.78rem;line-height:1.6;"></span>
+                        <div class="mv-source-summary">
+                            <strong>Data Sources</strong>
+                            <span id="mvBiasSourceList"></span>
                         </div>
                     </div>
                 </div>
@@ -10000,15 +10766,15 @@
 
             <!-- X. 3D Archetype Landscape -->
             <div class="mv-movement" id="mv3DLandscape" data-guide-key="mv3DLandscape">
-                <div class="mv-mhead"><span class="mv-mnum">10</span><h3>3D Virality Landscape</h3></div>
-                <p class="mv-lead">The same archetype clusters rendered in three dimensions &mdash; views, virality, and channel size form the axes. Drag to rotate, scroll to zoom. Each sphere is a real song; colour encodes the cluster. This helps distinguish a true strategy from a one-off spike.</p>
+                <div class="mv-mhead"><span class="mv-mnum">11</span><h3>3D Virality Landscape</h3></div>
+                <p class="mv-lead">The same archetype clusters rendered in three dimensions &mdash; <strong>views</strong>, <strong>virality</strong>, and <strong>channel size</strong> form the axes. Drag to rotate, scroll to zoom. Each sphere is a real song; colour encodes the cluster. This helps distinguish a true strategy from a one-off spike.</p>
                 <div class="mv-panel"><div class="mv-chart tall" id="mv3DScatter" style="min-height:480px;"></div></div>
             </div>
 
             <!-- XI. Songs Explorer -->
             <div class="mv-movement" id="mvSongsExplorer" data-guide-key="mvSongsExplorer">
-                <div class="mv-mhead"><span class="mv-mnum">11</span><h3>Real Songs Explorer</h3></div>
-                <p class="mv-lead">This is the public row layer behind the music lane. It now carries the broader structural context as well as the core leaderboard, so you can search, sort, page through the evidence, and decide whether a neat summary still feels earned.</p>
+                <div class="mv-mhead"><span class="mv-mnum">12</span><h3>Real Songs Explorer</h3></div>
+                <p class="mv-lead">This is the public row layer behind the music lane. It now carries the broader structural context as well as the core leaderboard, so you can <strong>search</strong>, <strong>sort</strong>, <strong>filter</strong>, and page through the evidence before deciding whether a neat summary still feels earned.</p>
                 <div class="mv-score-layer">
                     <div class="mv-mhead" style="margin-bottom:0.55rem;"><span class="mv-mnum">S</span><h3 style="font-size:1.05rem;">Score layer</h3></div>
                     <p class="mv-sublead">When a score, MIDI, ABC file, tab, or chord chart exists in the repo, this layer folds it into the song record and lets the note and harmony patterns speak for themselves. When the file is missing, it leaves the gap visible and invites the next addition instead of pretending.</p>
@@ -10040,13 +10806,91 @@
                             </div>
                         </div>
                     </div>
+                    <div class="mv-grid-2" style="margin-top:1rem;">
+                        <div class="mv-panel">
+                            <div class="mv-mhead" style="margin-bottom:0.6rem;"><span class="mv-mnum">L</span><h3 style="font-size:1.05rem;">Living media read</h3></div>
+                            <div class="mv-takeaway" id="mvLivingBoundary">Loading living media read…</div>
+                            <div class="mv-figures" id="mvLivingMetrics">
+                                <div class="mv-figure"><div class="k">&mdash;</div><div class="l">Preparing vitality metrics</div></div>
+                            </div>
+                        </div>
+                        <div class="mv-panel">
+                            <div class="mv-chart" id="mvLivingFieldChart" style="min-height:300px;"></div>
+                        </div>
+                    </div>
+                    <div class="mv-grid-2" style="margin-top:1rem;">
+                        <div class="mv-panel">
+                            <div class="mv-intel-kicker">Somatic profiles</div>
+                            <div class="mv-intel-queue" id="mvLivingProfiles">
+                                <div class="mv-intel-empty">Preparing somatic profiles…</div>
+                            </div>
+                        </div>
+                        <div class="mv-panel">
+                            <div class="mv-intel-kicker">Cultural ecology</div>
+                            <div class="mv-intel-queue" id="mvLivingCorridors">
+                                <div class="mv-intel-empty">Preparing corridor field…</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="mv-grid-2" style="margin-top:1rem;">
+                        <div class="mv-panel">
+                            <div class="mv-intel-kicker">Bias spectrum</div>
+                            <div class="mv-intel-queue" id="mvLivingBiasSpectrum">
+                                <div class="mv-intel-empty">Preparing bias spectrum…</div>
+                            </div>
+                        </div>
+                        <div class="mv-panel">
+                            <div class="mv-intel-kicker">Origin detector</div>
+                            <div class="mv-intel-queue" id="mvLivingOrigin">
+                                <div class="mv-intel-empty">Preparing origin detector…</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="mv-grid-2" style="margin-top:1rem;">
+                        <div class="mv-panel">
+                            <div class="mv-intel-kicker">Authenticity cases</div>
+                            <div class="mv-intel-queue" id="mvLivingAuthenticity">
+                                <div class="mv-intel-empty">Preparing authenticity cases…</div>
+                            </div>
+                        </div>
+                        <div class="mv-panel">
+                            <div class="mv-intel-kicker">Propagation chain</div>
+                            <div class="mv-intel-queue" id="mvLivingPropagation">
+                                <div class="mv-intel-empty">Preparing propagation chain…</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="mv-grid-2" style="margin-top:1rem;">
+                        <div class="mv-panel">
+                            <div class="mv-intel-kicker">Cross-media pathways</div>
+                            <div class="mv-intel-queue" id="mvLivingRoutes">
+                                <div class="mv-intel-empty">Preparing archive pathways…</div>
+                            </div>
+                        </div>
+                        <div class="mv-panel">
+                            <div class="mv-intel-kicker">Provocations</div>
+                            <div class="mv-intel-queue" id="mvLivingProvocations">
+                                <div class="mv-intel-empty">Preparing living media provocations…</div>
+                            </div>
+                        </div>
+                    </div>
                 </div>
                 <div class="mv-song-toolbar">
                     <input type="text" class="mv-search" id="mvSongSearch" placeholder="Search songs, channels, or languages&hellip;">
-                    <div class="mv-song-source-switch" id="mvSongSourceSwitch">
-                        <button class="active" data-source="all" onclick="MusicViz.setSongSource('all', this)">All public rows</button>
-                        <button data-source="primary_top100" onclick="MusicViz.setSongSource('primary_top100', this)">Core 100</button>
-                        <button data-source="context" onclick="MusicViz.setSongSource('context', this)">Expanded context</button>
+                    <div class="mv-song-filterrail">
+                        <select class="mv-filter-select" id="mvSongYearFilter" aria-label="Filter songs by publication year">
+                            <option value="all">All years</option>
+                        </select>
+                        <select class="mv-filter-select" id="mvSongOfficialFilter" aria-label="Filter songs by packaging">
+                            <option value="all">All packaging</option>
+                            <option value="official">Official only</option>
+                            <option value="independent">Independent / unofficial</option>
+                        </select>
+                        <div class="mv-song-source-switch" id="mvSongSourceSwitch">
+                            <button class="active" data-source="all" onclick="MusicViz.setSongSource('all', this)">All public rows</button>
+                            <button data-source="primary_top100" onclick="MusicViz.setSongSource('primary_top100', this)">Core 100</button>
+                            <button data-source="context" onclick="MusicViz.setSongSource('context', this)">Expanded context</button>
+                        </div>
                     </div>
                 </div>
                 <div class="mv-song-meta">
@@ -10082,7 +10926,7 @@
                 <img src="./assets/loopchii.svg" alt="">
             </div>
             <div class="footer-brand-copy">
-                <span class="eyebrow">LOOPCHii public research lane</span>
+                <span class="eyebrow">LOOPCHii open media lab</span>
                 <h3>Built to be inspected, challenged, and extended.</h3>
                 <p>Stream is a public LOOPCHii surface for representation asymmetries, attention concentration, media bias, and music-market structure. The synthetic representation lane stays clearly labeled. The music lane stays separate because it is built from public source data and should be read with a different quality posture.</p>
                 <div class="footer-link-row">
@@ -10098,7 +10942,7 @@
         <div class="footer-support">
             <div class="footer-support-card">
                 <span class="k">What contributors should expect</span>
-                <span class="v">Working code, visible assumptions, and a clear claim boundary between public research and private LOOPCHii runtime work.</span>
+                <span class="v">Working code, visible assumptions, and a clear analytical scope between open-source research and private LOOPCHii runtime work.</span>
             </div>
             <div class="footer-support-card">
                 <span class="k">Where to start</span>
@@ -10269,6 +11113,7 @@
             _orbitSurfaces: {},
             _dataOpsSurface: null,
             _dataEngineering: null,
+            _governanceSurface: null,
             _dataEngineeringActiveContractIndex: 0,
             _loopchiiLiteModule: null,
             _loopchiiLiteModulePromise: null,
@@ -10473,6 +11318,15 @@
                 this.jumpToViz(nextStep.dataset.target, nextStep);
             },
 
+            pulseSection(targetOrId) {
+                const target = typeof targetOrId === 'string' ? document.getElementById(targetOrId) : targetOrId;
+                if (!target) return;
+                target.classList.remove('section-pulse');
+                void target.offsetWidth;
+                target.classList.add('section-pulse');
+                window.setTimeout(() => target.classList.remove('section-pulse'), 1200);
+            },
+
             jumpToViz(id, button) {
                 const target = document.getElementById(id);
                 if (!target) return;
@@ -10484,6 +11338,7 @@
                     }
                 }
                 target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                window.setTimeout(() => this.pulseSection(target), 220);
             },
 
             scrollToTabStart() {
@@ -10602,7 +11457,7 @@
                         interceptMs: 13
                     },
                     safe: {
-                        label: 'Ordinary bounded request',
+                        label: 'Ordinary safe request',
                         terms: [],
                         prefix: '',
                         fragment: '',
@@ -11126,6 +11981,28 @@
                 state.frame = requestAnimationFrame(() => this.animateDataOpsSurface());
             },
 
+            openSurfaceRoute(route) {
+                if (!route) return;
+                if (route.tab) {
+                    const nav = document.querySelector(`.nav-tab[data-tab="${route.tab}"]`);
+                    if (nav) {
+                        showTab(route.tab, nav);
+                    }
+                }
+                if (route.target) {
+                    window.setTimeout(() => {
+                        if (route.target === 'mvAuditPanel' && typeof MusicViz !== 'undefined' && MusicViz && typeof MusicViz.toggleAudit === 'function') {
+                            MusicViz.toggleAudit(true);
+                        }
+                        const target = document.getElementById(route.target);
+                        if (target) {
+                            target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                            this.pulseSection(target);
+                        }
+                    }, route.tab ? 180 : 0);
+                }
+            },
+
             renderDataEngineeringControls() {
                 const grid = document.getElementById('dataOpsControlGrid');
                 const note = document.getElementById('dataOpsControlNote');
@@ -11168,6 +12045,96 @@
                     </div>
                 `);
                 grid.innerHTML = controlCards.concat(deliveryCards).join('') || '<div class="ops-control-card"><p>No operating controls available.</p></div>';
+            },
+
+            renderGovernanceSurface() {
+                const grid = document.getElementById('dataOpsGovGrid');
+                const note = document.getElementById('dataOpsGovNote');
+                const data = this._governanceSurface;
+                if (!grid || !data) return;
+                const domains = Array.isArray(data.domains) ? data.domains : [];
+                const summary = data.summary || {};
+                if (note) {
+                    note.textContent = `${summary.readiness_grade || '—'} readiness · ${domains.length} governance domains · ${summary.human_review_required ? 'human review required' : 'human review recommended'}.`;
+                }
+                grid.innerHTML = domains.map((domain, index) => `
+                    <div class="ops-control-card" style="--ops-glow:${index % 4 === 0 ? 'rgba(91,85,255,0.18)' : index % 4 === 1 ? 'rgba(15,182,168,0.18)' : index % 4 === 2 ? 'rgba(240,119,159,0.18)' : 'rgba(244,162,89,0.18)'};">
+                        <div class="ops-quality-head">
+                            <div>
+                                <span class="eyebrow">${this.escapeHtml((domain.label || 'domain').toLowerCase())}</span>
+                                <h4>${this.escapeHtml(domain.headline || domain.label || 'Governance domain')}</h4>
+                            </div>
+                            <span class="ops-quality-status ${this.escapeHtml((domain.status || 'watch').toLowerCase())}">${this.escapeHtml((domain.grade || '—') + ' · ' + (domain.status || 'watch'))}</span>
+                        </div>
+                        <p>${this.escapeHtml(domain.note || '')}</p>
+                        <div class="meta">
+                            ${(domain.evidence || []).slice(0, 2).map((item) => `
+                                <span><strong>${this.escapeHtml(item.label || 'Evidence')}:</strong> ${this.escapeHtml(String(item.value || '—'))}</span>
+                            `).join('')}
+                        </div>
+                        ${domain.route ? `<button class="grade-card-action" type="button" data-route='${this.escapeHtml(JSON.stringify(domain.route))}'>${this.escapeHtml(domain.route.label || 'Open route')}</button>` : ''}
+                    </div>
+                `).join('') || '<div class="ops-control-card"><p>No governance domains available.</p></div>';
+                grid.querySelectorAll('[data-route]').forEach((button) => {
+                    button.addEventListener('click', () => {
+                        try {
+                            this.openSurfaceRoute(JSON.parse(button.getAttribute('data-route') || '{}'));
+                        } catch (error) {
+                            console.warn('Invalid governance route', error);
+                        }
+                    });
+                });
+            },
+
+            renderReproducibilitySurface() {
+                const grid = document.getElementById('dataOpsReproGrid');
+                const note = document.getElementById('dataOpsReproNote');
+                const data = this._dataEngineering;
+                if (!grid || !data) return;
+                const repro = data.reproducibility || {};
+                const modes = Array.isArray(repro.research_modes) ? repro.research_modes : [];
+                const artifacts = Array.isArray(repro.artifact_contracts) ? repro.artifact_contracts : [];
+                if (note) {
+                    note.textContent = `Seed ${repro.seed ?? '—'} · ${artifacts.length} reproducible artifacts · ${modes.length} declared research modes.`;
+                }
+                const cards = [
+                    {
+                        eyebrow: 'determinism',
+                        title: `Seed ${repro.seed ?? '—'} · ${this.escapeHtml(repro.algorithm_surface || 'Synthetic generator')}`,
+                        copy: repro.determinism_note || 'The synthetic lane is intentionally reproducible.',
+                        meta: [
+                            `Sample sizes: ${(repro.default_sample_sizes || []).join(', ') || '—'}`,
+                            `Year span: ${repro.year_span || '—'}`,
+                        ],
+                    },
+                    {
+                        eyebrow: 'public boundary',
+                        title: 'Independent open-source runtime',
+                        copy: repro.public_boundary || 'This repo ships with its own public backend and static surfaces.',
+                        meta: artifacts.slice(0, 3).map((artifact) => `Artifact: ${artifact}`),
+                    },
+                    ...modes.map((mode) => ({
+                        eyebrow: 'research mode',
+                        title: mode.label || 'Mode',
+                        copy: mode.purpose || '',
+                        meta: [`Lane: ${mode.id || '—'}`],
+                    })),
+                ];
+                grid.innerHTML = cards.map((card, index) => `
+                    <div class="ops-control-card" style="--ops-glow:${index % 4 === 0 ? 'rgba(255,191,208,0.18)' : index % 4 === 1 ? 'rgba(159,232,223,0.18)' : index % 4 === 2 ? 'rgba(215,204,255,0.18)' : 'rgba(255,226,164,0.18)'};">
+                        <div class="ops-quality-head">
+                            <div>
+                                <span class="eyebrow">${this.escapeHtml(card.eyebrow || 'surface')}</span>
+                                <h4>${card.title}</h4>
+                            </div>
+                            <span class="ops-quality-status pass">reproducible</span>
+                        </div>
+                        <p>${this.escapeHtml(card.copy || '')}</p>
+                        <div class="meta">
+                            ${(card.meta || []).map((item) => `<span>${this.escapeHtml(item)}</span>`).join('')}
+                        </div>
+                    </div>
+                `).join('');
             },
 
             renderDataEngineeringContractDetail(index = 0) {
@@ -12634,16 +13601,23 @@
             async loadDataEngineeringSurface() {
                 const stageGrid = document.getElementById('dataOpsStageGrid');
                 const controlGrid = document.getElementById('dataOpsControlGrid');
+                const govGrid = document.getElementById('dataOpsGovGrid');
                 const qualityGrid = document.getElementById('dataOpsQualityGrid');
                 const contractSwitches = document.getElementById('dataOpsContractSwitches');
                 const contractDetail = document.getElementById('dataOpsContractDetail');
-                if (!stageGrid || !controlGrid || !qualityGrid || !contractSwitches || !contractDetail) return;
+                const reproGrid = document.getElementById('dataOpsReproGrid');
+                if (!stageGrid || !controlGrid || !govGrid || !qualityGrid || !contractSwitches || !contractDetail || !reproGrid) return;
                 const compact = new Intl.NumberFormat('en-US', { notation: 'compact', maximumFractionDigits: 1 });
                 try {
-                    const res = await fetch('/api/system/data-engineering');
-                    if (!res.ok) throw new Error();
-                    const data = await res.json();
+                    const [dataRes, governanceRes] = await Promise.all([
+                        fetch('/api/system/data-engineering'),
+                        fetch('/api/system/governance'),
+                    ]);
+                    if (!dataRes.ok || !governanceRes.ok) throw new Error();
+                    const data = await dataRes.json();
+                    const governance = await governanceRes.json();
                     this._dataEngineering = data;
+                    this._governanceSurface = governance;
 
                     const modelEl = document.getElementById('dataOpsModel');
                     const datasetsEl = document.getElementById('dataOpsDatasets');
@@ -12663,6 +13637,7 @@
                         }))
                     );
                     this.renderDataEngineeringControls();
+                    this.renderGovernanceSurface();
 
                     const noteEl = document.getElementById('dataOpsStageNote');
                     if (noteEl) noteEl.textContent = `${stages.length} operating layers connected by ${Array.isArray(data.lineage) ? data.lineage.length : 0} lineage edges.`;
@@ -12697,6 +13672,7 @@
                     `).join('') || '<div class="ops-quality-card"><p>No quality gates available.</p></div>';
 
                     this.renderDataEngineeringContractDetail(this._dataEngineeringActiveContractIndex || 0);
+                    this.renderReproducibilitySurface();
 
                     const overlayMap = [
                         ['dataOpsStageA', stages[0]?.name || 'Bronze landing'],
@@ -12712,9 +13688,11 @@
                 } catch (e) {
                     stageGrid.innerHTML = '<div class="ops-stage-card"><p>Run <code>python app.py</code> to expose the live data-engineering contract surface.</p></div>';
                     controlGrid.innerHTML = '<div class="ops-control-card"><p>The control layer needs the Python API or a rebuilt static export.</p></div>';
+                    govGrid.innerHTML = '<div class="ops-control-card"><p>The governance contract needs the Python API or a rebuilt static export.</p></div>';
                     qualityGrid.innerHTML = '<div class="ops-quality-card"><p>The quality-gate surface is unavailable in static fallback right now.</p></div>';
                     contractSwitches.innerHTML = '<button class="ops-contract-switch active" type="button">Unavailable</button>';
                     contractDetail.innerHTML = '<div class="ops-contract-card"><p>The contract explorer needs the Python API or a rebuilt static export.</p></div>';
+                    reproGrid.innerHTML = '<div class="ops-control-card"><p>The reproducibility catalog needs the Python API or a rebuilt static export.</p></div>';
                 }
             },
 
@@ -13684,6 +14662,14 @@
                     const card = document.createElement('div');
                     card.className = 'grade-card' + (idx === 0 ? ' crown' : '');
                     const name = p.platform.replace(/_/g, ' ');
+                    const weakest = dims
+                        .map((dimension) => ({
+                            key: dimension,
+                            label: labels[dimension] || dimension,
+                            score: Number(p[dimension] || 0),
+                            grade: p.grades[dimension] || '—'
+                        }))
+                        .sort((a, b) => a.score - b.score)[0];
                     let bars = '';
                     dims.forEach(d => {
                         bars += `<div class="subscore">
@@ -13694,7 +14680,27 @@
                     card.innerHTML = `<div class="platform-name">${name}</div>
                         <div class="grade-badge">${p.grade}</div>
                         <div class="grade-overall">Overall ${(p.overall * 100).toFixed(0)} / 100 · ${p.sample_size.toLocaleString()} roles</div>
+                        <div class="grade-card-note">Weakest visible dimension: <strong>${weakest.label}</strong> · ${weakest.grade}. Open the deeper read instead of stopping at the letter grade.</div>
                         ${bars}`;
+                    const actions = document.createElement('div');
+                    actions.className = 'grade-card-actions';
+                    [
+                        { label: 'See magnitude', target: 'scorecardEffectSizes' },
+                        { label: 'Read trend fit', target: 'scorecardTrendFit' },
+                        { label: 'Rewrite the cast', target: 'scorecardVerdict' }
+                    ].forEach((action) => {
+                        const btn = document.createElement('button');
+                        btn.type = 'button';
+                        btn.className = 'grade-card-action';
+                        btn.textContent = action.label;
+                        btn.addEventListener('click', (event) => {
+                            event.stopPropagation();
+                            this.jumpToViz(action.target);
+                        });
+                        actions.appendChild(btn);
+                    });
+                    card.appendChild(actions);
+                    card.addEventListener('click', () => this.jumpToViz('scorecardEffectSizes'));
                     grid.appendChild(card);
                     setTimeout(() => {
                         card.classList.add('in');
@@ -13780,7 +14786,41 @@
                     + '</div>';
             },
 
-            mountEchart(containerId, fallbackConfig, draw) {
+            ensureChartRegistry(owner) {
+                const target = owner && typeof owner === 'object' ? owner : this;
+                if (target && typeof target === 'object') {
+                    if (!Array.isArray(target._echartsInstances)) target._echartsInstances = [];
+                    return target._echartsInstances;
+                }
+                if (!Array.isArray(this._sharedEchartsInstances)) this._sharedEchartsInstances = [];
+                return this._sharedEchartsInstances;
+            },
+
+            registerEchart(chart, owner) {
+                if (!chart) return null;
+                let registry = this.ensureChartRegistry(owner);
+                if (!Array.isArray(registry)) {
+                    const target = owner && typeof owner === 'object' ? owner : this;
+                    target._echartsInstances = [];
+                    registry = target._echartsInstances;
+                }
+                if (!registry.includes(chart)) registry.push(chart);
+                return chart;
+            },
+
+            unregisterEchart(chart, owner) {
+                if (!chart) return;
+                let registry = this.ensureChartRegistry(owner);
+                if (!Array.isArray(registry)) {
+                    const target = owner && typeof owner === 'object' ? owner : this;
+                    target._echartsInstances = [];
+                    registry = target._echartsInstances;
+                }
+                const index = registry.indexOf(chart);
+                if (index >= 0) registry.splice(index, 1);
+            },
+
+            mountEchart(containerId, fallbackConfig, draw, owner) {
                 const container = typeof containerId === 'string' ? document.getElementById(containerId) : containerId;
                 if (!container) return null;
                 if (typeof echarts === 'undefined' || !echarts || typeof echarts.init !== 'function') {
@@ -13789,10 +14829,13 @@
                 }
                 try {
                     const existing = echarts.getInstanceByDom(container);
-                    if (existing) existing.dispose();
+                    if (existing) {
+                        existing.dispose();
+                        StreamLensApp.unregisterEchart(existing, owner || this);
+                    }
                     container.innerHTML = '';
                     const chart = echarts.init(container);
-                    this._echartsInstances.push(chart);
+                    StreamLensApp.registerEchart(chart, owner || this);
                     draw(chart);
                     return chart;
                 } catch (error) {
@@ -13966,19 +15009,19 @@
 
         // ==================== TAB NAVIGATION ====================
         const STORY = {
-            dashboard: ['Act I — Orientation', 'Where the capabilities separate, and where they connect.',
-                'The overview tab is the map of the whole repo: modeled representation, governed response behavior, practical decision routing, and the handoff into the public real-music lane. It is here to help you choose the right surface before you start reading a single chart too literally.'],
-            explore: ['Act II — Evidence', 'Every visible claim still has to survive the rows.',
+            dashboard: ['Start here', 'Choose the right lane first.',
+                'The overview tab is the map of the whole repo: modeled representation, governed response behavior, decision routing, and the handoff into the public real-music lane. Use it to decide which surface deserves your attention before you read any chart too literally.'],
+            explore: ['Inspect the rows', 'Every visible claim still has to survive the rows.',
                 'No summary should be taken on faith. This is the character-level dataset behind the modeled representation surface, where you can filter by platform, genre, media type, and year to see whether the pattern survives once the context changes.'],
-            insights: ['Act III — Findings', 'What the system is actually willing to say.',
+            insights: ['Read the findings', 'What the system can support right now.',
                 'These findings are generated from the current slice rather than written in advance. They combine parity, concentration, trend, network, and intersectional checks so the claim has more than one route into it and more than one place to fail.'],
-            library: ['Act IV — Pattern Language', 'Bias has shape before it has a score.',
-                'The pattern library gives names to the structures that keep repeating across media and recommendation systems. Some patterns are directly quantifiable here; others train the eye so the numerical layer does not become your only way of noticing harm.'],
-            learn: ['Act V — Methods', 'The math, the caveats, and the cleaning choices stay visible.',
-                'Every metric in this app is explained here with its tradeoffs in plain view. This is where you check what was measured, what was omitted, how the synthetic base was bounded, and where governance keeps the claim smaller than the evidence.'],
-            scorecard: ['Act VI — Decision Grade', 'Compression is useful only after the nuance survives.',
+            library: ['Name the pattern', 'Bias has shape before it has a score.',
+                'The pattern library gives names to structures that keep repeating across media and recommendation systems. Some patterns are directly quantifiable here; others train the eye so the numerical layer does not become your only way of noticing harm.'],
+            learn: ['Check the method', 'The math, caveats, and cleaning choices stay visible.',
+                'Every metric in this app is explained here with its tradeoffs in plain view. This is where you check what was measured, what was omitted, how the synthetic base was constructed, and where governance keeps the claim smaller than the evidence.'],
+            scorecard: ['Use the grade carefully', 'Compression is useful only after the nuance survives.',
                 'This tab compresses the field into a practical read for comparison, procurement, or internal review. It matters only because the earlier lanes exist first: the grade is not the truth, it is the most compressed summary the evidence can currently support.'],
-            music: ['Real Data — Public Attention', 'A separate lane for a real market, not a synthetic echo.',
+            music: ['Read the real market lane', 'A separate lane for a real market, not a synthetic echo.',
                 'The music module analyses public YouTube attention using real views, channel scale, metadata, duration, collaboration, language mix, and concentration checks. It stays separate so real public pressure can be studied on its own terms instead of being quietly blended into the modeled representation surface.']
         };
 
@@ -14075,11 +15118,11 @@
                 'The Verdict': 'The decade of evidence collapsed into a letter grade per platform, an inequality (Lorenz) curve, effect sizes, a fitted trend, and a what-if cast simulator. The grade only lands after the app checks whether the same signal survives across year, genre, media type, and concentration.',
                 'The Power Law of Attention': 'Complementary CDF (CCDF) of view counts on log-log axes. A straight line means pure power-law behaviour; the fitted exponent \u03b1 and Kolmogorov-Smirnov distance tell you how heavy the tail is. Computed by maximum-likelihood estimation (Clauset method) with a bootstrap 95% CI, then read alongside the channel mix because attention concentration changes what the curve means.',
                 'The Inequality of Attention': 'Lorenz curve + Gini + Theil index measuring how unevenly views concentrate across channels. A Gini near 1 means one channel takes everything; the top-k shares show the concrete concentration and why discovery can feel narrow.',
-                'Correlation Architecture': 'Spearman rank correlations (non-parametric) of each feature with view count, plus partial correlations that strip out channel size. Toggle between raw and partial to see what matters independently of reach and what was only riding on reach.',
+                'What Actually Moves with Reach': 'Spearman rank correlations (non-parametric) of each feature with view count, plus partial correlations that strip out channel size. Toggle between raw and partial to see what matters independently of reach and what was only riding on reach.',
                 'Viral Archetypes': 'K-means clustering (k=5) on log-views, log-virality, log-followers and duration. Points are real songs, colours are cluster assignments. Hover for titles and channels, then ask whether the cluster is a release style, a scale effect, or both.',
-                'The Tag Universe': 'A force-directed co-occurrence graph where nodes are tags and edges form when two tags appear on the same video. Node size = degree (how connected); colour = community (greedy modularity). Drag nodes to explore which tags act as bridges, not just labels.',
+                'How Tags Cluster': 'A force-directed co-occurrence graph where nodes are tags and edges form when two tags appear on the same video. Node size = degree (how connected); colour = community (greedy modularity). Drag nodes to explore which tags act as bridges, not just labels.',
                 'How Predictable Is Virality?': 'Cross-validated ensemble of RandomForest + GradientBoosting predicting log(views) from pre-publication features only (no target leakage). The R\u00b2 is the honest out-of-fold score; the importance bars show which features still mattered after the rest were held constant.',
-                'What-If Virality Predictor': 'Set hypothetical upload parameters and the trained RandomForest model predicts where the video would rank among the real top 100. On the static site this snaps to a precomputed grid; on the live API it is continuous, but still grounded in the same feature set.',
+                'Release Scenario Lab': 'Set hypothetical upload parameters and the trained RandomForest model predicts where the video would rank among the real top 100. On the static site this snaps to a precomputed grid; on the live API it is continuous, but still grounded in the same feature set.',
                 'Real Songs Explorer': 'The raw dataset behind every chart \u2014 100 real YouTube music videos with actual view counts, durations, and virality coefficients. Click any column header to sort; type in the search box to filter; use the rows to test whether the summary matches the source.',
                 'Bias in the Top 100': 'Gender representation, genre concentration, collaboration patterns, duration bias, and attention concentration \u2014 measuring the structural biases baked into music virality. The equity grade composites gender parity, views parity, genre diversity, and top-5 concentration after checking the surrounding variables.',
                 '3D Virality Landscape': 'A Plotly 3D scatter of views \u00d7 virality \u00d7 subscribers with archetype clusters. Drag to rotate, scroll to zoom. Each sphere is a real song coloured by its K-means cluster assignment, which makes it easier to see whether a cluster is truly different or just larger.'
@@ -14280,7 +15323,19 @@
             },
 
             mountEchart(containerId, fallbackConfig, draw) {
-                return StreamLensApp.mountEchart.call(StreamLensApp, containerId, fallbackConfig, draw);
+                return StreamLensApp.mountEchart.call(StreamLensApp, containerId, fallbackConfig, draw, MusicViz);
+            },
+
+            ensureChartRegistry() {
+                return StreamLensApp.ensureChartRegistry(MusicViz);
+            },
+
+            registerEchart(chart) {
+                return StreamLensApp.registerEchart(chart, MusicViz);
+            },
+
+            unregisterEchart(chart) {
+                return StreamLensApp.unregisterEchart(chart, MusicViz);
             },
 
             themeColors() {
@@ -14335,7 +15390,7 @@
                 const existing = echarts.getInstanceByDom(container);
                 if (existing) {
                     existing.dispose();
-                    this._echartsInstances = this._echartsInstances.filter(instance => instance !== existing);
+                    this.unregisterEchart(existing);
                 }
             },
 
@@ -14398,6 +15453,7 @@
                         ['network', () => this.renderNetwork()],
                         ['predictability', () => this.renderPredictability()],
                         ['resonance', () => this.renderResonance()],
+                        ['embodied', () => this.renderEmbodied()],
                         ['bias', () => this.renderBias()],
                         ['scatter3d', () => this.render3DScatter()],
                         ['songs', () => this.renderSongs()]
@@ -14419,6 +15475,7 @@
                     ['network', () => this.renderNetwork()],
                     ['predictability', () => this.renderPredictability()],
                     ['resonance', () => this.renderResonance()],
+                    ['embodied', () => this.renderEmbodied()],
                     ['scatter3d', () => this.render3DScatter()]
                 ];
                 let index = 0;
@@ -14475,7 +15532,7 @@
                     this.scheduleVisibleRefresh('activate');
                 }
             },
-            _MOVEMENT_ORDER: ['mvPowerLaw','mvInequality','mvCorrelation','mvArchetypes','mvNetwork','mvPredictability','mvResonance','mvWhatIf','mvBias','mv3DLandscape','mvSongsExplorer'],
+            _MOVEMENT_ORDER: ['mvPowerLaw','mvInequality','mvCorrelation','mvArchetypes','mvNetwork','mvPredictability','mvResonance','mvEmbodied','mvWhatIf','mvBias','mv3DLandscape','mvSongsExplorer'],
             _MOVEMENT_NOTES: {
                 mvPowerLaw: {
                     title: 'Read the attention curve before you read the winners.',
@@ -14532,6 +15589,14 @@
                     copy: 'This is a public proxy lane: concentration, duration fit, release timing, and title or tag echo are turned into a live resonance surface you can inspect without claiming to see inside hidden infrastructure.',
                     measure: 'A composite of oscillation, friction, stability, and a narrow gate window across the catalog.',
                     why: 'The repeats often reveal more than the winners because they show which conditions keep being rewarded.'
+                },
+                mvEmbodied: {
+                    title: 'Go deeper than winner lists: ask what kind of bodily and cultural pattern the field keeps rewarding.',
+                    stage: 'Embodied proxies',
+                    span: 'Keep the body and the corridor visible',
+                    copy: 'This layer stays strict about its limits. It does not claim waveform labs or biometrics. It does show whether public attention keeps circling the same bodily invitation, the same corridor of circulation, and the same inherited route to scale.',
+                    measure: 'Public proxies for somatic pull, communal carry, novelty room, inheritance pressure, vitality, and corridor balance.',
+                    why: 'Without this layer, it is too easy to confuse repetition with vitality or dominance with universality.'
                 },
                 mvWhatIf: {
                     title: 'A counterfactual is only useful if it stays tied to the real field.',
@@ -14632,7 +15697,8 @@
                     mvNetwork: 'mvArchetypes',
                     mvPredictability: 'mvArchetypes',
                     mvResonance: 'mvResonance',
-                    mvWhatIf: 'mvResonance',
+                    mvEmbodied: 'mvEmbodied',
+                    mvWhatIf: 'mvEmbodied',
                     mvBias: 'mvBias',
                     mv3DLandscape: 'mvBias',
                     mvSongsExplorer: 'mvSongsExplorer'
@@ -14771,6 +15837,9 @@
                 this.syncRouteFocus(this._activeRouteTarget);
                 this.updateFieldnote(id);
                 target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                if (typeof StreamLensApp !== 'undefined' && StreamLensApp && typeof StreamLensApp.pulseSection === 'function') {
+                    window.setTimeout(() => StreamLensApp.pulseSection(target), 220);
+                }
             },
 
             bindMusicRoute() {
@@ -14918,6 +15987,41 @@
                         },
                         feature_manifest: []
                     },
+                    decisionLab: {
+                        generated_at: '',
+                        drift: {
+                            windows: {
+                                earlier: { label: 'Unavailable', rows: 0 },
+                                later: { label: 'Unavailable', rows: 0 }
+                            },
+                            highlights: [],
+                            narrative: 'No cohort drift surface is available yet.'
+                        },
+                        experiments: {
+                            cards: [],
+                            strongest: null
+                        },
+                        trust: {
+                            score: 0,
+                            grade: 'F',
+                            summary: 'No trust posture is available yet.',
+                            signals: [],
+                            questions: []
+                        },
+                        embodied: {
+                            boundary_note: 'No embodied boundary note is available yet.',
+                            headline: 'No embodied field is available yet.',
+                            summary_cards: [],
+                            summary_index: {},
+                            top_signatures: [],
+                            cultural_corridors: [],
+                            provocations: []
+                        },
+                        summary: {
+                            headline: 'No decision lab is available yet.',
+                            recommended_next_question: 'Build the music lane first, then ask for comparative stress tests.'
+                        }
+                    },
                     bias: {
                         overall_grade: '?',
                         bias_scores: { gender_parity: 'n/a', views_parity: 'n/a', genre_diversity: 'n/a', age_diversity: 'n/a' },
@@ -14975,13 +16079,29 @@
                 this.renderRoleLoading(this._role || 'artist');
                 if (this._loading) return this._loadPromise;
                 this._loading = true;
-                const ep = ['overview','powerlaw','inequality','correlations','archetypes','network','predictability','resonance','songs','status','bias','quality','intelligence'];
-                this._loadPromise = Promise.all(ep.map(e => fetch('/api/music/' + e)
-                    .then(r => r.ok ? r.json() : Promise.reject(new Error(e)))
-                    .catch(() => this._fallbackMusicData(e))))
+                const ep = [
+                    { key: 'overview', path: 'overview' },
+                    { key: 'powerlaw', path: 'powerlaw' },
+                    { key: 'inequality', path: 'inequality' },
+                    { key: 'correlations', path: 'correlations' },
+                    { key: 'archetypes', path: 'archetypes' },
+                    { key: 'network', path: 'network' },
+                    { key: 'predictability', path: 'predictability' },
+                    { key: 'resonance', path: 'resonance' },
+                    { key: 'songs', path: 'songs' },
+                    { key: 'status', path: 'status' },
+                    { key: 'bias', path: 'bias' },
+                    { key: 'quality', path: 'quality' },
+                    { key: 'decisionLab', path: 'decision-lab' },
+                    { key: 'intelligence', path: 'intelligence' }
+                ];
+                this._loadPromise = Promise.all(ep.map(entry => fetch('/api/music/' + entry.path)
+                    .then(r => r.ok ? r.json() : Promise.reject(new Error(entry.path)))
+                    .catch(() => this._fallbackMusicData(entry.key))))
                     .then(results => {
-                        const keys = ep;
-                        keys.forEach((k,i) => this._data[k] = results[i]);
+                        ep.forEach((entry, i) => {
+                            this._data[entry.key] = results[i];
+                        });
                         this._loaded = true;
                         this._loading = false;
                         this.render();
@@ -15006,6 +16126,7 @@
                     ['hero', () => this.renderHero()],
                     ['audit', () => this.renderAudit()],
                     ['powerlaw', () => this.renderPowerLaw()],
+                    ['embodied', () => this.renderEmbodied()],
                     ['bias', () => this.renderBias()],
                     ['intelligence', () => this.renderIntelligence()],
                     ['songs', () => this.renderSongs()]
@@ -15085,7 +16206,22 @@
                 const container = document.getElementById('mvHeroScene');
                 const resonance = this._data.resonance || {};
                 const bias = this._data.bias || {};
-                if (!container || typeof THREE === 'undefined') return;
+                if (!container) return;
+                if (typeof THREE === 'undefined' || !THREE || typeof THREE.Scene !== 'function') {
+                    this.renderLibraryFallback('mvHeroScene', {
+                        kicker: 'Signal surface',
+                        title: 'Resonance preview still loads without WebGL',
+                        copy: 'This scene normally renders as a live 3D field. When GPU rendering is unavailable, the same public state resolves into the pressure variables driving the motion.',
+                        accent: '#f0779f',
+                        items: [
+                            { label: 'Oscillation', value: this.safeNumber((resonance.scorecard || {}).oscillation, 0.68).toFixed(3), note: 'Repeat-pressure in the current field.' },
+                            { label: 'Stability', value: this.safeNumber((resonance.scorecard || {}).stability, 0.62).toFixed(3), note: 'How durable the pattern remains.' },
+                            { label: 'Top-10 pressure', value: Math.round(this.safeNumber(((bias.concentration || {}).top10_share), 0.22) * 100) + '%', note: 'Attention share held by the ten largest channels.' },
+                            { label: 'Halt window', value: String(this.safeNumber((resonance.scorecard || {}).halt_window_ms, 18)) + ' ms', note: 'Public proxy for how quickly pressure hardens.' }
+                        ]
+                    });
+                    return;
+                }
 
                 if (!this._heroRenderer) {
                     const width = container.clientWidth || 520;
@@ -15371,7 +16507,7 @@
                                     '<span class="mv-audit-pill"><b>' + Math.round((coverage.publication_year_explicit_share || 0) * 100) + '%</b> explicit dates</span>' +
                                     '<span class="mv-audit-pill"><b>' + Math.round((coverage.publication_year_inferred_share || 0) * 100) + '%</b> text hints</span>' +
                                 '</div>' +
-                                '<p class="mv-audit-note">Coverage expands only where public fields exist. Unknown values stay unknown, and text-based year hints are kept separate from explicit upload dates.</p>' +
+                                '<p class="mv-audit-note">Coverage expands only where public fields exist. Unresolved fields stay visible, and text-based year hints stay separate from explicit upload dates.</p>' +
                             '</div>' +
                         '</div>' +
                         '<div class="mv-audit-card">' +
@@ -15438,7 +16574,7 @@
                 var existing = echarts.getInstanceByDom(container);
                 if (existing) existing.dispose();
                 var chart = echarts.init(container);
-                this._echartsInstances.push(chart);
+                this.registerEchart(chart);
                 var sourceAudit = q.source_audit || [];
                 var primary = sourceAudit[0] || {};
                 var mostViewed = sourceAudit[1] || {};
@@ -15586,7 +16722,7 @@
                 } else {
                     this.disposeEchart('mvLorenzChart');
                     const ec = echarts.init(el);
-                    this._echartsInstances.push(ec);
+                    this.registerEchart(ec);
                     ec.setOption({
                         grid: { left: 55, right: 20, top: 20, bottom: 45 },
                         xAxis: { name: '% of songs (ranked)', nameLocation: 'middle', nameGap: 28, min: 0, max: 1,
@@ -15663,7 +16799,7 @@
                 } else {
                     this.disposeEchart('mvHeatmapChart');
                     const ec = echarts.init(el);
-                    this._echartsInstances.push(ec);
+                    this.registerEchart(ec);
                     ec.setOption({
                         grid: { left: 110, right: 40, top: 10, bottom: 90 },
                         xAxis: { type: 'category', data: labels, axisLabel: { rotate: 40, fontSize: 10, interval: 0 }, splitArea: { show: true } },
@@ -15738,7 +16874,7 @@
                 if (existing) existing.dispose();
                 this.disposeEchart('mvArchChart');
                 var archEc = echarts.init(archEl);
-                this._echartsInstances.push(archEc);
+                this.registerEchart(archEc);
                 const clusterNames = d.clusters.map(c => c.name);
                 const points = d.points || [];
                 const highlighted = points
@@ -15946,7 +17082,7 @@
                 } else {
                     this.disposeEchart('mvPredChart');
                     const ec = echarts.init(el);
-                    this._echartsInstances.push(ec);
+                    this.registerEchart(ec);
                     ec.setOption({
                         series: [{
                             type: 'pie', radius: ['50%', '78%'], center: ['50%', '50%'],
@@ -15982,7 +17118,7 @@
                 }
                 this.disposeEchart('mvImpChart');
                 const ec2 = echarts.init(el2);
-                this._echartsInstances.push(ec2);
+                this.registerEchart(ec2);
                 ec2.setOption({
                     grid: { left: 140, right: 30, top: 8, bottom: 20 },
                     xAxis: { type: 'value', max: 1, axisLabel: { formatter: v => (v*100).toFixed(0) + '%' }, splitLine: { lineStyle: { color: 'rgba(40,46,86,0.06)' } } },
@@ -16026,6 +17162,34 @@
                     foot.innerHTML = leadGenre
                         ? '<strong>Highest-pressure genre:</strong> ' + leadGenre.genre + ' · ' + (leadGenre.view_share * 100).toFixed(1) + '% of views'
                         : 'Resonance is computed from the visible structure of the catalog.';
+                }
+
+                if (typeof THREE === 'undefined' || !THREE || typeof THREE.Scene !== 'function') {
+                    this.renderLibraryFallback('mvResonanceScene', {
+                        kicker: 'Resonance map',
+                        title: 'Track pressure remains readable without 3D rendering',
+                        copy: 'The public pressure map normally runs as a live GPU scene. When that layer is unavailable, the same catalog still resolves into the strongest pressure signals and top tracks.',
+                        accent: '#f4a259',
+                        items: tracks.slice(0, 4).map((track) => ({
+                            label: track.title,
+                            value: Math.round(this.safeNumber(track.resonance_score, 0) * 100) + '/100',
+                            note: (track.genre || 'Unknown genre') + ' · ' + (track.channel || 'Unknown channel')
+                        })).concat([
+                            { label: 'Oscillation', value: this.safeNumber(score.oscillation, 0).toFixed(3), note: 'Catalog repetition pressure.' },
+                            { label: 'Stability', value: this.safeNumber(score.stability, 0).toFixed(3), note: 'How firmly the pattern holds.' }
+                        ])
+                    });
+                    list.innerHTML = tracks.map((t, i) => {
+                        const colorA = this._RES_COLORS[i % this._RES_COLORS.length];
+                        const colorB = this._RES_COLORS[(i + 2) % this._RES_COLORS.length];
+                        return '<div class="mv-res-track' + (i === (this._resonanceSelected || 0) ? ' active' : '') + '" data-index="' + i + '" style="--start:' + colorA + ';--end:' + colorB + ';">' +
+                            '<div class="h"><div class="title">' + t.title + '</div><div class="meta">' + (t.genre || 'Unknown') + '</div></div>' +
+                            '<div class="row"><span>' + (t.channel || 'Unknown channel') + '</span><span>' + Math.round((t.resonance_score || 0) * 100) + '/100 resonance</span></div>' +
+                            '<div class="row"><span>Oscillation ' + (t.oscillation || 0).toFixed(3) + '</span><span>Stability ' + (t.stability || 0).toFixed(3) + '</span></div>' +
+                            '<div class="sig">' + (t.signals || []).map(function(s) { return '<span>' + s + '</span>'; }).join('') + '</div>' +
+                        '</div>';
+                    }).join('');
+                    return;
                 }
 
                 if (!this._resonanceRenderer || !this._resonanceScene) {
@@ -16172,14 +17336,180 @@
                 }
             },
 
+            renderEmbodied() {
+                const decisionLab = this._data.decisionLab || {};
+                const embodied = decisionLab.embodied || {};
+                const summaryCards = embodied.summary_cards || [];
+                const signatures = embodied.top_signatures || [];
+                const corridors = embodied.cultural_corridors || [];
+                const provocations = embodied.provocations || [];
+
+                const summaryHost = document.getElementById('mvEmbodiedSummary');
+                if (summaryHost) {
+                    summaryHost.innerHTML = summaryCards.length
+                        ? summaryCards.map((card) => (
+                            '<div class="mv-figure">'
+                            + '<div class="k">' + card.value_label + '</div>'
+                            + '<div class="l">' + card.label + '</div>'
+                            + '<div class="ci">' + card.note + '</div>'
+                            + '</div>'
+                        )).join('')
+                        : '<div class="mv-figure"><div class="k">—</div><div class="l">Embodied summary unavailable</div></div>';
+                }
+
+                const boundary = document.getElementById('mvEmbodiedBoundary');
+                if (boundary) {
+                    boundary.innerHTML = '<b>Boundary:</b> ' + (embodied.boundary_note || 'No embodied boundary note is available yet.')
+                        + ' <br><br><b>Current read:</b> ' + (embodied.headline || 'No embodied headline is available yet.');
+                }
+
+                if (this._embodiedSelected == null || this._embodiedSelected >= signatures.length) {
+                    this._embodiedSelected = 0;
+                }
+                const selected = signatures[this._embodiedSelected] || null;
+
+                const list = document.getElementById('mvEmbodiedList');
+                if (list) {
+                    list.innerHTML = signatures.length
+                        ? signatures.map((track, index) => {
+                            return '<div class="mv-embodied-track' + (index === this._embodiedSelected ? ' active' : '') + '" data-index="' + index + '">'
+                                + '<div class="head"><div class="title">' + track.title + '</div><div class="meta">' + (track.cultural_corridor || track.genre || 'Unlabeled corridor') + '</div></div>'
+                                + '<div class="reading">' + (track.reading || '') + '</div>'
+                                + '<div class="statline">'
+                                + '<span>vitality ' + Math.round(this.safeNumber(track.vitality_score, 0) * 100) + '/100</span>'
+                                + '<span>somatic ' + Math.round(this.safeNumber(track.somatic_pull, 0) * 100) + '/100</span>'
+                                + '<span>novelty ' + Math.round(this.safeNumber(track.novelty_room, 0) * 100) + '/100</span>'
+                                + '</div>'
+                                + '<div class="statline">' + (track.signature || []).map(function (tag) { return '<span>' + tag + '</span>'; }).join('') + '</div>'
+                                + '</div>';
+                        }).join('')
+                        : '<div class="mv-embodied-track"><div class="title">No vitality signatures are available yet.</div><div class="reading">The embodied field wakes up when the public decision surface has enough rows to compare.</div></div>';
+                    list.querySelectorAll('.mv-embodied-track[data-index]').forEach((card) => {
+                        card.addEventListener('click', () => {
+                            this._embodiedSelected = parseInt(card.dataset.index, 10) || 0;
+                            this.renderEmbodied();
+                        });
+                    });
+                }
+
+                const corridorGrid = document.getElementById('mvCorridorGrid');
+                if (corridorGrid) {
+                    corridorGrid.innerHTML = corridors.length
+                        ? corridors.map((corridor) => (
+                            '<div class="mv-embodied-corridor">'
+                            + '<div class="head"><div class="t">' + corridor.corridor + '</div><div class="meta">' + Math.round(this.safeNumber(corridor.view_share, 0) * 100) + '% of views</div></div>'
+                            + '<div class="reading">' + (corridor.reading || '') + '</div>'
+                            + '<div class="statline">'
+                            + '<span>' + this.safeNumber(corridor.song_count, 0) + ' songs</span>'
+                            + '<span>vitality ' + Math.round(this.safeNumber(corridor.avg_vitality, 0) * 100) + '/100</span>'
+                            + '<span>collab ' + Math.round(this.safeNumber(corridor.collab_share, 0) * 100) + '%</span>'
+                            + '</div>'
+                            + '</div>'
+                        )).join('')
+                        : '<div class="mv-embodied-corridor"><div class="t">No corridor surface yet</div><div class="reading">The repository needs public rows before corridors can be compared honestly.</div></div>';
+                }
+
+                const provocationGrid = document.getElementById('mvProvocations');
+                if (provocationGrid) {
+                    provocationGrid.innerHTML = provocations.length
+                        ? provocations.map((entry) => (
+                            '<div class="mv-provocation-card">'
+                            + '<div class="t">' + entry.title + '</div>'
+                            + '<div class="body">' + entry.body + '</div>'
+                            + '</div>'
+                        )).join('')
+                        : '<div class="mv-provocation-card"><div class="t">No provocations yet</div><div class="body">The provocations surface will appear once the embodied layer is present in the decision lab.</div></div>';
+                }
+
+                const colors = this.themeColors();
+                if (!selected) {
+                    this.renderLibraryFallback('mvEmbodiedRadar', {
+                        kicker: 'Embodied field',
+                        title: 'No selected vitality signature',
+                        copy: 'The radar surface appears once a ranked signature exists.',
+                        accent: '#f0779f',
+                        items: summaryCards.slice(0, 4).map((card) => ({ label: card.label, value: card.value_label, note: card.note }))
+                    });
+                    return;
+                }
+
+                this.mountEchart('mvEmbodiedRadar', {
+                    accent: '#f0779f',
+                    kicker: 'Embodied field',
+                    title: selected.title,
+                    copy: selected.reading || 'Selected vitality signature.',
+                    items: [
+                        { label: 'Somatic pull', value: Math.round(this.safeNumber(selected.somatic_pull, 0) * 100) + '/100', note: 'Public bodily-invitation proxy' },
+                        { label: 'Communal carry', value: Math.round(this.safeNumber(selected.communal_carry, 0) * 100) + '/100', note: 'Collaboration, engagement, recency, and language circulation' },
+                        { label: 'Novelty room', value: Math.round(this.safeNumber(selected.novelty_room, 0) * 100) + '/100', note: 'How much room remains beyond familiar inherited formulas' },
+                        { label: 'Low inheritance', value: Math.round((1 - this.safeNumber(selected.inheritance_pressure, 0)) * 100) + '/100', note: 'Higher means less dependence on inherited scale' },
+                        { label: 'Vitality', value: Math.round(this.safeNumber(selected.vitality_score, 0) * 100) + '/100', note: 'Composite public vitality proxy' }
+                    ]
+                }, (radarEc) => radarEc.setOption({
+                    title: {
+                        text: selected.title,
+                        subtext: (selected.cultural_corridor || selected.genre || 'Unlabeled corridor') + ' · ' + (selected.language || 'Unknown'),
+                        left: 'center',
+                        top: 8,
+                        textStyle: { fontSize: 13, fontWeight: 700, fontFamily: 'Space Grotesk', color: this._PLOT_FONT },
+                        subtextStyle: { fontSize: 10, color: this._PLOT_AXIS }
+                    },
+                    radar: {
+                        center: ['50%', '58%'],
+                        radius: '62%',
+                        splitNumber: 4,
+                        indicator: [
+                            { name: 'Somatic pull', max: 100 },
+                            { name: 'Communal carry', max: 100 },
+                            { name: 'Novelty room', max: 100 },
+                            { name: 'Low inheritance', max: 100 },
+                            { name: 'Vitality', max: 100 }
+                        ],
+                        name: { color: this._PLOT_FONT, fontSize: 10 },
+                        splitLine: { lineStyle: { color: this.alphaColor(colors.secondary, 0.16) } },
+                        splitArea: { areaStyle: { color: ['rgba(255,255,255,0.02)', 'rgba(255,255,255,0.04)'] } },
+                        axisLine: { lineStyle: { color: this.alphaColor(colors.accent, 0.18) } }
+                    },
+                    series: [{
+                        type: 'radar',
+                        data: [{
+                            value: [
+                                Math.round(this.safeNumber(selected.somatic_pull, 0) * 100),
+                                Math.round(this.safeNumber(selected.communal_carry, 0) * 100),
+                                Math.round(this.safeNumber(selected.novelty_room, 0) * 100),
+                                Math.round((1 - this.safeNumber(selected.inheritance_pressure, 0)) * 100),
+                                Math.round(this.safeNumber(selected.vitality_score, 0) * 100)
+                            ],
+                            name: selected.title,
+                            areaStyle: { color: this.alphaColor(colors.secondary, 0.22) },
+                            lineStyle: { width: 2.5, color: colors.secondary },
+                            itemStyle: { color: colors.quaternary },
+                            symbolSize: 6
+                        }]
+                    }],
+                    tooltip: { trigger: 'item' },
+                    animation: true,
+                    animationDuration: 900
+                }));
+            },
+
             renderSongs() {
                 this._songSource = this._songSource || 'all';
                 this._songPage = this._songPage || 1;
                 this._songPageSize = 24;
                 this._allSongs = this._data.songs || [];
+                this.populateSongFilters();
                 if (!this._songsBound) {
                     this._songsBound = true;
                     document.getElementById('mvSongSearch').addEventListener('input', () => {
+                        this._songPage = 1;
+                        this.applySongFilters();
+                    });
+                    document.getElementById('mvSongYearFilter').addEventListener('change', () => {
+                        this._songPage = 1;
+                        this.applySongFilters();
+                    });
+                    document.getElementById('mvSongOfficialFilter').addEventListener('change', () => {
                         this._songPage = 1;
                         this.applySongFilters();
                     });
@@ -16191,6 +17521,7 @@
 
             renderIntelligence() {
                 const intel = this._data.intelligence || {};
+                const living = intel.living_media || {};
                 const setText = (id, value) => {
                     const node = document.getElementById(id);
                     if (node) node.textContent = value;
@@ -16306,6 +17637,221 @@
                         }));
                     }
                 }
+
+                const livingBoundary = document.getElementById('mvLivingBoundary');
+                if (livingBoundary) {
+                    livingBoundary.innerHTML = '<b>Boundary:</b> '
+                        + (living.boundary_note || 'The living media layer uses public structure rather than hidden physiological claims.')
+                        + ' <br><br><b>Current read:</b> '
+                        + (living.headline || 'No living media headline is available yet.');
+                }
+
+                const livingMetrics = document.getElementById('mvLivingMetrics');
+                if (livingMetrics) {
+                    const metricRows = living.metrics || [];
+                    livingMetrics.innerHTML = metricRows.length
+                        ? metricRows.map((metric) => (
+                            '<div class="mv-figure">'
+                            + '<div class="k">' + metric.value_label + '</div>'
+                            + '<div class="l">' + metric.label + '</div>'
+                            + '<div class="ci">' + metric.note + '</div>'
+                            + '</div>'
+                        )).join('')
+                        : '<div class="mv-figure"><div class="k">—</div><div class="l">Living metrics unavailable</div></div>';
+                }
+
+                const livingProfiles = document.getElementById('mvLivingProfiles');
+                if (livingProfiles) {
+                    const rows = living.somatic_profiles || [];
+                    livingProfiles.innerHTML = rows.length
+                        ? rows.map((row, index) => (
+                            '<div class="mv-intel-card">'
+                            + '<div class="h"><span class="t">' + (index + 1) + '. ' + row.title + '</span><span class="v">' + Math.round(this.safeNumber(row.vitality_index, 0) * 100) + '/100</span></div>'
+                            + '<div class="s">' + (row.cultural_corridor || 'Unlabeled corridor') + ' · '
+                            + 'kinetic ' + Math.round(this.safeNumber(row.kinetic_energy, 0) * 100) + '/100 · '
+                            + 'resonance ' + Math.round(this.safeNumber(row.resonance_depth, 0) * 100) + '/100</div>'
+                            + '<div class="s" style="margin-top:0.45rem;">' + (row.reading || '') + '</div>'
+                            + '</div>'
+                        )).join('')
+                        : '<div class="mv-intel-empty">No living-media somatic profiles are available yet.</div>';
+                }
+
+                const livingCorridors = document.getElementById('mvLivingCorridors');
+                if (livingCorridors) {
+                    const rows = living.cultural_ecology || [];
+                    livingCorridors.innerHTML = rows.length
+                        ? rows.map((row) => (
+                            '<div class="mv-intel-card">'
+                            + '<div class="h"><span class="t">' + row.corridor + '</span><span class="v">' + Math.round(this.safeNumber(row.view_share, 0) * 100) + '%</span></div>'
+                            + '<div class="s">' + row.song_count + ' songs · vitality '
+                            + Math.round(this.safeNumber(row.avg_vitality, 0) * 100) + '/100 · kinetic '
+                            + Math.round(this.safeNumber(row.avg_kinetic, 0) * 100) + '/100</div>'
+                            + '<div class="s" style="margin-top:0.45rem;">' + (row.reading || '') + '</div>'
+                            + '</div>'
+                        )).join('')
+                        : '<div class="mv-intel-empty">No cultural-ecology surface is available yet.</div>';
+                }
+
+                const livingBiasSpectrum = document.getElementById('mvLivingBiasSpectrum');
+                if (livingBiasSpectrum) {
+                    const rows = living.bias_spectrum || [];
+                    livingBiasSpectrum.innerHTML = rows.length
+                        ? rows.map((row) => (
+                            '<div class="mv-intel-card mv-spectrum-card">'
+                            + '<div class="mv-spectrum-badge">Bias surface</div>'
+                            + '<div class="h"><span class="t">' + row.label + '</span><span class="v">' + row.value_label + '</span></div>'
+                            + '<div class="s">' + row.note + '</div>'
+                            + '<div class="mv-intel-meter"><div class="mv-intel-meterbar"><span style="width:' + Math.max(4, Math.round(this.safeNumber(row.value, 0) * 100)) + '%"></span></div></div>'
+                            + '</div>'
+                        )).join('')
+                        : '<div class="mv-intel-empty">No bias-spectrum surface is available yet.</div>';
+                }
+
+                const livingOrigin = document.getElementById('mvLivingOrigin');
+                if (livingOrigin) {
+                    const rows = living.origin_detector || [];
+                    livingOrigin.innerHTML = rows.length
+                        ? rows.map((row) => (
+                            '<div class="mv-intel-card mv-origin-card">'
+                            + '<div class="mv-origin-badge">Origin detector</div>'
+                            + '<div class="h"><span class="t">' + row.label + '</span><span class="v">' + row.value_label + '</span></div>'
+                            + '<div class="s">' + row.note + '</div>'
+                            + '<div class="mv-intel-meter"><div class="mv-intel-meterbar"><span style="width:' + Math.max(4, Math.round(this.safeNumber(row.value, 0) * 100)) + '%"></span></div></div>'
+                            + '</div>'
+                        )).join('')
+                        : '<div class="mv-intel-empty">No origin-detector surface is available yet.</div>';
+                }
+
+                const livingAuthenticity = document.getElementById('mvLivingAuthenticity');
+                if (livingAuthenticity) {
+                    const rows = living.authenticity_profiles || [];
+                    livingAuthenticity.innerHTML = rows.length
+                        ? rows.map((row) => (
+                            '<div class="mv-intel-card mv-origin-card">'
+                            + '<div class="mv-origin-badge">' + row.posture + '</div>'
+                            + '<div class="h"><span class="t">' + row.title + '</span><span class="v">' + Math.round(this.safeNumber(row.authenticity_index, 0) * 100) + '/100</span></div>'
+                            + '<div class="s">' + (row.cultural_corridor || 'Unlabeled corridor') + ' · engineered '
+                            + Math.round(this.safeNumber(row.engineered_signature, 0) * 100) + '/100 · anomaly '
+                            + Math.round(this.safeNumber(row.velocity_anomaly, 0) * 100) + '/100</div>'
+                            + '<div class="s" style="margin-top:0.45rem;">' + (row.reading || '') + '</div>'
+                            + '</div>'
+                        )).join('')
+                        : '<div class="mv-intel-empty">No authenticity cases are available yet.</div>';
+                }
+
+                const livingPropagation = document.getElementById('mvLivingPropagation');
+                if (livingPropagation) {
+                    const rows = living.propagation_chain || [];
+                    livingPropagation.innerHTML = rows.length
+                        ? rows.map((row, index) => (
+                            '<div class="mv-intel-card mv-propagation-card">'
+                            + '<div class="mv-spectrum-badge">Stage ' + (index + 1) + '</div>'
+                            + '<div class="h"><span class="t">' + row.stage + '</span><span class="v">' + row.value_label + '</span></div>'
+                            + '<div class="s">' + row.note + '</div>'
+                            + '<div class="mv-intel-meter"><div class="mv-intel-meterbar"><span style="width:' + Math.max(4, Math.round(this.safeNumber(row.value, 0) * 100)) + '%"></span></div></div>'
+                            + '</div>'
+                        )).join('')
+                        : '<div class="mv-intel-empty">No propagation chain is available yet.</div>';
+                }
+
+                const livingProvocations = document.getElementById('mvLivingProvocations');
+                if (livingProvocations) {
+                    const rows = living.provocations || [];
+                    livingProvocations.innerHTML = rows.length
+                        ? rows.map((row) => (
+                            '<div class="mv-intel-card">'
+                            + '<div class="h"><span class="t">' + row.title + '</span><span class="v">Prompt</span></div>'
+                            + '<div class="s">' + row.body + '</div>'
+                            + '</div>'
+                        )).join('')
+                        : '<div class="mv-intel-empty">No provocations are available yet.</div>';
+                }
+
+                const livingRoutes = document.getElementById('mvLivingRoutes');
+                if (livingRoutes) {
+                    const rows = living.cross_media_routes || [];
+                    livingRoutes.innerHTML = rows.length
+                        ? rows.map((row) => (
+                            '<button type="button" class="mv-intel-card mv-intel-route" data-tab="' + row.tab + '" data-target="' + row.target + '">'
+                            + '<div class="h"><span class="t">' + row.title + '</span><span class="v">Open</span></div>'
+                            + '<div class="s">' + row.note + '</div>'
+                            + '</button>'
+                        )).join('')
+                        : '<div class="mv-intel-empty">No archive pathways are available yet.</div>';
+                    livingRoutes.querySelectorAll('.mv-intel-route').forEach((card) => {
+                        card.addEventListener('click', () => {
+                            const tab = card.getAttribute('data-tab') || 'music';
+                            const target = card.getAttribute('data-target') || '';
+                            const nav = Array.from(document.querySelectorAll('.nav-tab')).find((btn) => (btn.getAttribute('onclick') || '').includes("'" + tab + "'")) || null;
+                            showTab(tab, nav);
+                            if (tab === 'music' && target) {
+                                this.jumpToSection(target);
+                                return;
+                            }
+                            if (target) {
+                                requestAnimationFrame(() => {
+                                    const node = document.getElementById(target);
+                                    if (node) node.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                                });
+                            }
+                        });
+                    });
+                }
+
+                const livingChartEl = document.getElementById('mvLivingFieldChart');
+                if (livingChartEl) {
+                    const metricRows = living.metrics || [];
+                    if (!metricRows.length) {
+                        this.renderLibraryFallback('mvLivingFieldChart', {
+                            kicker: 'Living media fallback',
+                            title: 'No living field chart yet',
+                            copy: 'The chart appears once the living-media surface has enough public structure to summarize honestly.',
+                            accent: '#f0779f',
+                            items: []
+                        });
+                    } else {
+                        this.mountEchart('mvLivingFieldChart', {
+                            accent: '#f0779f',
+                            kicker: 'Living media',
+                            title: 'Vitality field',
+                            copy: 'A public map of motion, depth, gravity, resistance, and vitality built from observable evidence rather than private physiological claims.',
+                            items: metricRows.map((metric) => ({ label: metric.label, value: metric.value_label, note: metric.note }))
+                        }, (fieldEc) => fieldEc.setOption({
+                            title: {
+                                text: 'Living media read',
+                                subtext: 'Public vitality proxies · inspectable, reproducible, data-backed',
+                                left: 'center',
+                                top: 8,
+                                textStyle: { fontSize: 13, fontWeight: 700, fontFamily: 'Space Grotesk', color: this._PLOT_FONT },
+                                subtextStyle: { fontSize: 10, color: this._PLOT_AXIS }
+                            },
+                            radar: {
+                                center: ['50%', '58%'],
+                                radius: '64%',
+                                splitNumber: 4,
+                                indicator: metricRows.map((metric) => ({ name: metric.label, max: 100 })),
+                                name: { color: this._PLOT_FONT, fontSize: 10 },
+                                splitLine: { lineStyle: { color: this.alphaColor('#ffdca6', 0.14) } },
+                                splitArea: { areaStyle: { color: ['rgba(255,255,255,0.02)', 'rgba(255,255,255,0.04)'] } },
+                                axisLine: { lineStyle: { color: this.alphaColor('#5566f6', 0.18) } }
+                            },
+                            series: [{
+                                type: 'radar',
+                                data: [{
+                                    value: metricRows.map((metric) => Math.round(this.safeNumber(metric.value, 0) * 100)),
+                                    name: 'Living media read',
+                                    areaStyle: { color: this.alphaColor('#f0779f', 0.22) },
+                                    lineStyle: { width: 2.5, color: '#ffdca6' },
+                                    itemStyle: { color: '#7c3aed' },
+                                    symbolSize: 6
+                                }]
+                            }],
+                            tooltip: { trigger: 'item' },
+                            animation: true,
+                            animationDuration: 950
+                        }));
+                    }
+                }
             },
 
             sourceLabel(source) {
@@ -16325,8 +17871,28 @@
                 this.applySongFilters();
             },
 
+            populateSongFilters() {
+                const yearSelect = document.getElementById('mvSongYearFilter');
+                if (yearSelect) {
+                    const current = yearSelect.value || 'all';
+                    const years = Array.from(new Set(
+                        (this._allSongs || [])
+                            .map((song) => this.safeNumber(song.published_year, 0))
+                            .filter((year) => year > 0)
+                    )).sort((a, b) => b - a);
+                    yearSelect.innerHTML = ['<option value="all">All years</option>', '<option value="known">Known years only</option>']
+                        .concat(years.map((year) => '<option value="' + year + '">' + year + '</option>'))
+                        .join('');
+                    yearSelect.value = years.some((year) => String(year) === current) || current === 'all' || current === 'known'
+                        ? current
+                        : 'all';
+                }
+            },
+
             applySongFilters() {
                 const query = (document.getElementById('mvSongSearch').value || '').toLowerCase().trim();
+                const yearFilter = document.getElementById('mvSongYearFilter')?.value || 'all';
+                const officialFilter = document.getElementById('mvSongOfficialFilter')?.value || 'all';
                 this._filteredSongs = this._allSongs.filter((song) => {
                     const inSource = this._songSource === 'all'
                         ? true
@@ -16334,6 +17900,11 @@
                             ? song.source !== 'primary_top100'
                             : song.source === this._songSource;
                     if (!inSource) return false;
+                    const songYear = this.safeNumber(song.published_year, 0);
+                    if (yearFilter === 'known' && !(songYear > 0)) return false;
+                    if (yearFilter !== 'all' && yearFilter !== 'known' && String(songYear) !== yearFilter) return false;
+                    if (officialFilter === 'official' && !song.is_official) return false;
+                    if (officialFilter === 'independent' && song.is_official) return false;
                     if (!query) return true;
                     const haystack = `${song.title} ${song.channel} ${song.detected_language || ''} ${song.source || ''}`.toLowerCase();
                     return haystack.includes(query);
@@ -16371,7 +17942,11 @@
                     const first = songs.length ? start + 1 : 0;
                     const last = songs.length ? Math.min(start + this._songPageSize, songs.length) : 0;
                     const contextRows = this._allSongs.filter(song => song.source !== 'primary_top100').length;
-                    meta.textContent = `${songs.length.toLocaleString()} rows match · showing ${first}-${last} · ${contextRows.toLocaleString()} context rows beyond the core leaderboard`;
+                    const yearFilter = document.getElementById('mvSongYearFilter')?.value || 'all';
+                    const officialFilter = document.getElementById('mvSongOfficialFilter')?.value || 'all';
+                    const yearLabel = yearFilter === 'all' ? 'all years' : yearFilter === 'known' ? 'known years only' : yearFilter;
+                    const packageLabel = officialFilter === 'all' ? 'all packaging' : officialFilter === 'official' ? 'official only' : 'independent / unofficial';
+                    meta.textContent = `${songs.length.toLocaleString()} rows match · showing ${first}-${last} · ${contextRows.toLocaleString()} context rows beyond the core leaderboard · ${yearLabel} · ${packageLabel}`;
                 }
                 const pager = document.getElementById('mvSongPager');
                 if (pager) {
@@ -16616,16 +18191,22 @@
                 if (b.genre_breakdown) {
                     var genreBody = document.getElementById('mvGenreBreakdownBody');
                     if (genreBody) {
-                        genreBody.innerHTML = rawGenreRows.map((row) => {
+                        const visibleGenreRows = classifiedRows.length ? classifiedRows : rawGenreRows;
+                        genreBody.innerHTML = visibleGenreRows.map((row) => {
                             return '<tr>' +
                                 '<td>' + (row.genre || 'Unclassified') + '</td>' +
                                 '<td>' + this.safeNumber(row.song_count, 0).toLocaleString() + '</td>' +
-                                '<td>' + (this.safeNumber(row.view_share, 0) * 100).toFixed(1) + '%</td>' +
+                                '<td>' + (this.safeNumber(row.classified_view_share || row.view_share, 0) * 100).toFixed(1) + '%</td>' +
                                 '<td>' + this.fmt(this.safeNumber(row.avg_views, 0)) + '</td>' +
                                 '<td>' + this.safeNumber(row.avg_duration_min, 0).toFixed(2) + ' min</td>' +
                                 '<td>' + (this.safeNumber(row.collab_share, 0) * 100).toFixed(0) + '%</td>' +
                             '</tr>';
                         }).join('');
+                    }
+                } else {
+                    var emptyGenreBody = document.getElementById('mvGenreBreakdownBody');
+                    if (emptyGenreBody) {
+                        emptyGenreBody.innerHTML = '<tr><td colspan="6">Genre metadata is still thin in this slice, so the breakdown stays intentionally blank instead of inventing a pattern.</td></tr>';
                     }
                 }
 
@@ -16929,6 +18510,8 @@
                 const confidenceLabel = document.getElementById('mvRoleConfidenceLabel');
                 const factors = document.getElementById('mvRoleFactors');
                 const proof = document.getElementById('mvRoleProof');
+                const question = document.getElementById('mvRoleQuestion');
+                const actions = document.getElementById('mvRoleActions');
                 this.syncRoleSwitch();
                 if (card) {
                     const glow = theme.soft.replace('0.12', '0.16');
@@ -16968,6 +18551,23 @@
                             + '</div>';
                     }).join('');
                 }
+                if (question) {
+                    question.innerHTML = '<b>Question to keep open:</b> what would this reader need to see next before they could responsibly repeat the claim?';
+                }
+                if (actions) {
+                    actions.innerHTML = [
+                        { label: 'Hold the role', note: 'The selected lens stays pinned while the evidence loads.', tab: 'music', target: 'mvBias' },
+                        { label: 'Check the row layer', note: 'When in doubt, drop back down to the public songs instead of waiting on prose.', tab: 'music', target: 'mvSongsExplorer' },
+                        { label: 'Re-open methods', note: 'If the field still feels brittle, inspect the assumptions and coverage posture first.', tab: 'learn', target: 'learnDataSystem' }
+                    ].map((move) => (
+                        '<button type="button" class="mv-role-action" data-role-tab="' + move.tab + '" data-role-target="' + move.target + '">'
+                        + '<span class="k">Next move</span>'
+                        + '<span class="v">' + move.label + '</span>'
+                        + '<span class="s">' + move.note + '</span>'
+                        + '</button>'
+                    )).join('');
+                    this.bindRoleActions();
+                }
                 this.renderRoleBridge(activeRole, null, null, true);
                 if (takeaway) takeaway.textContent = 'The role stays selected even while the evidence surface is still loading. Once the public rows land, the same card will refill without changing the lens.';
             },
@@ -16977,6 +18577,10 @@
                 const theme = this._ROLE_THEMES[activeRole] || this._ROLE_THEMES.artist;
                 const intel = this._data.intelligence || {};
                 const bias = this._data.bias || {};
+                const decisionLab = this._data.decisionLab || {};
+                const trust = decisionLab.trust || {};
+                const strongestExperiment = ((decisionLab.experiments || {}).strongest) || null;
+                const strongestDrift = (((decisionLab.drift || {}).highlights) || [])[0] || null;
                 const status = document.getElementById('mvRoleBridgeStatus');
                 const copy = document.getElementById('mvRoleBridgeCopy');
                 const grid = document.getElementById('mvRoleBridgeGrid');
@@ -17006,8 +18610,8 @@
                         { label: 'Score path', value: 'Checking', note: 'The bridge is deciding whether note-level analysis is active or intentionally dormant in this repository state.' }
                     );
                 } else if (noteFiles > 0 && noteEvents > 0) {
-                    status.textContent = noteFiles.toLocaleString() + ' linked notation files';
-                    copy.textContent = roleCopy[activeRole];
+                    status.textContent = noteFiles.toLocaleString() + ' linked notation files · trust ' + ((trust.grade || '—') + ' / ' + Math.round(Number(trust.score || 0) * 100));
+                    copy.textContent = roleCopy[activeRole] + ' ' + (((decisionLab.summary || {}).headline) || '');
                     bridgeCards.push(
                         { label: 'Note families', value: (topNotes[0] || {}).item || '—', note: topNotes.length ? 'Most common parsed note family in linked notation.' : 'No parsed note families yet.' },
                         { label: 'Key center', value: (topKeys[0] || {}).item || '—', note: topKeys.length ? 'Most observed key in the linked score layer.' : 'No key distribution yet.' },
@@ -17018,13 +18622,35 @@
                     const nextCandidate = priority[0] || null;
                     const coverage = bias.coverage || {};
                     status.textContent = 'Notation layer dormant by design';
-                    copy.textContent = roleCopy[activeRole];
+                    copy.textContent = roleCopy[activeRole] + ' ' + (((decisionLab.summary || {}).recommended_next_question) || '');
                     bridgeCards.push(
                         { label: 'Current state', value: '0 linked scores', note: 'The repository has public song rows but no notation-bearing files to justify note or chord claims yet.' },
                         { label: 'Best next link', value: nextCandidate ? nextCandidate.title : 'Choose a high-pressure track', note: nextCandidate ? 'Highest-priority candidate for joining score evidence back to reach and bias.' : 'Linking even one MusicXML or MIDI file is enough to wake the score-aware lane.' },
                         { label: 'Reach anchor', value: Math.round(((coverage.publication_year_share || 0) * 100)) + '% year coverage', note: 'Until notes exist, time, duration, language, and concentration remain the honest public proxies.' },
                         { label: 'What unlocks next', value: 'Notes · keys · chords', note: 'Once notation lands, the same field can test whether repeated attention is also musically repetitive.' }
                     );
+                }
+
+                if (!isLoading && strongestExperiment) {
+                    bridgeCards.push({
+                        label: 'Strongest comparison',
+                        value: strongestExperiment.median_uplift_label || '—',
+                        note: (strongestExperiment.label || 'Decision lab comparison') + ': ' + (strongestExperiment.takeaway || strongestExperiment.why_it_matters || '')
+                    });
+                }
+                if (!isLoading && strongestDrift) {
+                    bridgeCards.push({
+                        label: 'Fastest moving signal',
+                        value: strongestDrift.delta_label || '—',
+                        note: (strongestDrift.label || 'Cohort drift') + ' shifted from ' + (strongestDrift.before_label || '—') + ' to ' + (strongestDrift.after_label || '—') + '.'
+                    });
+                }
+                if (!isLoading && trust && typeof trust.score !== 'undefined') {
+                    bridgeCards.push({
+                        label: 'Trust posture',
+                        value: (trust.grade || '—') + ' · ' + Math.round(Number(trust.score || 0) * 100) + '/100',
+                        note: trust.summary || 'The decision lab keeps a separate trust read on coverage, freshness, and source balance.'
+                    });
                 }
 
                 grid.innerHTML = bridgeCards.map(function (item) {
@@ -17034,6 +18660,33 @@
                         + '<span class="s">' + item.note + '</span>'
                         + '</div>';
                 }).join('');
+            },
+
+            bindRoleActions() {
+                const host = document.getElementById('mvRoleActions');
+                if (!host) return;
+                host.querySelectorAll('.mv-role-action[data-role-tab]').forEach((btn) => {
+                    btn.addEventListener('click', () => {
+                        const tab = btn.dataset.roleTab || 'music';
+                        const target = btn.dataset.roleTarget || '';
+                        const nav = Array.from(document.querySelectorAll('.nav-tab')).find((node) => (node.getAttribute('onclick') || '').includes("'" + tab + "'")) || null;
+                        showTab(tab, nav);
+                        if (!target) return;
+                        if (tab === 'music') {
+                            this.jumpToSection(target);
+                            return;
+                        }
+                        requestAnimationFrame(() => {
+                            const node = document.getElementById(target);
+                            if (node) {
+                                node.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                                if (typeof StreamLensApp !== 'undefined' && StreamLensApp && typeof StreamLensApp.pulseSection === 'function') {
+                                    window.setTimeout(() => StreamLensApp.pulseSection(node), 220);
+                                }
+                            }
+                        });
+                    });
+                });
             },
 
             renderRoleLens() {
@@ -17061,6 +18714,8 @@
                 const confidenceLabel = document.getElementById('mvRoleConfidenceLabel');
                 const factors = document.getElementById('mvRoleFactors');
                 const proof = document.getElementById('mvRoleProof');
+                const question = document.getElementById('mvRoleQuestion');
+                const actions = document.getElementById('mvRoleActions');
                 this.syncRoleSwitch();
                 if (kicker) kicker.textContent = theme.title;
                 if (title) title.textContent = lens.title || theme.title;
@@ -17071,11 +18726,19 @@
                 if (confidence) confidence.textContent = Math.round(surface.confidence) + '%';
                 if (confidenceLabel) confidenceLabel.textContent = surface.confidenceLabel;
                 if (factors) {
-                    factors.innerHTML = (surface.factors || []).map(function (factor) {
+                    const factorPalette = [
+                        ['#ffe2aa', '#f0779f', '#8fe5dd'],
+                        ['#d8d0ff', '#5566f6', '#9ee6dd'],
+                        ['#ffd7e6', '#f4a259', '#ffe2aa'],
+                        ['#d8f1ff', '#7c3aed', '#ffc6d8'],
+                        ['#ffe8bc', '#0fb6a8', '#d2ceff']
+                    ];
+                    factors.innerHTML = (surface.factors || []).map(function (factor, index) {
+                        const palette = factorPalette[index % factorPalette.length];
                         return '<div class="mv-role-factor">'
                             + '<span class="k">' + factor.label + '</span>'
                             + '<div class="v"><span>' + factor.valueLabel + '</span><span>' + Math.round(factor.value * 100) + '%</span></div>'
-                            + '<div class="mv-role-factorbar"><span style="width:' + Math.max(4, Math.round(factor.value * 100)) + '%"></span></div>'
+                            + '<div class="mv-role-factorbar"><span style="width:' + Math.max(4, Math.round(factor.value * 100)) + '%;--factor-start:' + palette[0] + ';--factor-mid:' + palette[1] + ';--factor-end:' + palette[2] + ';"></span></div>'
                             + '<span class="s">' + factor.note + '</span>'
                             + '</div>';
                     }).join('');
@@ -17089,6 +18752,22 @@
                         '</div>';
                     }).join('');
                 }
+                if (question) {
+                    question.innerHTML = '<b>Question to keep open:</b> ' + (lens.question || 'Which part of this conclusion still needs to earn its way into a decision?');
+                }
+                if (actions) {
+                    const moves = Array.isArray(lens.next_moves) ? lens.next_moves : [];
+                    actions.innerHTML = moves.length
+                        ? moves.map((move) => (
+                            '<button type="button" class="mv-role-action" data-role-tab="' + (move.tab || 'music') + '" data-role-target="' + (move.target || '') + '">'
+                            + '<span class="k">' + ((move.tab || 'music') === 'music' ? 'Open this lane' : 'Cross-check next') + '</span>'
+                            + '<span class="v">' + (move.label || 'Open next surface') + '</span>'
+                            + '<span class="s">' + (move.note || 'Use the next surface to pressure-test the current read.') + '</span>'
+                            + '</button>'
+                        )).join('')
+                        : '<button type="button" class="mv-role-action" data-role-tab="music" data-role-target="mvSongsExplorer"><span class="k">Open this lane</span><span class="v">Walk the source rows</span><span class="s">Stay close to the evidence when the summary starts sounding too neat.</span></button>';
+                    this.bindRoleActions();
+                }
                 this.renderRoleBridge(role, lens, surface, false);
             },
 
@@ -17096,6 +18775,9 @@
                 const b = this._data.bias || {};
                 const p = this._data.predictability || {};
                 const r = this._data.resonance || {};
+                const d = this._data.decisionLab || {};
+                const embodied = d.embodied || {};
+                const embodiedIndex = embodied.summary_index || {};
                 const coverage = Math.max(0, Math.min(1, Number(((b.coverage || {}).confidence) || ((b.bias_scores || {}).coverage_confidence) || 0)));
                 const genreDiversity = Math.max(0, Math.min(1, Number(((b.classified_genres || {}).diversity) || ((b.bias_scores || {}).genre_diversity) || 0)));
                 const knownGenreShare = Math.max(0, Math.min(1, Number(((b.coverage || {}).genre_known_share) || ((b.bias_scores || {}).known_genre_share) || 0)));
@@ -17105,54 +18787,71 @@
                 const collabOpen = Math.max(0, Math.min(1, Number(((b.collaboration || {}).collab_view_share) || 0)));
                 const resonanceStability = Math.max(0, Math.min(1, Number((((r || {}).scorecard || {}).stability) || 0)));
                 const predictability = Math.max(0, Math.min(1, (Number(p.ensemble_r2 || 0) + 0.1) / 0.65));
+                const trustScore = Math.max(0, Math.min(1, Number(((d.trust || {}).score) || 0)));
+                const somaticInvitation = Math.max(0, Math.min(1, Number(embodiedIndex.somatic_pull || 0)));
+                const communalCarry = Math.max(0, Math.min(1, Number(embodiedIndex.communal_carry || 0)));
+                const noveltyRoom = Math.max(0, Math.min(1, Number(embodiedIndex.novelty_room || 0)));
+                const inheritancePressure = Math.max(0, Math.min(1, Number(embodiedIndex.inheritance_pressure || 0)));
+                const corridorBalance = Math.max(0, Math.min(1, Number(embodiedIndex.corridor_balance || 0)));
+                const strongestExperiment = ((d.experiments || {}).strongest) || {};
+                const strongestDrift = (((d.drift || {}).highlights) || [])[0] || {};
+                const experimentStrength = Math.max(0, Math.min(1, Math.abs(Math.log(Math.max(Number(strongestExperiment.median_uplift_ratio || 1), 1e-6))) / Math.log(3)));
+                const driftStrength = Math.max(0, Math.min(1, Math.abs(Number(strongestDrift.relative_change || 0)) / 0.75));
 
                 const profiles = {
                     artist: {
-                        score: (concentrationRelief * 0.34) + (genreDiversity * 0.26) + (collabOpen * 0.2) + (resonanceStability * 0.2),
-                        confidence: (coverage * 0.55) + (knownGenreShare * 0.45),
+                        score: (noveltyRoom * 0.24) + (concentrationRelief * 0.22) + (genreDiversity * 0.14) + (communalCarry * 0.16) + (resonanceStability * 0.12) + (experimentStrength * 0.12),
+                        confidence: (coverage * 0.48) + (knownGenreShare * 0.32) + (trustScore * 0.2),
                         scoreLabel: 'How much room is left for a new release shape to breathe.',
                         confidenceLabel: 'How much of that read is backed by classified rows instead of unlabeled spillover.',
                         factors: [
+                            { label: 'Novelty room', value: noveltyRoom, valueLabel: Math.round(noveltyRoom * 100) + '/100', note: 'Higher means the field still leaves room for a new musical or packaging move beyond the incumbent corridor.' },
                             { label: 'Room left', value: concentrationRelief, valueLabel: 'Concentration relief', note: 'Higher means fewer incumbents absorb the whole field before a new song arrives.' },
+                            { label: 'Communal carry', value: communalCarry, valueLabel: Math.round(communalCarry * 100) + '/100', note: 'Useful when engagement and collaboration are helping tracks travel beyond pure scale.' },
                             { label: 'Genre spread', value: genreDiversity, valueLabel: 'Classified diversity', note: 'Higher means the visible genre field is less trapped inside one family.' },
-                            { label: 'Collab opening', value: collabOpen, valueLabel: 'Collaboration share', note: 'Useful when partnerships are still a credible route into reach.' },
-                            { label: 'Repeat durability', value: resonanceStability, valueLabel: 'Resonance stability', note: 'Higher means the tracks that repeat keep doing so with less volatility.' }
+                            { label: 'Repeat durability', value: resonanceStability, valueLabel: 'Resonance stability', note: 'Higher means the tracks that repeat keep doing so with less volatility.' },
+                            { label: 'Experiment lift', value: experimentStrength, valueLabel: strongestExperiment.median_uplift_label || '1.00x', note: 'Uses the strongest controlled comparison in the public field instead of intuition alone.' }
                         ]
                     },
                     consumer: {
-                        score: (genreDiversity * 0.34) + (languageBreadth * 0.26) + (concentrationRelief * 0.24) + (publicationCoverage * 0.16),
-                        confidence: (coverage * 0.52) + (publicationCoverage * 0.48),
+                        score: (corridorBalance * 0.22) + (genreDiversity * 0.18) + (languageBreadth * 0.16) + (somaticInvitation * 0.16) + (concentrationRelief * 0.14) + (publicationCoverage * 0.14),
+                        confidence: (coverage * 0.4) + (publicationCoverage * 0.32) + (trustScore * 0.28),
                         scoreLabel: 'How likely the discovery field is to feel broad instead of polished-but-repetitive.',
                         confidenceLabel: 'How safely you can read variety here without over-trusting missing labels.',
                         factors: [
+                            { label: 'Corridor balance', value: corridorBalance, valueLabel: Math.round(corridorBalance * 100) + '/100', note: 'Higher means attention is less trapped inside one cultural corridor.' },
                             { label: 'Catalog breadth', value: genreDiversity, valueLabel: 'Genre diversity', note: 'Higher means discovery is less likely to collapse into one lane.' },
                             { label: 'Language reach', value: languageBreadth, valueLabel: 'Language breadth', note: 'Higher means the public field offers more than one language path into attention.' },
+                            { label: 'Bodily invitation', value: somaticInvitation, valueLabel: Math.round(somaticInvitation * 100) + '/100', note: 'A public proxy for how strongly the field keeps rewarding repeat-ready shapes.' },
                             { label: 'Attention spread', value: concentrationRelief, valueLabel: 'Top-10 relief', note: 'Higher means fewer songs monopolise the field at the top.' },
                             { label: 'Time depth', value: publicationCoverage, valueLabel: 'Year coverage', note: 'Higher means the public context has enough publication history to trust a variety claim.' }
                         ]
                     },
                     business: {
-                        score: (concentrationRelief * 0.3) + (predictability * 0.28) + (coverage * 0.22) + (resonanceStability * 0.2),
-                        confidence: (coverage * 0.6) + (predictability * 0.4),
+                        score: (predictability * 0.18) + (experimentStrength * 0.18) + ((1 - inheritancePressure) * 0.18) + (communalCarry * 0.14) + (resonanceStability * 0.12) + (coverage * 0.10) + (noveltyRoom * 0.10),
+                        confidence: (coverage * 0.42) + (predictability * 0.28) + (trustScore * 0.3),
                         scoreLabel: 'How usable the field is for repeatable strategy rather than winner folklore.',
                         confidenceLabel: 'How much of the read can survive diligence, not just a good pitch.',
                         factors: [
                             { label: 'Repeatability', value: predictability, valueLabel: 'Model lift', note: 'Higher means more of the field can be explained without pretending luck does not exist.' },
-                            { label: 'Market openness', value: concentrationRelief, valueLabel: 'Concentration relief', note: 'Higher means the business surface is not fully locked by a tiny winner ring.' },
+                            { label: 'Low inheritance', value: 1 - inheritancePressure, valueLabel: Math.round((1 - inheritancePressure) * 100) + '/100', note: 'Higher means the field is less dependent on incumbent scale and official packaging.' },
+                            { label: 'Communal carry', value: communalCarry, valueLabel: Math.round(communalCarry * 100) + '/100', note: 'Useful when a release is converting social energy into measurable lift.' },
                             { label: 'Evidence posture', value: coverage, valueLabel: 'Coverage confidence', note: 'Higher means more of the public rows carry enough labels to defend the claim.' },
-                            { label: 'Signal stability', value: resonanceStability, valueLabel: 'Resonance stability', note: 'Higher means repeat attention is less erratic and easier to plan around.' }
+                            { label: 'Signal stability', value: resonanceStability, valueLabel: 'Resonance stability', note: 'Higher means repeat attention is less erratic and easier to plan around.' },
+                            { label: 'Controlled lift', value: experimentStrength, valueLabel: strongestExperiment.median_uplift_label || '1.00x', note: 'A higher value means at least one release-shape comparison is moving the median in a measurable way.' }
                         ]
                     },
                     research: {
-                        score: (coverage * 0.32) + (publicationCoverage * 0.22) + (knownGenreShare * 0.22) + (concentrationRelief * 0.24),
-                        confidence: coverage,
+                        score: (coverage * 0.2) + (publicationCoverage * 0.16) + (knownGenreShare * 0.14) + (corridorBalance * 0.14) + (trustScore * 0.16) + (driftStrength * 0.12) + (noveltyRoom * 0.08),
+                        confidence: (coverage * 0.58) + (trustScore * 0.42),
                         scoreLabel: 'How much of the claim is supported by visible labels, dates, and separable cohorts.',
                         confidenceLabel: 'This is the direct coverage posture of the current public evidence surface.',
                         factors: [
                             { label: 'Label coverage', value: coverage, valueLabel: 'Coverage confidence', note: 'Higher means more of the claim is tied to rows with explicit public fields.' },
                             { label: 'Time coverage', value: publicationCoverage, valueLabel: 'Publication years', note: 'Higher means time-based claims are less exposed to missing year data.' },
                             { label: 'Genre observability', value: knownGenreShare, valueLabel: 'Known-genre share', note: 'Higher means genre conclusions come from labeled rows rather than unlabeled spillover.' },
-                            { label: 'Concentration control', value: concentrationRelief, valueLabel: 'Top-10 relief', note: 'Higher means the field is less distorted by a tiny winner cluster before you model it.' }
+                            { label: 'Corridor balance', value: corridorBalance, valueLabel: Math.round(corridorBalance * 100) + '/100', note: 'Higher means cultural circulation is less trapped inside one dominant lane.' },
+                            { label: 'Cohort drift', value: driftStrength, valueLabel: strongestDrift.delta_label || '0.0', note: 'This captures how much the dated field is moving before a headline gets treated as durable.' }
                         ]
                     }
                 };
@@ -17167,7 +18866,13 @@
                     proof: 'This role read is grounded in ' + Math.round(coverage * 100) + '% coverage confidence, '
                         + Math.round(knownGenreShare * 100) + '% known-genre share, '
                         + Math.round(publicationCoverage * 100) + '% year coverage, and a top-10 attention share of '
-                        + Math.round((1 - concentrationRelief) * 100) + '%. The score is directional, not a promise.'
+                        + Math.round((1 - concentrationRelief) * 100) + '%. The strongest controlled comparison currently reads '
+                        + (strongestExperiment.median_uplift_label || '1.00x')
+                        + ', while the sharpest dated drift is '
+                        + (strongestDrift.delta_label || '0.0')
+                        + '. The embodied proxy layer currently reads '
+                        + Math.round(somaticInvitation * 100) + '/100 bodily invitation and '
+                        + Math.round(noveltyRoom * 100) + '/100 novelty room. The score is directional, not a promise.'
                 };
             },
 

@@ -220,17 +220,40 @@ def test_data_engineering_surface(client):
     res = client.get('/api/system/data-engineering')
     assert res.status_code == 200
     body = res.json()
-    assert {'generated_at', 'operating_model', 'service_levels', 'delivery_surfaces', 'stages', 'lineage', 'contracts', 'quality_highlights'} <= set(body)
+    assert {'generated_at', 'operating_model', 'service_levels', 'delivery_surfaces', 'stages', 'lineage', 'reproducibility', 'contracts', 'quality_highlights'} <= set(body)
     assert body['operating_model']['dataset_count'] >= 2
     assert len(body['service_levels']) >= 4
     assert len(body['delivery_surfaces']) >= 3
     assert len(body['stages']) >= 4
     assert len(body['contracts']) >= 2
+    assert body['reproducibility']['seed'] == 42
+    assert len(body['reproducibility']['default_sample_sizes']) >= 4
     first_contract = body['contracts'][0]
     assert {'dataset_id', 'grain', 'primary_key', 'partition_keys', 'quality_checks', 'schema_profile', 'schema'} <= set(first_contract)
     assert len(first_contract['quality_checks']) >= 3
     assert len(first_contract['schema']) >= 5
     assert first_contract['schema_profile']['column_count'] >= 5
+
+
+def test_governance_surface(client):
+    res = client.get('/api/system/governance')
+    assert res.status_code == 200
+    body = res.json()
+    assert {'summary', 'domains', 'questions', 'contribution_paths'} <= set(body)
+    assert body['summary']['repository_mode'] == 'independent_open_source_surface'
+    assert len(body['domains']) >= 5
+    assert any(domain['id'] == 'gdpr_boundary' for domain in body['domains'])
+
+
+def test_streaming_readiness_surface(client):
+    res = client.get('/api/system/streaming-readiness')
+    assert res.status_code == 200
+    body = res.json()
+    assert {'positioning', 'architecture_concerns', 'production_expectations_missing', 'roadmap'} <= set(body)
+    assert body['positioning']['maturity_label'] == 'research_foundation_with_operational_signals'
+    assert len(body['architecture_concerns']) >= 3
+    assert len(body['production_expectations_missing']['runtime_guarantees']) >= 5
+    assert len(body['roadmap']['quick_wins']) >= 3
 
 
 def test_bias_propagation_surface(client):

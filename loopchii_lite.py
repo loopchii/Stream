@@ -77,7 +77,7 @@ PRESETS: tuple[DemoPreset, ...] = (
         label="Let ordinary work pass cleanly",
         prompt="Summarize the strongest genre shifts in the public music data and give me three honest caveats.",
         category="safe",
-        nuisance="Shows the guard surface gets out of the way when the request is ordinary and well-bounded.",
+        nuisance="Shows the guard surface gets out of the way when the request is ordinary and clearly safe.",
         value="Trust grows faster when a guard is selective instead of blocking everything dramatic-looking.",
     ),
 )
@@ -141,7 +141,7 @@ PROFILE_MAP = {
         "intercept_ms": 13,
     },
     "safe": {
-        "label": "Ordinary bounded request",
+        "label": "Ordinary safe request",
         "prompt_terms": (),
         "matched_terms": (),
         "standard_prefix": "",
@@ -242,4 +242,3 @@ def _compose_standard_response(profile: dict) -> str:
         )
         if part.strip()
     )
-

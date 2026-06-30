@@ -1,0 +1,4 @@
+-r requirements.txt
+httpx>=0.27
+pytest>=7.4
+flake8>=6.1

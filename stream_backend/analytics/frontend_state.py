@@ -44,7 +44,7 @@ def build_frontend_state(
         comparatives=build_comparative_surface(representation, music_report, music_index),
         critical_spine=critical_spine,
         note_signals=build_note_signal_surface(music_index),
-        governance=build_governance_surface(data_engineering, representation),
+        governance=build_governance_surface(data_engineering, representation, music_report),
         freshness=build_freshness_surface(generated_at, representation, music_report, music_index),
     )
     payload = envelope.to_dict()

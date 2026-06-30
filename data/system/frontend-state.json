@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-06-30T15:59:59+00:00",
+  "generated_at": "2026-06-30T19:22:15+00:00",
   "sample_size": 5000,
   "hero": {
     "headline": "Public analysis should be able to survive a second question.",
@@ -61,102 +61,106 @@
     "music": {
       "artist": {
         "title": "Artist read",
-        "summary": {
-          "title": "Artist lens",
-          "summary": "This is a market-shape read, not a songwriting oracle. In the classified slice, Electronic/Dance carries the strongest share of visible attention, the strongest duration pocket is 3–4 min, and collaboration helps most when it expands reach without making the track anonymous.",
-          "signals": [
-            {
-              "label": "Known-genre leader",
-              "value": "Electronic/Dance"
-            },
-            {
-              "label": "Collab view share",
-              "value": "39.1%"
-            },
-            {
-              "label": "Known-genre diversity",
-              "value": "0.473"
-            },
-            {
-              "label": "Top duration band",
-              "value": "3–4 min"
-            }
-          ],
-          "takeaway": "The practical question is not which genre is supposedly 'best.' It is whether your release shape can still find oxygen once attention narrows around a few familiar patterns."
-        },
+        "summary": "This is a market-shape read, not a songwriting oracle. In the classified slice, Pop carries the strongest share of visible attention, the strongest duration pocket is 3–4 min, and collaboration helps most when it expands reach without making the track anonymous.",
+        "question": "Where does the field still leave room for a release to feel distinct instead of merely legible to an existing machine?",
+        "next_moves": [
+          {
+            "label": "Study release archetypes",
+            "note": "See the distinct ways tracks reached the field before turning one winner into a universal template.",
+            "tab": "music",
+            "target": "mvArchetypes"
+          },
+          {
+            "label": "Test a hypothetical upload",
+            "note": "Change duration, packaging, tags, and channel size to see what moves the percentile story.",
+            "tab": "music",
+            "target": "mvWhatIf"
+          },
+          {
+            "label": "Walk the source rows",
+            "note": "Drop back to the songs themselves before borrowing a pattern into a real release decision.",
+            "tab": "music",
+            "target": "mvSongsExplorer"
+          }
+        ],
         "stakes": "Exposure, collaboration timing, release shape, and category crowding."
       },
       "consumer": {
         "title": "Consumer read",
-        "summary": {
-          "title": "Consumer lens",
-          "summary": "Listeners are moving through a field that is both concentrated and partially labeled. The visible publication window spans 2009 to 2025, but only 26% of rows carry public year data, which means breadth has to be read with some caution.",
-          "signals": [
-            {
-              "label": "Languages detected",
-              "value": "5"
-            },
-            {
-              "label": "English share",
-              "value": "92.7%"
-            },
-            {
-              "label": "Known-genre coverage",
-              "value": "15%"
-            },
-            {
-              "label": "Publication span",
-              "value": "2009–2025"
-            }
-          ],
-          "takeaway": "A healthy discovery system should feel broader than its hit list. If the surface feels repetitive, the numbers suggest you may not be imagining it."
-        },
+        "summary": "Listeners are moving through a field that is both concentrated and partially labeled. The visible publication window spans 2009 to 2026, but only 28% of rows carry public year data, which means breadth has to be read with some caution.",
+        "question": "Is this field genuinely broad, or does it only feel broad because the same corridor keeps repainting itself in new colors?",
+        "next_moves": [
+          {
+            "label": "Trace the tag universe",
+            "note": "See whether discovery is wide or still circling inside a tight tag neighborhood.",
+            "tab": "music",
+            "target": "mvNetwork"
+          },
+          {
+            "label": "Read the bias surface",
+            "note": "Check who gets the front row once language, genre, and collaboration are counted together.",
+            "tab": "music",
+            "target": "mvBias"
+          },
+          {
+            "label": "Inspect the public rows",
+            "note": "Stay close to the songs when the discovery story starts sounding too polished.",
+            "tab": "music",
+            "target": "mvSongsExplorer"
+          }
+        ],
         "stakes": "Discovery quality, variety, and whether recommendation loops keep collapsing back to the same center."
       },
       "business": {
         "title": "Business read",
-        "summary": {
-          "title": "Business lens",
-          "summary": "Attention remains narrow enough that a small set of channels can still steer the visible market. The top 5 hold 12.5% of views and the top 10 hold 19.1%, which is useful if you need to separate repeatable distribution logic from one-off mythology.",
-          "signals": [
-            {
-              "label": "Top 5 concentration",
-              "value": "12.5%"
-            },
-            {
-              "label": "Coverage confidence",
-              "value": "31%"
-            },
-            {
-              "label": "Views parity",
-              "value": "0.63x"
-            }
-          ],
-          "takeaway": "The value is not 'which song went viral.' It is which conditions keep narrowing or opening the market across multiple cohorts."
-        },
+        "summary": "Attention remains narrow enough that a small set of channels can still steer the visible market. The top 5 hold 12.5% of views and the top 10 hold 19.1%, which is useful if you need to separate repeatable distribution logic from one-off mythology.",
+        "question": "Which signals still move the market after inherited scale is discounted, and which ones only look strong because the room was preloaded?",
+        "next_moves": [
+          {
+            "label": "Pressure-test predictability",
+            "note": "Separate controllable lift from folklore by checking what the ensemble can explain.",
+            "tab": "music",
+            "target": "mvPredictability"
+          },
+          {
+            "label": "Inspect raw vs partial signals",
+            "note": "See which correlations survive after channel size stops dominating the picture.",
+            "tab": "music",
+            "target": "mvCorrelation"
+          },
+          {
+            "label": "Read the cultural field",
+            "note": "Move into corridor balance, inheritance pressure, and authenticity posture before productizing the conclusion.",
+            "tab": "music",
+            "target": "mvSongsExplorer"
+          }
+        ],
         "stakes": "Channel concentration, inventory risk, promotional efficiency, and repeatable lift."
       },
       "research": {
         "title": "Research read",
-        "summary": {
-          "title": "Research lens",
-          "summary": "The useful question is not whether a pattern exists somewhere, but whether it survives classification gaps, coverage limits, and cohort changes. This lane is strongest when it keeps the leaderboard separate from the broader structural context instead of pretending they are the same thing.",
-          "signals": [
-            {
-              "label": "Genre Gini",
-              "value": "0.838"
-            },
-            {
-              "label": "Coverage confidence",
-              "value": "31%"
-            },
-            {
-              "label": "Observed years",
-              "value": "12"
-            }
-          ],
-          "takeaway": "The method earns trust when the story gets smaller where coverage is weak, and sharper where multiple checks agree."
-        },
+        "summary": "The useful question is not whether a pattern exists somewhere, but whether it survives classification gaps, coverage limits, and cohort changes. This lane is strongest when it keeps the leaderboard separate from the broader structural context instead of pretending they are the same thing.",
+        "question": "Which claims shrink under coverage pressure, and which ones stay sharp enough to survive disagreement?",
+        "next_moves": [
+          {
+            "label": "Audit the dated field",
+            "note": "Check timeline gaps, known-year share, and whether a temporal story is carrying more certainty than the rows allow.",
+            "tab": "music",
+            "target": "mvBias"
+          },
+          {
+            "label": "Inspect the row layer",
+            "note": "Keep the conclusion close to the source rows instead of repeating an abstracted summary.",
+            "tab": "music",
+            "target": "mvSongsExplorer"
+          },
+          {
+            "label": "Open the methods surface",
+            "note": "Cross-check assumptions, quality gates, and contract posture before treating the output as settled.",
+            "tab": "learn",
+            "target": "learnDataSystem"
+          }
+        ],
         "stakes": "Cohort integrity, feature leakage, and longitudinal comparability."
       },
       "catalog_size": 100
@@ -204,7 +208,7 @@
     ]
   },
   "critical_spine": {
-    "generated_at": "2026-06-30T15:59:59+00:00",
+    "generated_at": "2026-06-30T19:22:15+00:00",
     "sample_size": 5000,
     "summary": {
       "posture": "critical_reading_before_claims",
@@ -440,6 +444,17 @@
     ]
   },
   "governance": {
+    "summary": {
+      "title": "Public governance contract",
+      "repository_mode": "independent_open_source_surface",
+      "independence_note": "This repository runs on its own public Python, static-export, and browser stack. It is not a thin shell over a private LOOPCHii platform service.",
+      "claim_boundary": "Governance here means public evidence, visible controls, and explicit human-review thresholds. It does not mean private-platform enforcement has been open-sourced.",
+      "quality_check_count": 0,
+      "pass_rate": 0.0,
+      "readiness_score": 0.674,
+      "readiness_grade": "C+",
+      "human_review_required": true
+    },
     "quality_check_count": 0,
     "pass_count": 0,
     "warn_count": 0,
@@ -448,15 +463,225 @@
       "synthetic_dataset": null,
       "music_dataset": null
     },
-    "insight_count": 7
+    "insight_count": 7,
+    "domains": [
+      {
+        "id": "fairness_controls",
+        "label": "Algorithmic fairness",
+        "score": 0.74,
+        "grade": "B-",
+        "status": "watch",
+        "headline": "The fairness lane is usable, but it is not self-certifying.",
+        "note": "Industry-level readiness is B-. Diversity (0.713), parity (0.744), dialogue equity (0.743), and screen equity (0.761) all need to travel together before this repo should present a calm fairness story.",
+        "evidence": [
+          {
+            "label": "Industry grade",
+            "value": "B-",
+            "note": "Compressed read across the four representation dimensions."
+          },
+          {
+            "label": "Parity point",
+            "value": "0.744",
+            "note": "Centered closer to 1.0 means less headline imbalance."
+          },
+          {
+            "label": "Diversity point",
+            "value": "0.713",
+            "note": "Breadth matters, but it is not the whole fairness picture."
+          },
+          {
+            "label": "Average confidence spread",
+            "value": "0.039",
+            "note": "Wider bands mean the fairness claim should stay softer."
+          }
+        ],
+        "route": {
+          "tab": "scorecard",
+          "target": "scorecardVerdict",
+          "label": "Open decision grade"
+        }
+      },
+      {
+        "id": "discrimination_pressure",
+        "label": "Discrimination pressure",
+        "score": 0.534,
+        "grade": "D+",
+        "status": "caution",
+        "headline": "The effect sizes are too large to wave away as presentation noise.",
+        "note": "Dialogue-related group differences stay material. The strongest current effect is gender dialogue at Cramér's V 0.576 (large). That means this surface should raise structural-risk questions, not only summarize distribution.",
+        "evidence": [
+          {
+            "label": "Mean effect pressure",
+            "value": "0.466",
+            "note": "Average Cramér's V across the measured dialogue disparity tests."
+          },
+          {
+            "label": "Gender dialogue",
+            "value": "0.576",
+            "note": "If this stays high, role voice is still stratified."
+          },
+          {
+            "label": "Racial dialogue",
+            "value": "0.522",
+            "note": "High values mean speaking share is not distributing neutrally."
+          },
+          {
+            "label": "Age dialogue",
+            "value": "0.300",
+            "note": "Generational visibility can flatten long before it is obvious in the UI."
+          }
+        ],
+        "route": {
+          "tab": "library",
+          "target": "libraryPropagationStudio",
+          "label": "Trace propagation"
+        }
+      },
+      {
+        "id": "data_scope",
+        "label": "Data-scope discipline",
+        "score": 1.0,
+        "grade": "A+",
+        "status": "pass",
+        "headline": "The public scope is tight enough to inspect without pretending to be a private trust platform.",
+        "note": "The repo keeps synthetic representation data and public music rows in separate lanes, exposes the contract for both, and avoids direct contact or location fields in the current contracted schemas. That is strong public-scope discipline.",
+        "evidence": [
+          {
+            "label": "Contracted datasets",
+            "value": "0",
+            "note": "Separate lanes help keep methods and claims honest."
+          },
+          {
+            "label": "Risky fields detected",
+            "value": "0",
+            "note": "Count of direct-identifier style field names in the public schemas."
+          },
+          {
+            "label": "Lane separation",
+            "value": "yes",
+            "note": "Synthetic and public lanes should remain visibly distinct."
+          },
+          {
+            "label": "Manual refresh disclosure",
+            "value": "yes",
+            "note": "The music lane does not pretend to be a hidden live ingestion firehose."
+          }
+        ],
+        "route": {
+          "tab": "learn",
+          "target": "learnDataSystem",
+          "label": "Inspect contracts"
+        }
+      },
+      {
+        "id": "gdpr_boundary",
+        "label": "GDPR and consent boundary",
+        "score": 0.67,
+        "grade": "C+",
+        "status": "watch",
+        "headline": "Useful for public research, not sufficient for subject-rights automation.",
+        "note": "This repository is an open-source analysis repo. It does not implement lawful-basis routing, DSAR handling, deletion receipts, or per-subject consent tracking. That is the right boundary for open work, and it should stay visible.",
+        "evidence": [
+          {
+            "label": "Personal contact fields",
+            "value": "0",
+            "note": "The current public schemas avoid obvious personal-contact columns."
+          },
+          {
+            "label": "Subject-rights flows",
+            "value": "not implemented",
+            "note": "There is no DSAR or deletion orchestration in this repo today."
+          },
+          {
+            "label": "Refresh posture",
+            "value": "manual + declared",
+            "note": "Public-source refreshes are explicit instead of silently continuous."
+          },
+          {
+            "label": "Public-source lane",
+            "value": "yes",
+            "note": "The music module is built from committed public datasets."
+          }
+        ],
+        "route": {
+          "tab": "learn",
+          "target": "learnDataSystem",
+          "label": "Read the boundary"
+        }
+      },
+      {
+        "id": "human_review",
+        "label": "Decision and human review",
+        "score": 0.427,
+        "grade": "D-",
+        "status": "caution",
+        "headline": "The repo should route decisions, not finalize them alone.",
+        "note": "Trust posture is C+, year support lands at 0.222, and the average confidence spread is 0.039. That is enough to guide review and prioritization, but high-stakes calls still need a human.",
+        "evidence": [
+          {
+            "label": "Trust score",
+            "value": "0.682",
+            "note": "Public music trust surface: coverage, source balance, and freshness."
+          },
+          {
+            "label": "Time support",
+            "value": "0.222",
+            "note": "Explicit years count more than inferred ones when the question is trend."
+          },
+          {
+            "label": "Pass rate",
+            "value": "0%",
+            "note": "Visible quality gates that passed in the current contracted datasets."
+          },
+          {
+            "label": "Human review",
+            "value": "required",
+            "note": "A visible guard against auto-escalating soft evidence."
+          }
+        ],
+        "route": {
+          "tab": "music",
+          "target": "mvAuditPanel",
+          "label": "Open audit"
+        }
+      }
+    ],
+    "questions": [
+      "Would this claim still hold if the inferred-year rows were removed?",
+      "Are we describing a fairness gap, or flattening a genre or platform confounder into one story?",
+      "Is this surface helping a human review better, or is it being asked to make the decision by itself?",
+      "What extra metadata would turn the weakest governance grade into something more defensible?"
+    ],
+    "contribution_paths": [
+      {
+        "title": "Strengthen fairness tests",
+        "detail": "Add deeper subgroup checks, counterfactual analysis, or stronger uncertainty explanations where current effect sizes stay large.",
+        "lane": "backend"
+      },
+      {
+        "title": "Improve public-data rights posture",
+        "detail": "Document what a future consent, deletion, or lawful-basis workflow would need before this surface could handle private user data.",
+        "lane": "docs"
+      },
+      {
+        "title": "Expand year and source coverage carefully",
+        "detail": "The trust surface improves when more rows carry explicit time and language labels without pretending certainty where the source is thin.",
+        "lane": "data"
+      },
+      {
+        "title": "Keep the boundary legible in the UI",
+        "detail": "Refine the browser flow so readers can see when a result is strong enough to act on and when it still needs a person in the loop.",
+        "lane": "ui"
+      }
+    ]
   },
   "freshness": {
-    "generated_at": "2026-06-30T15:59:59+00:00",
+    "generated_at": "2026-06-30T19:22:15+00:00",
     "representation_run_rows": 5000,
     "publication_year_share": 0.193,
-    "inferred_year_share": 0.071,
+    "inferred_year_share": 0.083,
     "notation_files": 0,
     "matched_catalog_songs": 0
   },
-  "payload_hash": "7242697349845021000b850180fb759a9acae0d8ff903d2aa9277b43c71a349d"
+  "payload_hash": "0cde109934b6b48b5a84c20a3e3b28f271bcc20562c569c37a483d6a314ec5dc"
 }
