@@ -1564,6 +1564,24 @@
         body.pastel-theme #tab-music { --ink: #4a148c; --ink-dim: #7b4fb0; --paper: rgba(255,255,255,0.7); --line: rgba(123,31,162,0.14); }
 
         .mv-wrap { max-width: 1180px; margin: 0 auto; padding: 1.2rem 1.4rem 4rem; background: var(--halo); }
+        #tab-music .mv-panel {
+            background:
+                linear-gradient(180deg, rgba(255,255,255,0.90), rgba(244,247,255,0.78)),
+                radial-gradient(circle at top right, rgba(85,102,246,0.08), transparent 38%),
+                radial-gradient(circle at bottom left, rgba(15,182,168,0.08), transparent 32%);
+        }
+        #tab-music .mv-movement:nth-of-type(2n) .mv-panel {
+            background:
+                linear-gradient(180deg, rgba(251,247,255,0.92), rgba(243,249,255,0.80)),
+                radial-gradient(circle at top right, rgba(240,119,159,0.08), transparent 38%),
+                radial-gradient(circle at bottom left, rgba(244,162,89,0.08), transparent 34%);
+        }
+        #tab-music .mv-movement:nth-of-type(3n) .mv-panel {
+            background:
+                linear-gradient(180deg, rgba(248,252,255,0.92), rgba(240,250,249,0.80)),
+                radial-gradient(circle at top right, rgba(15,182,168,0.09), transparent 38%),
+                radial-gradient(circle at bottom left, rgba(85,102,246,0.08), transparent 34%);
+        }
 
         /* Hero / overture */
         .mv-hero {
@@ -1608,6 +1626,11 @@
 
         .mv-figures { display: grid; grid-template-columns: 1fr 1fr; gap: 0.9rem; }
         .mv-figure { background: var(--paper); border: 1px solid var(--line); border-radius: 16px; padding: 1.1rem 1.2rem; }
+        #tab-music .mv-figure {
+            background:
+                linear-gradient(160deg, rgba(255,255,255,0.96), rgba(246,248,255,0.88)),
+                radial-gradient(circle at top right, rgba(85,102,246,0.08), transparent 40%);
+        }
         .mv-figure .k { font-family: 'Space Grotesk', monospace; font-size: 1.8rem; font-weight: 600; color: var(--indigo); letter-spacing: -0.02em; }
         .mv-figure .l { font-size: 0.78rem; letter-spacing: 0.04em; color: var(--ink-dim); margin-top: 0.2rem; }
         .mv-figure .ci { font-size: 0.72rem; color: var(--ink-dim); margin-top: 0.35rem; font-family: 'Space Grotesk', monospace; }
@@ -1628,6 +1651,11 @@
         .mv-bar.neg > span { background: linear-gradient(90deg, var(--rose), var(--amber)); }
         .mv-corr-row .val { font-family: 'Space Grotesk', monospace; font-size: 0.84rem; text-align: right; color: var(--ink-dim); }
         .mv-toggle { display: inline-flex; gap: 0.3rem; background: rgba(40,46,86,0.06); border-radius: 999px; padding: 0.25rem; margin-bottom: 1rem; }
+        #tab-music .mv-toggle,
+        #tab-music .mv-seg {
+            background: linear-gradient(180deg, rgba(255,255,255,0.78), rgba(236,240,255,0.68));
+            border: 1px solid rgba(85,102,246,0.10);
+        }
         .mv-toggle button { border: none; background: transparent; padding: 0.4rem 0.9rem; border-radius: 999px; font-size: 0.82rem; cursor: pointer; color: var(--ink-dim); font-weight: 500; transition: all 0.2s ease; }
         .mv-toggle button.active { background: var(--paper); color: var(--ink); box-shadow: 0 4px 12px -6px rgba(40,46,86,0.5); }
 
@@ -1641,6 +1669,11 @@
         .mv-seg button { border: none; background: transparent; padding: 0.4rem 0.95rem; border-radius: 9px; font-size: 0.82rem; cursor: pointer; color: var(--ink-dim); font-weight: 600; }
         .mv-seg button.active { background: var(--paper); color: var(--ink); box-shadow: 0 3px 10px -6px rgba(40,46,86,0.6); }
         .mv-gauge { text-align: center; padding: 1.8rem 1.4rem; border-radius: 22px; background: linear-gradient(160deg, rgba(85,102,246,0.10), rgba(15,182,168,0.08)); border: 1px solid var(--line); }
+        #tab-music .mv-gauge {
+            background:
+                linear-gradient(160deg, rgba(85,102,246,0.16), rgba(15,182,168,0.12)),
+                radial-gradient(circle at top right, rgba(240,119,159,0.12), transparent 34%);
+        }
         .mv-gauge .grade { font-family: 'Fraunces', Georgia, serif; font-size: clamp(3rem, 9vw, 4.6rem); font-weight: 600; line-height: 1; background: linear-gradient(120deg, var(--indigo), var(--teal)); -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent; }
         .mv-gauge .pct { font-family: 'Space Grotesk', monospace; font-size: 1.05rem; color: var(--ink); margin-top: 0.6rem; }
         .mv-gauge .views { font-size: 0.9rem; color: var(--ink-dim); margin-top: 0.3rem; }
@@ -4770,11 +4803,56 @@
                 return String(Math.round(n));
             },
 
+            _fallbackMusicData(key) {
+                const empty = {
+                    overview: { n_songs: 0, total_views: 0, n_channels: 0, top_song: '', data_source: 'unavailable' },
+                    powerlaw: { alpha: 0, alpha_ci: { low: 0, high: 0 }, ks_distance: 0, n: 0, xmin: 0, ccdf: [], interpretation: 'No power-law data available.' },
+                    inequality: { gini: 0, theil: 0, top3_channel_share: 0, top10_channel_share: 0, lorenz: [], top_channels: [], interpretation: 'No inequality data available.' },
+                    correlations: { rows: [], heatmap: { labels: [], matrix: [] } },
+                    archetypes: { clusters: [], points: [] },
+                    network: { n_nodes: 0, n_edges: 0, density: 0, n_communities: 0, nodes: [], edges: [], interpretation: 'No network data available.' },
+                    predictability: { ensemble_r2: 0, predictable_pct: 0, luck_pct: 100, features: [], interpretation: 'No predictability data available.' },
+                    resonance: {
+                        scorecard: { oscillation: 0, friction: 0, stability: 0, wattage_variance_proxy: 0, halt_window_ms: 0 },
+                        top_tracks: [], genre_pressure: [],
+                        year_profile: { years: [], oscillation: [], friction: [] },
+                        interpretation: 'No resonance data available.'
+                    },
+                    songs: [],
+                    status: { live_available: false, note: 'Data unavailable.' },
+                    bias: {
+                        overall_grade: '?',
+                        bias_scores: { gender_parity: 'n/a', views_parity: 'n/a', genre_diversity: 'n/a', age_diversity: 'n/a' },
+                        concentration: { top5_share: 0 },
+                        role_perspectives: {
+                            artist: { title: 'Artist lens', summary: 'Data unavailable.', takeaway: 'No data loaded.', signals: [] },
+                            consumer: { title: 'Consumer lens', summary: 'Data unavailable.', takeaway: 'No data loaded.', signals: [] },
+                            business: { title: 'Business lens', summary: 'Data unavailable.', takeaway: 'No data loaded.', signals: [] },
+                            research: { title: 'Research lens', summary: 'Data unavailable.', takeaway: 'No data loaded.', signals: [] }
+                        },
+                        interpretation: 'No bias data available.',
+                        gender: { counts: {}, avg_views_by_gender: {} },
+                        genres: { counts: {} },
+                        duration_bias: { short_under_3min: { avg_views: 0, count: 0 }, medium_3to4min: { avg_views: 0, count: 0 }, long_over_4min: { avg_views: 0, count: 0 } },
+                        collaboration: { collab_count: 0, solo_count: 0 },
+                        language_bias: { counts: {}, english_share: 0, n_languages: 0 },
+                        engagement_bias: { top_engaged_songs: [] },
+                        country_bias: { counts: {} },
+                        publication_timeline: { years: [], song_counts: [], avg_views: [] },
+                        enriched_stats: { total_songs: 0, sources: {} },
+                        genre_breakdown: []
+                    }
+                };
+                return empty[key] || {};
+            },
+
             load() {
                 if (this._loaded) return;
                 this._loaded = true;
                 const ep = ['overview','powerlaw','inequality','correlations','archetypes','network','predictability','resonance','songs','status','bias'];
-                Promise.all(ep.map(e => fetch('/api/music/' + e).then(r => r.json())))
+                Promise.all(ep.map(e => fetch('/api/music/' + e)
+                    .then(r => r.ok ? r.json() : Promise.reject(new Error(e)))
+                    .catch(() => this._fallbackMusicData(e))))
                     .then(results => {
                         const keys = ep;
                         keys.forEach((k,i) => this._data[k] = results[i]);
