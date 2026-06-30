@@ -1,0 +1,239 @@
+{
+  "generated_at": "2026-06-30T15:23:10+00:00",
+  "sample_size": 5000,
+  "hero": {
+    "headline": "Public analysis should be able to survive a second question.",
+    "subheadline": "The same backend now computes the music lane, representation lane, runtime summaries, and front-end state.",
+    "signals": [
+      {
+        "id": "representation_parity",
+        "label": "Representation parity",
+        "value": 0.744,
+        "display": "0.744",
+        "note": "Share balance in the active representation surface."
+      },
+      {
+        "id": "representation_diversity",
+        "label": "Representation breadth",
+        "value": 71.3,
+        "display": "71.3%",
+        "note": "Synthetic lane diversity index, computed in Python and exported for the UI."
+      },
+      {
+        "id": "music_top_share",
+        "label": "Attention concentration",
+        "value": 0.465,
+        "display": "46.5%",
+        "note": "Top-3 channel control share in the public music lane."
+      },
+      {
+        "id": "notation_coverage",
+        "label": "Notation-linked coverage",
+        "value": 0.0,
+        "display": "0.0%",
+        "note": "Share of catalog songs with directly linked score or notation support."
+      }
+    ],
+    "music_summary": {
+      "songs": 100,
+      "views": 10591031907,
+      "channels": 65
+    }
+  },
+  "roles": {
+    "synthetic": {
+      "researcher": {
+        "title": "Research lane",
+        "summary": "Use the synthetic lane to test method, drift, and category structure before claiming anything about a private catalog."
+      },
+      "engineer": {
+        "title": "Engineering lane",
+        "summary": "The representation surface is structured for reproducibility: deterministic seeds, explicit exports, and inspectable metrics."
+      },
+      "buyer": {
+        "title": "Buyer lane",
+        "summary": "The public surface is strongest when it helps a team see where a narrow field is being mistaken for a neutral one."
+      },
+      "grade": "F",
+      "equity_score": 0.0,
+      "diversity_index": 0.7128
+    },
+    "music": {
+      "artist": {
+        "title": "Artist read",
+        "summary": {
+          "title": "Artist lens",
+          "summary": "This is a market-shape read, not a songwriting oracle. In the classified slice, Electronic/Dance carries the strongest share of visible attention, the strongest duration pocket is 3–4 min, and collaboration helps most when it expands reach without making the track anonymous.",
+          "signals": [
+            {
+              "label": "Known-genre leader",
+              "value": "Electronic/Dance"
+            },
+            {
+              "label": "Collab view share",
+              "value": "39.1%"
+            },
+            {
+              "label": "Known-genre diversity",
+              "value": "0.473"
+            },
+            {
+              "label": "Top duration band",
+              "value": "3–4 min"
+            }
+          ],
+          "takeaway": "The practical question is not which genre is supposedly 'best.' It is whether your release shape can still find oxygen once attention narrows around a few familiar patterns."
+        },
+        "stakes": "Exposure, collaboration timing, release shape, and category crowding."
+      },
+      "consumer": {
+        "title": "Consumer read",
+        "summary": {
+          "title": "Consumer lens",
+          "summary": "Listeners are moving through a field that is both concentrated and partially labeled. The visible publication window spans 2009 to 2025, but only 26% of rows carry public year data, which means breadth has to be read with some caution.",
+          "signals": [
+            {
+              "label": "Languages detected",
+              "value": "5"
+            },
+            {
+              "label": "English share",
+              "value": "92.7%"
+            },
+            {
+              "label": "Known-genre coverage",
+              "value": "15%"
+            },
+            {
+              "label": "Publication span",
+              "value": "2009–2025"
+            }
+          ],
+          "takeaway": "A healthy discovery system should feel broader than its hit list. If the surface feels repetitive, the numbers suggest you may not be imagining it."
+        },
+        "stakes": "Discovery quality, variety, and whether recommendation loops keep collapsing back to the same center."
+      },
+      "business": {
+        "title": "Business read",
+        "summary": {
+          "title": "Business lens",
+          "summary": "Attention remains narrow enough that a small set of channels can still steer the visible market. The top 5 hold 12.5% of views and the top 10 hold 19.1%, which is useful if you need to separate repeatable distribution logic from one-off mythology.",
+          "signals": [
+            {
+              "label": "Top 5 concentration",
+              "value": "12.5%"
+            },
+            {
+              "label": "Coverage confidence",
+              "value": "31%"
+            },
+            {
+              "label": "Views parity",
+              "value": "0.63x"
+            }
+          ],
+          "takeaway": "The value is not 'which song went viral.' It is which conditions keep narrowing or opening the market across multiple cohorts."
+        },
+        "stakes": "Channel concentration, inventory risk, promotional efficiency, and repeatable lift."
+      },
+      "research": {
+        "title": "Research read",
+        "summary": {
+          "title": "Research lens",
+          "summary": "The useful question is not whether a pattern exists somewhere, but whether it survives classification gaps, coverage limits, and cohort changes. This lane is strongest when it keeps the leaderboard separate from the broader structural context instead of pretending they are the same thing.",
+          "signals": [
+            {
+              "label": "Genre Gini",
+              "value": "0.838"
+            },
+            {
+              "label": "Coverage confidence",
+              "value": "31%"
+            },
+            {
+              "label": "Observed years",
+              "value": "12"
+            }
+          ],
+          "takeaway": "The method earns trust when the story gets smaller where coverage is weak, and sharper where multiple checks agree."
+        },
+        "stakes": "Cohort integrity, feature leakage, and longitudinal comparability."
+      },
+      "catalog_size": 100
+    }
+  },
+  "narratives": {
+    "intro": "The backend is now responsible for the repo's analytical posture: what is fresh, what is public, what is synthetic, and what still needs caution.",
+    "representation": {
+      "top_titles": [
+        "Gender parity over time",
+        "Platform diversity gap",
+        "Genre lead-role skew"
+      ],
+      "summary": "Representation findings stay small enough to inspect and specific enough to challenge."
+    },
+    "music": {
+      "top_tracks": [
+        "Luis Fonsi - Despacito ft. Daddy Yankee",
+        "Wiz Khalifa - See You Again ft. Charlie Puth [Official Video] Furious 7 Soundtrack",
+        "Ed Sheeran - Shape of You (Official Music Video)"
+      ],
+      "summary": "The public music lane stays separate so virality, concentration, and boost dynamics can be read on their own terms."
+    }
+  },
+  "comparatives": {
+    "synthetic_vs_public": [
+      {
+        "topic": "Breadth vs concentration",
+        "representation": 0.7128,
+        "music": 0.697,
+        "note": "One lane asks how broad the field looks; the other asks how tightly attention concentrates."
+      },
+      {
+        "topic": "Parity vs dominance",
+        "representation": 0.744,
+        "music": 0.465,
+        "note": "Parity is not the same question as market control, but both reveal where the center hardens."
+      },
+      {
+        "topic": "Note-linked depth",
+        "representation": null,
+        "music": 0.0,
+        "note": "The music lane can now report how much of the catalog is connected to score-level evidence."
+      }
+    ]
+  },
+  "note_signals": {
+    "catalog_song_count": 636,
+    "discovered_music_files": 0,
+    "matched_catalog_songs": 0,
+    "parsed_note_events": 0,
+    "top_titles": [
+      "ROSÉ & Bruno Mars - APT. (Official Music Video)",
+      "Lady Gaga, Bruno Mars - Die With A Smile (Official Music Video)",
+      "Reneé Rapp - Leave Me Alone (Official Music Video)",
+      "Billie Eilish - BIRDS OF A FEATHER (Official Music Video)",
+      "Reneé Rapp - Mad (Official Music Video)"
+    ]
+  },
+  "governance": {
+    "quality_check_count": 0,
+    "pass_count": 0,
+    "warn_count": 0,
+    "fail_count": 0,
+    "contracts": {
+      "synthetic_dataset": null,
+      "music_dataset": null
+    },
+    "insight_count": 7
+  },
+  "freshness": {
+    "generated_at": "2026-06-30T15:23:10+00:00",
+    "representation_run_rows": 5000,
+    "publication_year_share": 0.193,
+    "inferred_year_share": 0.071,
+    "notation_files": 0,
+    "matched_catalog_songs": 0
+  },
+  "payload_hash": "0813fd5608c8b71f5453dba64928e1a4b330a0c936151381a391447dd0c2e568"
+}

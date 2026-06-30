@@ -43,6 +43,7 @@ def build_data() -> None:
     write_json(DATA / "system" / "data-engineering.json", backend.data_engineering_surface())
     write_json(DATA / "system" / "bias-propagation.json", backend.bias_propagation())
     write_json(DATA / "system" / "trojan-horse.json", backend.trojan_horse_surface())
+    write_json(DATA / "system" / "catalog.json", backend.system_catalog())
 
     for n in SIZES:
         print(f"Running pipeline at n_samples={n} ...")
@@ -60,8 +61,12 @@ def build_data() -> None:
         write_json(out / "characters.json", backend.characters(limit=cap))
         if n == DEFAULT_SIZE:
             write_json(out / "results.json", backend.results())
+            write_json(DATA / "system" / "frontend-state.json", backend.system_frontend_state(sample_size=n))
+            write_json(DATA / "system" / "comparatives.json", backend.system_comparatives(sample_size=n))
+            write_json(DATA / "system" / "runtime.json", backend.system_runtime(sample_size=n))
 
     build_music()
+    backend.runtime_service.materialize(sample_size=DEFAULT_SIZE, persist_sqlite=True)
 
     # Disable Jekyll so GitHub Pages serves the data/ files verbatim.
     (BASE / ".nojekyll").write_text("", encoding="utf-8")

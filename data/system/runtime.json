@@ -1,0 +1,68 @@
+{
+  "runtime": "stream_backend",
+  "generated_at": "2026-06-30T15:23:10+00:00",
+  "sample_size": 5000,
+  "languages": [
+    "python",
+    "sqlite",
+    "analytics",
+    "music",
+    "governance"
+  ],
+  "targets": [
+    "api",
+    "static",
+    "sqlite"
+  ],
+  "sqlite_path": "data/system/runtime/stream_runtime.sqlite3",
+  "jobs": [
+    {
+      "name": "representation",
+      "description": "Synthetic representation analysis and export.",
+      "output_name": "analysis_results.json"
+    },
+    {
+      "name": "music",
+      "description": "Public music analysis and quality reporting.",
+      "output_name": "data/music/*.json"
+    },
+    {
+      "name": "music_intelligence",
+      "description": "Catalog + notation harvest for deeper note-level reasoning.",
+      "output_name": "music_index.json"
+    },
+    {
+      "name": "frontend_state",
+      "description": "Generated runtime payload for the browser surface.",
+      "output_name": "data/system/frontend-state.json"
+    }
+  ],
+  "contract_surface": {
+    "runtime": "stream_backend",
+    "languages": [
+      "Python",
+      "HTML",
+      "JavaScript",
+      "Rust",
+      "WASM"
+    ],
+    "targets": [
+      "api",
+      "static",
+      "sqlite"
+    ],
+    "sqlite_path": "data/system/runtime/stream_runtime.sqlite3",
+    "sample_sizes": [
+      1000,
+      5000,
+      10000,
+      25000
+    ],
+    "latest_run_id": null,
+    "notes": [
+      "Synthetic and public lanes stay separated.",
+      "Static exports and API responses should originate from the same runtime package.",
+      "SQLite snapshots are for inspectable persistence, not for hiding logic."
+    ]
+  }
+}

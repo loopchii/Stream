@@ -30,6 +30,8 @@ from media_liability_lab import (
     public_media_lab_snapshot,
     sample_recommendation_events,
 )
+from stream_backend import RuntimeConfig, StreamRuntime
+from stream_backend.services.catalog import build_runtime_catalog
 from streamlens_processor import DataProcessor
 
 BASE_DIR = Path(__file__).resolve().parent
@@ -132,6 +134,16 @@ class MusicIntelligenceCache:
 
 
 music_intelligence_cache = MusicIntelligenceCache()
+
+runtime_config = RuntimeConfig.from_base_dir(BASE_DIR)
+runtime_service = StreamRuntime(
+    config=runtime_config,
+    representation_results_fn=lambda n: cache.run(n_samples=n),
+    representation_df_fn=cache.dataframe,
+    music_report_fn=music_cache.report,
+    music_df_fn=music_pipeline.load_enriched_dataset,
+    music_index_fn=music_intelligence_cache.package,
+)
 
 
 @app.get("/", include_in_schema=False)
@@ -468,6 +480,51 @@ def data_engineering_surface():
 def trojan_horse_surface():
     """Public zero-friction adoption surface for the browser playground."""
     return public_playground_snapshot()
+
+
+@app.get("/api/system/catalog")
+def system_catalog():
+    """High-level catalog of the repo's polyglot backend surfaces."""
+    return build_runtime_catalog(runtime_config)
+
+
+@app.get("/api/system/runtime")
+def system_runtime(sample_size: int = Query(default=5000, ge=100, le=100000)):
+    """Generated runtime state computed by the Python orchestration spine."""
+    return runtime_service.build_snapshot(sample_size=sample_size)
+
+
+@app.get("/api/system/runtime/latest")
+def system_runtime_latest():
+    """Last persisted runtime snapshot when SQLite materialization has been run."""
+    latest = runtime_service.latest_snapshot()
+    if latest is None:
+        raise HTTPException(status_code=404, detail="No persisted runtime snapshot found yet.")
+    return latest
+
+
+@app.get("/api/system/frontend-state")
+def system_frontend_state(sample_size: int = Query(default=5000, ge=100, le=100000)):
+    """Frontend payload generated from Python so the browser owns less logic."""
+    return runtime_service.build_snapshot(sample_size=sample_size)["frontend_state"]
+
+
+@app.get("/api/system/comparatives")
+def system_comparatives(sample_size: int = Query(default=5000, ge=100, le=100000)):
+    """Cross-lane comparative surface for synthetic vs public music evidence."""
+    return runtime_service.build_snapshot(sample_size=sample_size)["comparatives"]
+
+
+@app.post("/api/system/materialize")
+def system_materialize(sample_size: int = Query(default=5000, ge=100, le=100000)):
+    """Write the runtime snapshot to JSON exports and SQLite for local inspection."""
+    payload = runtime_service.materialize(sample_size=sample_size, persist_sqlite=True)
+    return {
+        "materialized": True,
+        "run_id": payload["run_id"],
+        "sqlite_path": str(runtime_config.sqlite_path),
+        "artifacts": payload["artifacts"],
+    }
 
 
 @app.get("/api/playground/simulate")

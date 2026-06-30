@@ -1,0 +1,1 @@
+{"runtime": "stream_backend", "languages": ["Python", "SQLite", "JavaScript", "HTML", "Rust"], "modules": ["analytics", "orchestration", "store", "exporters", "services", "cli"], "sqlite_path": "data/system/runtime/stream_runtime.sqlite3"}
