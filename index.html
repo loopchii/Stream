@@ -11955,6 +11955,10 @@
             }
         }
 
+        // Keep inline controls resolvable across static hosts, GitHub Pages previews,
+        // and browser wrappers that evaluate public surfaces a little differently.
+        window.showTab = showTab;
+        window.setTheme = setTheme;
         window.StreamLensApp = StreamLensApp;
 
         // ==================== INFO CHIPS (plain-language labels) ====================
