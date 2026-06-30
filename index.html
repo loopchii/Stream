@@ -5574,8 +5574,32 @@
         .mv-bias-grade .grade-sub { font-size: 0.82rem; color: var(--ink-dim); margin-top: 0.3rem; max-width: 28rem; margin-left: auto; margin-right: auto; }
         .mv-role-shell { display: grid; gap: 0.9rem; }
         .mv-role-headline { font-size: 0.92rem; color: var(--ink-dim); line-height: 1.55; max-width: 58rem; }
-        .mv-role-switch { display: inline-flex; flex-wrap: wrap; gap: 0.4rem; padding: 0.25rem; border-radius: 999px; background: rgba(85,102,246,0.07); }
-        .mv-role-switch button { border: none; background: transparent; color: var(--ink-dim); padding: 0.48rem 0.95rem; border-radius: 999px; font-size: 0.82rem; font-weight: 700; cursor: pointer; transition: all 0.2s ease; }
+        .mv-role-switch {
+            position: relative;
+            z-index: 3;
+            isolation: isolate;
+            display: inline-flex;
+            flex-wrap: wrap;
+            gap: 0.4rem;
+            padding: 0.25rem;
+            border-radius: 999px;
+            background: rgba(85,102,246,0.07);
+        }
+        .mv-role-switch button {
+            position: relative;
+            z-index: 2;
+            border: none;
+            background: transparent;
+            color: var(--ink-dim);
+            padding: 0.48rem 0.95rem;
+            border-radius: 999px;
+            font-size: 0.82rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            pointer-events: auto;
+            touch-action: manipulation;
+        }
         .mv-role-switch button.active { background: linear-gradient(135deg, var(--indigo), var(--teal)); color: #fff; box-shadow: 0 8px 18px rgba(85,102,246,0.22); }
         .mv-role-card {
             position: relative;
@@ -5715,6 +5739,76 @@
             color: rgba(241,235,255,0.8);
             font-size: 0.84rem;
             line-height: 1.65;
+        }
+        .mv-role-bridge {
+            margin-top: 0.78rem;
+            padding: 0.9rem 0.95rem;
+            border-radius: 16px;
+            background:
+                radial-gradient(circle at top right, rgba(255,255,255,0.06), transparent 36%),
+                linear-gradient(155deg, rgba(255,255,255,0.05), rgba(255,255,255,0.025));
+            border: 1px solid rgba(255,255,255,0.08);
+        }
+        .mv-role-bridge-head {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.55rem;
+            justify-content: space-between;
+            align-items: baseline;
+            margin-bottom: 0.32rem;
+        }
+        .mv-role-bridge-head .k {
+            font-size: 0.68rem;
+            letter-spacing: 1.4px;
+            text-transform: uppercase;
+            color: rgba(241,235,255,0.66);
+            font-weight: 700;
+        }
+        .mv-role-bridge-head .v {
+            font-size: 0.8rem;
+            color: #fff1d4;
+            font-weight: 700;
+        }
+        .mv-role-bridge-copy {
+            color: rgba(241,235,255,0.76);
+            font-size: 0.84rem;
+            line-height: 1.62;
+            margin: 0.15rem 0 0.8rem;
+        }
+        .mv-role-bridge-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(170px, 1fr));
+            gap: 0.62rem;
+        }
+        .mv-role-bridge-card {
+            min-height: 100%;
+            padding: 0.78rem 0.82rem;
+            border-radius: 14px;
+            border: 1px solid rgba(255,255,255,0.08);
+            background: rgba(255,255,255,0.04);
+        }
+        .mv-role-bridge-card .k {
+            display: block;
+            font-size: 0.68rem;
+            letter-spacing: 1.28px;
+            text-transform: uppercase;
+            color: rgba(241,235,255,0.66);
+            font-weight: 700;
+            margin-bottom: 0.24rem;
+        }
+        .mv-role-bridge-card .v {
+            display: block;
+            color: #fff5df;
+            font-family: 'Space Grotesk', monospace;
+            font-size: 0.96rem;
+            font-weight: 700;
+            margin-bottom: 0.28rem;
+        }
+        .mv-role-bridge-card .s {
+            display: block;
+            color: rgba(241,235,255,0.74);
+            font-size: 0.79rem;
+            line-height: 1.55;
         }
         .mv-role-takeaway { margin-top: 0.85rem; padding-left: 0.8rem; border-left: 3px solid var(--teal); color: var(--ink-dim); font-size: 0.9rem; line-height: 1.6; }
         .mv-chip { display: inline-flex; align-items: center; gap: 0.35rem; font-size: 0.78rem; padding: 0.2rem 0.6rem; border-radius: 8px; background: rgba(85,102,246,0.08); color: var(--ink); margin: 0.15rem; }
@@ -8163,10 +8257,10 @@
                         </div>
                         <p class="mv-role-headline">The facts do not change when the reader changes, but the consequence does. A creator reads this for room to maneuver. A buyer reads it for repeatable demand. A listener reads it for breadth. A researcher reads it for falsifiable structure. Change the lens; keep the evidence.</p>
                         <div class="mv-role-switch" id="mvRoleSwitch">
-                            <button class="active" data-role="artist" onclick="MusicViz.setRole('artist', this)">Artist</button>
-                            <button data-role="consumer" onclick="MusicViz.setRole('consumer', this)">Consumer</button>
-                            <button data-role="business" onclick="MusicViz.setRole('business', this)">Business</button>
-                            <button data-role="research" onclick="MusicViz.setRole('research', this)">Research</button>
+                            <button type="button" class="active" data-role="artist" onclick="MusicViz.setRole('artist', this)">Artist</button>
+                            <button type="button" data-role="consumer" onclick="MusicViz.setRole('consumer', this)">Consumer</button>
+                            <button type="button" data-role="business" onclick="MusicViz.setRole('business', this)">Business</button>
+                            <button type="button" data-role="research" onclick="MusicViz.setRole('research', this)">Research</button>
                         </div>
                         <div class="mv-role-card" id="mvRoleCard">
                             <div class="mv-role-kicker" id="mvRoleKicker">Artist lens</div>
@@ -8194,6 +8288,20 @@
                             </div>
                             <div class="mv-role-proof" id="mvRoleProof">Waiting for coverage, classification, and stability notes from the live field.</div>
                             <div class="mv-role-signals" id="mvRoleSignals"></div>
+                            <div class="mv-role-bridge" id="mvRoleBridge">
+                                <div class="mv-role-bridge-head">
+                                    <span class="k">Score-aware bridge</span>
+                                    <span class="v" id="mvRoleBridgeStatus">Preparing notation-linked context…</span>
+                                </div>
+                                <p class="mv-role-bridge-copy" id="mvRoleBridgeCopy">This is where note, chord, and key evidence will be joined back to the public reach data, but only when the repository actually contains notation-bearing files.</p>
+                                <div class="mv-role-bridge-grid" id="mvRoleBridgeGrid">
+                                    <div class="mv-role-bridge-card">
+                                        <span class="k">Current state</span>
+                                        <span class="v">Waking up</span>
+                                        <span class="s">The score-linked layer is waiting for the public music field to finish loading.</span>
+                                    </div>
+                                </div>
+                            </div>
                             <div class="mv-role-takeaway" id="mvRoleTakeaway"></div>
                         </div>
                     </div>
@@ -12093,6 +12201,9 @@
             _telemetryBandFrame: null,
             _telemetryBandState: null,
             _active: false,
+            _loading: false,
+            _loadPromise: null,
+            _roleSwitchBound: false,
             _movementNotesDecorated: false,
             _ARCH_COLORS: ['#5566f6','#0fb6a8','#f4a259','#f0779f','#7c3aed'],
             _COMM_COLORS: ['#5566f6','#0fb6a8','#f4a259','#f0779f','#7c3aed','#16a34a','#ef4444','#eab308'],
@@ -12105,6 +12216,26 @@
             _RES_COLORS: ['#f0779f','#5566f6','#0fb6a8','#f4a259','#7c3aed','#34d399','#f43f5e'],
             _PLOT_FONT: '#e7e0f7',
             _PLOT_GRID: 'rgba(255,255,255,0.08)',
+
+            bindRoleSwitch() {
+                if (this._roleSwitchBound) return;
+                const host = document.getElementById('mvRoleSwitch');
+                if (!host) return;
+                host.querySelectorAll('button[data-role]').forEach((btn) => {
+                    btn.type = 'button';
+                    btn.addEventListener('click', () => this.setRole(btn.dataset.role, btn));
+                });
+                this._roleSwitchBound = true;
+                this.syncRoleSwitch();
+            },
+
+            syncRoleSwitch(button) {
+                const activeRole = this._role || 'artist';
+                document.querySelectorAll('#mvRoleSwitch button[data-role]').forEach((btn) => {
+                    const isActive = button ? btn === button : btn.dataset.role === activeRole;
+                    btn.classList.toggle('active', isActive);
+                });
+            },
 
             isActive() {
                 const panel = document.getElementById('tab-music');
@@ -12610,20 +12741,26 @@
 
             load() {
                 if (this._loaded) {
+                    this.bindRoleSwitch();
                     this.decorateMovementNotes();
                     this.bindMusicRoute();
                     this.updateFieldnote(this._activeMovementId || 'mvPowerLaw');
                     this.initTelemetryBand();
-                    return;
+                    return this._loadPromise || Promise.resolve(this._data);
                 }
-                this._loaded = true;
+                this.bindRoleSwitch();
+                this.renderRoleLoading(this._role || 'artist');
+                if (this._loading) return this._loadPromise;
+                this._loading = true;
                 const ep = ['overview','powerlaw','inequality','correlations','archetypes','network','predictability','resonance','songs','status','bias','quality','intelligence'];
-                Promise.all(ep.map(e => fetch('/api/music/' + e)
+                this._loadPromise = Promise.all(ep.map(e => fetch('/api/music/' + e)
                     .then(r => r.ok ? r.json() : Promise.reject(new Error(e)))
                     .catch(() => this._fallbackMusicData(e))))
                     .then(results => {
                         const keys = ep;
                         keys.forEach((k,i) => this._data[k] = results[i]);
+                        this._loaded = true;
+                        this._loading = false;
                         this.render();
                         this.decorateMovementNotes();
                         this.bindMusicRoute();
@@ -12631,8 +12768,14 @@
                         this.initTelemetryBand();
                         this.bindSliders();
                         this.triggerSimulate();
+                        return this._data;
                     })
-                    .catch(err => console.error('MusicViz load error:', err));
+                    .catch(err => {
+                        this._loading = false;
+                        console.error('MusicViz load error:', err);
+                        throw err;
+                    });
+                return this._loadPromise;
             },
 
             render() {
@@ -13722,7 +13865,11 @@
 
                 const takeaway = document.getElementById('mvIntelTakeaway');
                 if (takeaway) {
-                    takeaway.innerHTML = '<b>Why this matters:</b> ' + (intel.honesty_note || 'This layer only speaks where the repository has notation to support it.') + ' ' + (intel.invitation || '');
+                    takeaway.innerHTML = '<b>Why this matters:</b> '
+                        + (intel.honesty_note || 'This layer only speaks where the repository has notation to support it.')
+                        + ' '
+                        + (intel.invitation || '')
+                        + ' Until score files exist, treat this lane as a disciplined handoff between audience structure and future note-level analysis, not as a place to invent harmonic certainty.';
                 }
 
                 const queue = document.getElementById('mvIntelQueue');
@@ -13733,7 +13880,7 @@
                             const viewLabel = this.fmt(Number(row.views || 0));
                             return '<div class="mv-intel-card">'
                                 + '<div class="h"><span class="t">' + (index + 1) + '. ' + row.title + '</span><span class="v">' + viewLabel + '</span></div>'
-                                + '<div class="s">' + (row.artist ? row.artist + ' · ' : '') + this.sourceLabel(row.source || 'primary_top100') + ' · no linked score files in this repo yet.</div>'
+                                + '<div class="s">' + (row.artist ? row.artist + ' · ' : '') + this.sourceLabel(row.source || 'primary_top100') + ' · high-value candidate for linking notation back to reach, release shape, and bias.</div>'
                                 + '</div>';
                         }).join('')
                         : '<div class="mv-intel-empty">No priority queue yet. Add notation files and this surface will start linking them back to the catalog.</div>';
@@ -13951,14 +14098,9 @@
                 }).catch(err => console.warn('simulate error', err));
             },
 
-            renderBias() {
+            renderBiasSummary() {
                 const b = this._data.bias;
                 if (!b) return;
-                this._role = this._role || 'artist';
-                const c = this.themeColors();
-                const chartPalette = [c.accent, c.secondary, c.quaternary, c.tertiary, '#9aa7ff', '#ffc0d6'];
-                const titleStyle = { fontSize: 13, fontWeight: 700, fontFamily: 'Space Grotesk', color: c.ink };
-                // Grade
                 document.getElementById('mvBiasGradeLetter').textContent = b.overall_grade;
                 document.getElementById('mvBiasParity').textContent = b.bias_scores.gender_parity;
                 document.getElementById('mvBiasViewsParity').textContent = b.bias_scores.views_parity + 'x';
@@ -13971,6 +14113,16 @@
                     ? ' Timeline gaps stay visible rather than being smoothed away: ' + timeline.missing_years.slice(0, 6).join(', ') + (timeline.missing_years.length > 6 ? '…' : '') + '.'
                     : '';
                 document.getElementById('mvBiasTakeaway').innerHTML = '<b>Takeaway:</b> ' + b.interpretation + gapNote;
+            },
+
+            renderBias() {
+                const b = this._data.bias;
+                if (!b) return;
+                this._role = this._role || 'artist';
+                const c = this.themeColors();
+                const chartPalette = [c.accent, c.secondary, c.quaternary, c.tertiary, '#9aa7ff', '#ffc0d6'];
+                const titleStyle = { fontSize: 13, fontWeight: 700, fontFamily: 'Space Grotesk', color: c.ink };
+                this.renderBiasSummary();
                 this.renderRoleLens();
                 // Gender donut (ECharts)
                 const genderEl = document.getElementById('mvGenderChart');
@@ -14193,9 +14345,134 @@
 
             setRole(role, button) {
                 this._role = role;
-                document.querySelectorAll('#mvRoleSwitch button').forEach(b => b.classList.remove('active'));
-                if (button) button.classList.add('active');
+                this.syncRoleSwitch(button);
+                if (!this._data.bias || !this._data.bias.role_perspectives) {
+                    this.renderRoleLoading(role);
+                    return;
+                }
                 this.renderRoleLens();
+            },
+
+            renderRoleLoading(role) {
+                const activeRole = role || this._role || 'artist';
+                const theme = this._ROLE_THEMES[activeRole] || this._ROLE_THEMES.artist;
+                const card = document.getElementById('mvRoleCard');
+                const kicker = document.getElementById('mvRoleKicker');
+                const title = document.getElementById('mvRoleTitle');
+                const summary = document.getElementById('mvRoleSummary');
+                const takeaway = document.getElementById('mvRoleTakeaway');
+                const signals = document.getElementById('mvRoleSignals');
+                const score = document.getElementById('mvRoleScore');
+                const scoreLabel = document.getElementById('mvRoleScoreLabel');
+                const confidence = document.getElementById('mvRoleConfidence');
+                const confidenceLabel = document.getElementById('mvRoleConfidenceLabel');
+                const factors = document.getElementById('mvRoleFactors');
+                const proof = document.getElementById('mvRoleProof');
+                this.syncRoleSwitch();
+                if (card) {
+                    const glow = theme.soft.replace('0.12', '0.16');
+                    card.style.borderColor = theme.accent;
+                    card.style.background = 'radial-gradient(circle at top right, ' + glow + ', transparent 34%), linear-gradient(150deg, rgba(16,22,44,0.96), rgba(12,18,38,0.92))';
+                }
+                if (kicker) kicker.textContent = theme.title;
+                if (title) title.textContent = 'Loading ' + activeRole + ' read';
+                if (summary) summary.textContent = 'Holding your selected lens while the public music field hydrates. The card will fill with role-specific evidence as soon as the bias and intelligence layers land.';
+                if (score) score.textContent = '…';
+                if (scoreLabel) scoreLabel.textContent = 'The opening score is being recalculated from the live public rows.';
+                if (confidence) confidence.textContent = '…';
+                if (confidenceLabel) confidenceLabel.textContent = 'Coverage, classification, and year depth will appear here when the field settles.';
+                if (factors) {
+                    factors.innerHTML = [
+                        { label: 'Coverage', note: 'Waiting for classification coverage and year depth.' },
+                        { label: 'Market shape', note: 'Waiting for concentration and repeat-pressure context.' },
+                        { label: 'Score layer', note: 'Waiting to decide whether notation-linked analysis is active or still intentionally dormant.' }
+                    ].map(function (item) {
+                        return '<div class="mv-role-factor">'
+                            + '<span class="k">' + item.label + '</span>'
+                            + '<div class="v"><span>Preparing signal</span><span>—</span></div>'
+                            + '<div class="mv-role-factorbar"><span style="width:10%"></span></div>'
+                            + '<span class="s">' + item.note + '</span>'
+                            + '</div>';
+                    }).join('');
+                }
+                if (proof) proof.textContent = 'The selected perspective is pinned. Waiting for public coverage, classification, and stability signals before filling the card.';
+                if (signals) {
+                    signals.innerHTML = [
+                        { label: 'Selected lens', value: activeRole },
+                        { label: 'State', value: this._loading ? 'Hydrating' : 'Stand by' }
+                    ].map(function (item) {
+                        return '<div class="mv-role-signal" style="background:' + theme.soft + '; border-color:' + theme.accent + '22;">'
+                            + '<span class="k">' + item.label + '</span>'
+                            + '<span class="v">' + item.value + '</span>'
+                            + '</div>';
+                    }).join('');
+                }
+                this.renderRoleBridge(activeRole, null, null, true);
+                if (takeaway) takeaway.textContent = 'The role stays selected even while the evidence surface is still loading. Once the public rows land, the same card will refill without changing the lens.';
+            },
+
+            renderRoleBridge(role, lens, surface, isLoading) {
+                const activeRole = role || this._role || 'artist';
+                const theme = this._ROLE_THEMES[activeRole] || this._ROLE_THEMES.artist;
+                const intel = this._data.intelligence || {};
+                const bias = this._data.bias || {};
+                const status = document.getElementById('mvRoleBridgeStatus');
+                const copy = document.getElementById('mvRoleBridgeCopy');
+                const grid = document.getElementById('mvRoleBridgeGrid');
+                if (!status || !copy || !grid) return;
+
+                const roleCopy = {
+                    artist: 'When score files exist, this bridge compares repeat attention to note families, key centers, and chord movement so a creator can see whether the market keeps rewarding the same musical habits or leaving room for a sharper move.',
+                    consumer: 'When score files exist, this bridge helps test whether variety is only visual and marketing-deep, or whether the musical language itself keeps collapsing into the same familiar patterns.',
+                    business: 'When score files exist, this bridge turns note and chord recurrence into a market-read: which musical shapes keep converting reach into repeat attention, and which ones only look good on the first spike.',
+                    research: 'When score files exist, this bridge joins public audience structure back to actual note, key, and chord evidence so a claim about repetition can survive inspection instead of stopping at vibes.'
+                };
+
+                const noteFiles = Number(intel.discovered_music_files || 0);
+                const noteEvents = Number(intel.parsed_note_events || 0);
+                const chordEvents = Number(intel.parsed_chord_events || 0);
+                const topNotes = intel.top_notes || [];
+                const topKeys = intel.key_distribution || [];
+                const priority = intel.priority_queue || [];
+                const bridgeCards = [];
+
+                if (isLoading) {
+                    status.textContent = 'Hydrating role context…';
+                    copy.textContent = roleCopy[activeRole];
+                    bridgeCards.push(
+                        { label: 'Current state', value: 'Loading', note: 'The role card is waiting for bias and score-readiness data from the public build.' },
+                        { label: 'Why it matters', value: 'Pinned lens', note: 'Your selected reader perspective is held now so the evidence can land into the right frame instead of snapping back to a default.' },
+                        { label: 'Score path', value: 'Checking', note: 'The bridge is deciding whether note-level analysis is active or intentionally dormant in this repository state.' }
+                    );
+                } else if (noteFiles > 0 && noteEvents > 0) {
+                    status.textContent = noteFiles.toLocaleString() + ' linked notation files';
+                    copy.textContent = roleCopy[activeRole];
+                    bridgeCards.push(
+                        { label: 'Note families', value: (topNotes[0] || {}).item || '—', note: topNotes.length ? 'Most common parsed note family in linked notation.' : 'No parsed note families yet.' },
+                        { label: 'Key center', value: (topKeys[0] || {}).item || '—', note: topKeys.length ? 'Most observed key in the linked score layer.' : 'No key distribution yet.' },
+                        { label: 'Note events', value: noteEvents.toLocaleString(), note: 'Parsed note events currently grounding the score-aware lane.' },
+                        { label: 'Chord events', value: chordEvents.toLocaleString(), note: 'Parsed chord events currently available for harmonic comparison.' }
+                    );
+                } else {
+                    const nextCandidate = priority[0] || null;
+                    const coverage = bias.coverage || {};
+                    status.textContent = 'Notation layer dormant by design';
+                    copy.textContent = roleCopy[activeRole];
+                    bridgeCards.push(
+                        { label: 'Current state', value: '0 linked scores', note: 'The repository has public song rows but no notation-bearing files to justify note or chord claims yet.' },
+                        { label: 'Best next link', value: nextCandidate ? nextCandidate.title : 'Choose a high-pressure track', note: nextCandidate ? 'Highest-priority candidate for joining score evidence back to reach and bias.' : 'Linking even one MusicXML or MIDI file is enough to wake the score-aware lane.' },
+                        { label: 'Reach anchor', value: Math.round(((coverage.publication_year_share || 0) * 100)) + '% year coverage', note: 'Until notes exist, time, duration, language, and concentration remain the honest public proxies.' },
+                        { label: 'What unlocks next', value: 'Notes · keys · chords', note: 'Once notation lands, the same field can test whether repeated attention is also musically repetitive.' }
+                    );
+                }
+
+                grid.innerHTML = bridgeCards.map(function (item) {
+                    return '<div class="mv-role-bridge-card" style="border-color:' + theme.accent + '22;">'
+                        + '<span class="k">' + item.label + '</span>'
+                        + '<span class="v">' + item.value + '</span>'
+                        + '<span class="s">' + item.note + '</span>'
+                        + '</div>';
+                }).join('');
             },
 
             renderRoleLens() {
@@ -14205,6 +14482,7 @@
                 const theme = this._ROLE_THEMES[role] || this._ROLE_THEMES.artist;
                 const lens = b.role_perspectives[role] || b.role_perspectives.artist;
                 const surface = this.roleLensSurface(role);
+                this.renderBiasSummary();
                 const card = document.getElementById('mvRoleCard');
                 if (card) {
                     const glow = theme.soft.replace('0.12', '0.16');
@@ -14222,6 +14500,7 @@
                 const confidenceLabel = document.getElementById('mvRoleConfidenceLabel');
                 const factors = document.getElementById('mvRoleFactors');
                 const proof = document.getElementById('mvRoleProof');
+                this.syncRoleSwitch();
                 if (kicker) kicker.textContent = theme.title;
                 if (title) title.textContent = lens.title || theme.title;
                 if (summary) summary.textContent = lens.summary || '';
@@ -14249,6 +14528,7 @@
                         '</div>';
                     }).join('');
                 }
+                this.renderRoleBridge(role, lens, surface, false);
             },
 
             roleLensSurface(role) {
