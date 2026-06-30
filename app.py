@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """
-StreamLens Analytics API Server
-Serves the interactive dashboard and a REST API over the analysis pipeline.
+Stream API server.
+Serves the public interactive dashboard and the analysis API.
 Author: Cazandra Aporbo, MS
 """
 
@@ -19,13 +19,21 @@ import music_ingest
 import music_pipeline
 from advanced_metrics import letter_grade as grade_for
 from bias_library import BIAS_LIBRARY, CATEGORIES
+from lens_sdk import default_registry, evaluate_stream
+from media_liability_lab import (
+    analyze_compulsive_usage,
+    build_causal_map,
+    guard_generated_buffer,
+    public_media_lab_snapshot,
+    sample_recommendation_events,
+)
 from streamlens_processor import DataProcessor
 
 BASE_DIR = Path(__file__).resolve().parent
 
 app = FastAPI(
-    title="StreamLens Analytics API",
-    description="Quantitative bias and representation analysis for streaming media",
+    title="Stream API",
+    description="Loopchii public research API for measurable media bias, representation, and attention analysis",
     version="1.0.0",
 )
 
@@ -108,7 +116,7 @@ def dashboard():
 
 @app.get("/api/health")
 def health():
-    return {"status": "ok", "service": "streamlens-analytics", "version": "1.0.0"}
+    return {"status": "ok", "service": "stream", "publisher": "loopchii", "version": "1.0.0"}
 
 
 @app.get("/api/results")
@@ -224,12 +232,52 @@ def insights():
     return cache.results()["insights"]
 
 
+@app.get("/api/lenses/catalog")
+def lenses_catalog():
+    """Public catalog of the active lens SDK registry."""
+    return {"items": default_registry().catalog()}
+
+
+@app.get("/api/lenses/demo-stream")
+def lenses_demo_stream(limit: int = Query(default=18, ge=1, le=80)):
+    """Evaluate grouped stream records with the public lens registry."""
+    evaluations = evaluate_stream(cache.dataframe(), registry=default_registry(), max_groups=limit)
+    return {
+        "count": len(evaluations),
+        "items": evaluations,
+    }
+
+
+@app.get("/api/media-lab/overview")
+def media_lab_overview():
+    """Public enterprise-media research snapshot."""
+    return public_media_lab_snapshot()
+
+
+@app.get("/api/media-lab/compulsive-loop")
+def media_lab_compulsive_loop():
+    """Analyze a deterministic sample recommendation stream for compulsive-loop risk."""
+    return analyze_compulsive_usage(sample_recommendation_events())
+
+
+@app.get("/api/media-lab/generative-guard")
+def media_lab_generative_guard():
+    """Run the public generative buffer guard against a sample liability payload."""
+    return guard_generated_buffer(b"safe-frame|copyrighted-castle|soundtrack-stem")
+
+
+@app.get("/api/media-lab/causal-map")
+def media_lab_causal_map():
+    """Export a readable causal map of recommendation flow."""
+    return build_causal_map(sample_recommendation_events())
+
+
 @app.get("/api/export")
 def export():
     """Download the full analysis results as JSON"""
     return JSONResponse(
         content=cache.results(),
-        headers={"Content-Disposition": "attachment; filename=streamlens_results.json"},
+        headers={"Content-Disposition": "attachment; filename=stream_results.json"},
     )
 
 
@@ -240,7 +288,7 @@ LEARN_CONTENT = [
         "summary": "Borrowed from ecology, it measures how evenly demographic groups are represented.",
         "detail": ("H = -sum(p_i * ln(p_i)), normalized by ln(k). A score of 1.0 means every "
                    "group appears equally often; 0 means a single group dominates entirely. "
-                   "StreamLens applies it to character race distributions per platform, genre, and year."),
+                   "Stream applies it to character race distributions per platform, genre, and year."),
         "try_it": "Filter to Documentary vs Action in Explore Data and compare the diversity values.",
     },
     {
@@ -257,7 +305,7 @@ LEARN_CONTENT = [
         "title": "Chi-Square Bias Detection",
         "summary": "Compares observed dialogue/role distributions against an unbiased expectation.",
         "detail": ("chi2 = (observed - expected)^2 / expected. Large values mean a demographic gets far "
-                   "more or less dialogue than chance would predict. StreamLens runs this per gender "
+                   "more or less dialogue than chance would predict. Stream runs this per gender "
                    "on dialogue word counts and per role type for stereotyping."),
         "try_it": "Open GET /api/metrics/bias in the API docs to see raw chi-square scores.",
     },
@@ -284,7 +332,7 @@ LEARN_CONTENT = [
         "title": "Extended Bechdel Tests",
         "summary": "Classic and extended low-bar tests of meaningful representation.",
         "detail": ("The classic test asks whether two women talk about something other than a man. "
-                   "StreamLens extends the idea to race and age: do minority characters interact "
+                   "Stream extends the idea to race and age: do minority characters interact "
                    "meaningfully with each other at all?"),
         "try_it": "See BiasDetector.calculate_bechdel_extension in streamlens_processor.py.",
     },

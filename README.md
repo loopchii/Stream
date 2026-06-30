@@ -1,20 +1,22 @@
-# StreamLens Analytics
+# Stream
 
 <div align="center">
 
-[![Mathematical Framework](https://img.shields.io/badge/Mathematical%20Framework-Advanced%20Bias%20Detection-FFE4E1?style=for-the-badge)](https://github.com/Cazzy-Aporbo/StreamLens-Analytics)
-[![Data Analysis](https://img.shields.io/badge/Data%20Analysis-2015--2026%20Media-E6E6FA?style=for-the-badge)](https://github.com/Cazzy-Aporbo/StreamLens-Analytics)
-[![Interactive Dashboard](https://img.shields.io/badge/Interactive%20Dashboard-Real--time%20Visualizations-F0F8FF?style=for-the-badge)](https://github.com/Cazzy-Aporbo/StreamLens-Analytics)
+[![Loopchii Research Surface](https://img.shields.io/badge/Loopchii-Public%20Research%20Surface-FFE4E1?style=for-the-badge)](https://github.com/loopchii/Stream)
+[![Media Analysis](https://img.shields.io/badge/Media%20Analysis-Representation%20%26%20Attention-E6E6FA?style=for-the-badge)](https://github.com/loopchii/Stream)
+[![Inspectable Dashboard](https://img.shields.io/badge/Interactive%20Dashboard-Open%20Methods-F0F8FF?style=for-the-badge)](https://github.com/loopchii/Stream)
+[![CI](https://img.shields.io/github/actions/workflow/status/loopchii/Stream/ci.yml?branch=main&style=for-the-badge&label=CI)](https://github.com/loopchii/Stream/actions/workflows/ci.yml)
+[![License](https://img.shields.io/github/license/loopchii/Stream?style=for-the-badge)](LICENSE)
 
 </div>
 
 <div align="center">
 
-### [▶ Launch the Live Dashboard](https://cazzy-aporbo.github.io/StreamLens-Analytics/)
+### [▶ Launch the Dashboard Preview](https://htmlpreview.github.io/?https://github.com/loopchii/Stream/blob/main/index.html)
 
-[![Open Live App](https://img.shields.io/badge/Live%20Demo-Open%20StreamLens%20in%20your%20browser-FFB6C1?style=for-the-badge)](https://cazzy-aporbo.github.io/StreamLens-Analytics/)
+[![Open Dashboard](https://img.shields.io/badge/Public%20Preview-Open%20Stream%20in%20your%20browser-FFB6C1?style=for-the-badge)](https://htmlpreview.github.io/?https://github.com/loopchii/Stream/blob/main/index.html)
 
-<sub>The full dashboard — all seven tabs, charts, the Verdict scorecard, the Music Virality module, and both What‑If simulators — runs entirely in your browser. No install, no server. Every number is pre‑computed by the same Python pipeline in this repo (run `python build_static.py` to regenerate), so the live figures match the API exactly.</sub>
+<sub>The public dashboard runs entirely in the browser. It keeps the methods visible, the claims bounded, and the data provenance explicit. Every number is pre-computed by the same Python pipeline in this repository.</sub>
 
 </div>
 
@@ -22,15 +24,15 @@
   
 <div align="center">
   
- [StreamLens‑Analytics/streaming‑bias‑index.html](https://htmlpreview.github.io/?https://github.com/Cazzy-Aporbo/StreamLens-Analytics/blob/main/streaming-bias-index.html)  
-<sub>A comprehensive exploration of the Streaming Bias Index within the StreamLens Analytics framework</sub>
+ [streaming-bias-index.html](https://htmlpreview.github.io/?https://github.com/loopchii/Stream/blob/main/streaming-bias-index.html)  
+<sub>A legacy static view of the representation index and its explanatory framing</sub>
 </div>
 
 
 <div align="center">
   
- [StreamLen_processors.html](https://htmlpreview.github.io/?https://github.com/Cazzy-Aporbo/StreamLens-Analytics/blob/main/StreamLen_processors.html)  
-<sub>A deep‑dive into the data‑processing pipeline of the StreamLens Analytics project</sub>
+ [StreamLen_processors.html](https://htmlpreview.github.io/?https://github.com/loopchii/Stream/blob/main/StreamLen_processors.html)  
+<sub>A notebook-style public view into the processing and measurement workflow</sub>
 </div>
 
 <div align="center">
@@ -45,9 +47,52 @@
 
 </div>
 
-> **My Philosophy for This Project:** Media representation should be measurable, patterns should be visible, and bias should be quantifiable. If we can't measure it, we can't fix it.
+> **Why this exists:** public research should be readable, falsifiable, and useful without pretending to expose every internal system behind it.
 
-I designed StreamLens Analytics because I noticed something troubling: everyone talks about representation in media, but few actually quantify it. This framework uses information theory, statistical testing, and network analysis to surface bias patterns that simple demographic counts miss. It currently runs on a clearly-labeled synthetic dataset (seeded and reproducible) so every metric, chart, and insight can be traced back to code you can read. This project began September 2024, and is a work in progress. 
+Stream is a Loopchii public research surface for media bias, representation, and attention analysis. It uses information theory, statistical testing, network analysis, and clearly bounded synthetic data to show how cultural pattern analysis can be made inspectable instead of rhetorical. The purpose of this repository is to publish methods, visual reasoning, and reproducible outputs without exposing proprietary runtime systems that belong elsewhere in the Loopchii ecosystem.
+
+## Start Here
+
+Pick the quickest route in:
+
+| If you want to... | Go here | What you get |
+|---|---|---|
+| Explore the public interface first | [Dashboard Preview](https://htmlpreview.github.io/?https://github.com/loopchii/Stream/blob/main/index.html) | The full browser surface with charts, story flow, and the real-data music module |
+| Inspect the live schema | `http://localhost:8000/docs` | FastAPI endpoints, request shapes, and response payloads |
+| See something useful in under 10 seconds | `python lens_visualizer.py` | A terminal-first stream demo with public lens findings and instant visual feedback |
+| Understand the methods before the visuals | [`StreamLen_processors.html`](https://htmlpreview.github.io/?https://github.com/loopchii/Stream/blob/main/StreamLen_processors.html) | A notebook-style walkthrough of the processing logic |
+| Contribute or extend the work | [contributing.md](contributing.md) | Clean setup steps, contribution lanes, and review expectations |
+
+## Navigation
+
+- [What This Actually Does](#what-this-actually-does)
+- [Public Lens SDK](#public-lens-sdk)
+- [Media Liability Lab](#media-liability-lab)
+- [Why Engineers Trust This Repo](#why-engineers-trust-this-repo)
+- [Music Virality Module — Real YouTube Data](#music-virality-module--real-youtube-data)
+- [Quick Start](#quick-start)
+- [What the Pipeline Surfaces](#what-the-pipeline-surfaces)
+- [The Interactive Dashboard](#the-interactive-dashboard)
+- [Project Structure](#project-structure)
+- [Data and Methods](#data-and-methods)
+- [Contributing](#contributing)
+- [License and Citation](#license-and-citation)
+
+## Why Engineers Trust This Repo
+
+- The claim boundary is explicit. Synthetic representation data is labeled throughout, and the real-data music module is separated on purpose.
+- The public artifacts are inspectable. The dashboard, API, notebook-style walkthrough, and exported results all point back to code in this repository.
+- The surface is reproducible. Local runs, static artifacts, and API responses come from the same Python pipeline.
+- The repo is tested continuously. CI runs linting and tests across supported Python versions on every push to `main`.
+
+## Choose Your Path
+
+| Reader | Best first stop | Why |
+|---|---|---|
+| Engineer | [Quick Start](#quick-start) | Get the app running locally, inspect the API, and trace outputs back to code |
+| Researcher | [Data and Methods](#data-and-methods) | Review assumptions, metrics, and the synthetic-vs-real distinction before citing anything |
+| Designer or writer | [The Interactive Dashboard](#the-interactive-dashboard) | Understand how the story flow, visual hierarchy, and explanatory language are structured |
+| Contributor | [contributing.md](contributing.md) | See the accepted scopes for code, data, documentation, and public research support |
 
 <div align="center">
   
@@ -59,11 +104,45 @@ I designed StreamLens Analytics because I noticed something troubling: everyone 
 
 ## What This Actually Does
 
-StreamLens models representation across streaming media from 2015 to 2026. Instead of just counting demographics (which everyone does), it computes a framework of measurable signals: dialogue distribution (chi-square), character network clustering (homophily/assortativity), role typecasting, screen-time and sentiment gaps, intersectional representation ratios, and temporal evolution of bias.
+Stream models representation across streaming media from 2015 to 2026. Instead of stopping at demographic counts, it computes measurable signals: dialogue distribution, character-network clustering, role typecasting, screen-time and sentiment gaps, intersectional representation ratios, and temporal drift.
 
-**Honesty note:** the dataset is synthetic — generated with a fixed random seed (`np.random.seed(42)`) and shaped to mirror patterns reported in media-representation research. It is ideal for learning and demonstrating the methods; it is not a measurement of real shows. Every screen in the app discloses this.
+**Honesty note:** the base entertainment dataset is synthetic — generated with a fixed random seed (`np.random.seed(42)`) and shaped to mirror patterns reported in media-representation research. It is good for learning, testing, and explaining the methods. It is not a claim about real catalogues or real studios.
 
-The interactive dashboard lets you explore these patterns yourself across seven tabs — Dashboard, Explore Data, Insights, a 57-entry Bias Library, Learn, a Verdict scorecard, and the new **Music Virality** module (real YouTube data) — filtering by platform, genre, media type, and year.
+The interactive dashboard lets you inspect those patterns across seven tabs — Dashboard, Explore Data, Insights, Bias Library, Learn, Verdict, and **Music Virality** — with filtering by platform, genre, media type, and year.
+
+## What This Repo Is Not
+
+- It is not a hidden proprietary Loopchii runtime.
+- It is not a claim about private studio catalogues, internal platform data, or undisclosed production systems.
+- It is not a generic “AI for media” wrapper. The value here is in clear methods, bounded interpretation, and visible public artifacts.
+
+## Public Lens SDK
+
+`Stream` now exposes a small public extension surface for contributors who want something more active than a static dashboard:
+
+- `lens_sdk.py` provides a minimal `KineticLens` protocol plus grouped `StreamRecord` inputs and typed `GeometricMask` findings.
+- `lens_visualizer.py` gives a terminal-first demo path so contributors can run a live grouped stream and watch findings surface immediately.
+- `/api/lenses/catalog` publishes the active public lenses.
+- `/api/lenses/demo-stream` evaluates the cached grouped stream through the same public registry.
+
+This is intentionally scoped. It gives contributors a truthful place to add assessors, heuristics, and public reasoning layers without opening private Loopchii architecture.
+
+## Media Liability Lab
+
+The repo now includes a public research harness for media-platform risk questions:
+
+- **Compulsive loop analysis** via `media_liability_lab.py`, which scores how repetitive and sticky a recommendation stream looks.
+- **Generative guard simulation**, which screens an output buffer against public signatures and zeroizes it when a match is detected.
+- **Causal map export**, which turns a recommendation sequence into nodes, edges, and repeat-path risk markers.
+
+The public API exposes this through:
+
+- `/api/media-lab/overview`
+- `/api/media-lab/compulsive-loop`
+- `/api/media-lab/generative-guard`
+- `/api/media-lab/causal-map`
+
+This is a public research harness, not a claim that the repo contains private production enforcement. Its value is that contributors can test the logic, extend the heuristics, and inspect the outputs directly.
 
 <div align="center">
   
@@ -196,8 +275,8 @@ No machine-learning models are trained in this pipeline — every number is a tr
 
 ```bash
 # Clone the repository
-git clone https://github.com/Cazzy-Aporbo/StreamLens-Analytics.git
-cd StreamLens-Analytics
+git clone https://github.com/loopchii/Stream.git
+cd Stream
 
 # Set up environment (I use venv, but conda works too)
 python -m venv venv
@@ -209,6 +288,9 @@ pip install -r requirements.txt
 # Launch the API server + dashboard
 python app.py
 # Then open http://localhost:8000 in your browser
+
+# Or get the terminal-first lens demo
+python lens_visualizer.py
 
 # Or run the analysis pipeline standalone
 python streamlens_processor.py
@@ -233,6 +315,12 @@ python streamlens_processor.py
 | `/api/metrics/network` | GET | Interaction network homophily and density |
 | `/api/metrics/intersectionality` | GET | Most under/over-represented intersectional groups |
 | `/api/insights` | GET | Narrative findings generated from the data |
+| `/api/lenses/catalog` | GET | Public catalog of the active lens registry |
+| `/api/lenses/demo-stream` | GET | Grouped stream records evaluated by the public lens SDK |
+| `/api/media-lab/overview` | GET | Combined public snapshot of recommendation, guard, and causal-map research outputs |
+| `/api/media-lab/compulsive-loop` | GET | Compulsive-loop risk score and recommended friction for a sample recommendation stream |
+| `/api/media-lab/generative-guard` | GET | Public generative buffer screening and zeroization demo |
+| `/api/media-lab/causal-map` | GET | Topological recommendation-flow export with repeat-path risk edges |
 | `/api/metrics/advanced` | GET | Inequality (Gini/Theil/Lorenz), Simpson/Theil diversity, Cramér's V effect sizes, bootstrap CIs, fitted year trend |
 | `/api/metrics/scorecard` | GET | Per-platform A–F report card across four representation dimensions |
 | `/api/simulate/parity?female_ratio=R` | GET | What-If parity index, letter grade, and verdict for a hypothetical female lead share |
@@ -324,7 +412,7 @@ Because the data is synthetic, treat the exact values as demonstrations of the m
 - **Dashboard (Act I)** — live stat cards, year slider with era readouts, bubble chart, 3D representation landscape, network graph, time series, radar chart
 - **Explore Data (Act II)** — the raw character-level records behind every metric, filterable by platform, genre, media type, and year; media-mix donut
 - **Insights (Act III)** — findings generated by the pipeline, plus the bias breakdown and intersectionality tables
-- **Bias Library (Act IV)** — 57 documented bias types across 8 categories, searchable, with the ones StreamLens quantifies marked
+- **Bias Library (Act IV)** — 57 documented bias types across 8 categories, searchable, with the ones Stream quantifies marked
 - **Learn (Act V)** — plain-language explanations of every metric, with pointers into the source code
 - **Verdict (Act VI)** — a platform A–F report card, a Lorenz/Gini inequality curve, Cramér's V effect-size bars, a fitted decade trend line, and a What-If parity simulator wired to the backend
 - **Music Virality (Real Data)** — eight-movement deep dive into 100 real YouTube music videos: power-law, inequality, correlations, archetypes, tag network, predictability, What-If predictor, and a sortable real-songs explorer
@@ -391,10 +479,13 @@ processor.export_results(results, filename='analysis_results.json')
 ## Project Structure
 
 ```
-StreamLens-Analytics/
+Stream/
 │
 ├── index.html                    # The interactive dashboard (start here)
 ├── app.py                        # FastAPI server (dashboard + REST API)
+├── lens_sdk.py                   # Public extension protocol for grouped stream assessors
+├── lens_visualizer.py            # Terminal-first demo of the public lens registry
+├── media_liability_lab.py        # Public media-platform risk research harness
 ├── streamlens_processor.py       # Main processing pipeline
 ├── bias_library.py               # 57 documented bias types served at /api/bias-library
 ├── music_pipeline.py             # Real-data music virality analysis (power-law, Gini, clustering, RF)
@@ -409,6 +500,8 @@ StreamLens-Analytics/
 ├── tests/
 │   ├── test_analyzer.py          # Unit tests for the pipeline
 │   ├── test_api.py               # API tests
+│   ├── test_lens_sdk.py          # Public lens SDK tests
+│   ├── test_media_liability_lab.py  # Media-platform research harness tests
 │   └── test_music.py             # Music pipeline + API tests
 │
 └── .github/workflows/ci.yml     # CI: lint + tests on Python 3.11/3.12
@@ -468,7 +561,7 @@ The pipeline uses a chi-square goodness-of-fit test for dialogue distribution (w
 
 Media shapes culture. When most action heroes are male, when women of color rarely hold lead roles, when characters over 50 fade from screens, it sends a message about whose stories matter. This isn't about quotas or political correctness. It's about accurately reflecting the world we live in.
 
-StreamLens exists to make those patterns measurable — and to teach the measuring. The Bias Library names 57 documented patterns so you can spot them; the Learn tab explains the math so you can verify it; the Explore tab hands you the raw rows so you never have to take a summary on faith. Because the first step to fixing a problem is proving it exists.
+Stream exists to make those patterns measurable and readable at the same time. The Bias Library names documented patterns so you can spot them; the Learn tab explains the math so you can verify it; the Explore tab hands you the raw rows so you never have to trust a summary by default.
 
 <div align="center">
   
@@ -487,7 +580,7 @@ I'd love help making this better. Areas where I particularly need assistance:
 - **Visualization**: Making complex patterns more intuitive
 - **Documentation**: Explaining the math in simpler terms
 
-Check out [contributing.md](contributing.md) for guidelines. Fair warning: I'm particular about code quality, but I promise helpful code reviews.
+Check out [contributing.md](contributing.md) for guidelines. The repo also ships issue templates for bugs, feature requests, and data/source improvements so contributors can plug in without guessing the expected shape.
 
 <div align="center">
   
@@ -512,7 +605,7 @@ Check out [contributing.md](contributing.md) for guidelines. Fair warning: I'm p
 </tr>
 <tr style="background-color:#F0F8FF;">
 <td><strong>Test Coverage</strong></td>
-<td>98 pytest tests (pipeline + API + music + bias)</td>
+<td>111 pytest tests (pipeline + API + music + public lens SDK + media liability lab)</td>
 <td>Run with <code>pytest tests -q</code>; CI on Python 3.11/3.12</td>
 </tr>
 <tr>
@@ -544,14 +637,14 @@ Check out [contributing.md](contributing.md) for guidelines. Fair warning: I'm p
 
 MIT License - use this code for anything you want. If you find something interesting or build on this work, I'd love to hear about it.
 
-If you use StreamLens Analytics in research:
+If you use Stream in research:
 
 ```bibtex
 @software{streamlens2025,
-  title = {StreamLens Analytics: Mathematical Framework for Media Bias Detection},
+  title = {Stream: Loopchii Public Research Surface for Media Bias and Attention Analysis},
   author = {Aporbo, Cazandra},
   year = {2025},
-  url = {https://github.com/Cazzy-Aporbo/StreamLens-Analytics}
+  url = {https://github.com/loopchii/Stream}
 }
 ```
 
@@ -566,8 +659,8 @@ If you use StreamLens Analytics in research:
 ## Contact
 
 **Author**: Cazandra Aporbo, MS  
-**Repository**: [github.com/Cazzy-Aporbo/StreamLens-Analytics](https://github.com/Cazzy-Aporbo/StreamLens-Analytics)  
-**Issues**: [Report bugs or request features](https://github.com/Cazzy-Aporbo/StreamLens-Analytics/issues)
+**Repository**: [github.com/loopchii/Stream](https://github.com/loopchii/Stream)  
+**Issues**: [Report bugs or request features](https://github.com/loopchii/Stream/issues)
 
 Currently working on expanding this to include international content and historical analysis pre-2015. If you have access to good datasets or want to collaborate, reach out through GitHub issues.
 

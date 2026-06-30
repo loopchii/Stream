@@ -20,7 +20,7 @@ def test_health(client):
 def test_dashboard_served(client):
     res = client.get('/')
     assert res.status_code == 200
-    assert 'StreamLens' in res.text
+    assert 'Stream' in res.text
 
 
 def test_results(client):
@@ -130,6 +130,55 @@ def test_insights(client):
     insights = res.json()
     assert len(insights) > 0
     assert {'category', 'title', 'detail'} <= set(insights[0])
+
+
+def test_lenses_catalog(client):
+    res = client.get('/api/lenses/catalog')
+    assert res.status_code == 200
+    body = res.json()
+    assert len(body['items']) >= 4
+    assert {'lens_id', 'display_name', 'description'} <= set(body['items'][0])
+
+
+def test_lenses_demo_stream(client):
+    res = client.get('/api/lenses/demo-stream', params={'limit': 6})
+    assert res.status_code == 200
+    body = res.json()
+    assert body['count'] <= 6
+    assert len(body['items']) == body['count']
+    if body['items']:
+        assert {'record', 'finding_count', 'findings'} <= set(body['items'][0])
+
+
+def test_media_lab_overview(client):
+    res = client.get('/api/media-lab/overview')
+    assert res.status_code == 200
+    body = res.json()
+    assert {'compulsive_usage', 'generative_guard', 'causal_map', 'events'} <= set(body)
+
+
+def test_media_lab_compulsive_loop(client):
+    res = client.get('/api/media-lab/compulsive-loop')
+    assert res.status_code == 200
+    body = res.json()
+    assert 0 <= body['risk_score'] <= 1
+    assert body['recommended_friction_ms'] >= 0
+
+
+def test_media_lab_generative_guard(client):
+    res = client.get('/api/media-lab/generative-guard')
+    assert res.status_code == 200
+    body = res.json()
+    assert body['blocked'] is True
+    assert body['remaining_nonzero_bytes'] == 0
+
+
+def test_media_lab_causal_map(client):
+    res = client.get('/api/media-lab/causal-map')
+    assert res.status_code == 200
+    body = res.json()
+    assert body['node_count'] > 0
+    assert body['edge_count'] > 0
 
 
 def test_learn(client):

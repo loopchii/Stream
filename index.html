@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>StreamLens Analytics: Advanced Media Bias Analysis Platform</title>
+    <title>Stream | Loopchii Research Surface for Media Bias and Attention Analysis</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600&family=Inter:wght@400;500;600;700&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
@@ -15,13 +15,15 @@
     <style>
         :root {
             /* Primary Theme — Aurora (light, airy) */
-            --primary-bg: #f4f6ff;
-            --primary-surface: #ffffff;
-            --primary-accent: #6c5ce7;
-            --primary-secondary: #ff6ea8;
-            --primary-tertiary: #ffb84d;
-            --primary-text: #2d3250;
-            --primary-text-dim: #5c6386;
+            --primary-bg: #f6f4ff;
+            --primary-surface: rgba(255, 255, 255, 0.86);
+            --primary-accent: #5b55ff;
+            --primary-secondary: #ff6f9f;
+            --primary-tertiary: #ffbe5c;
+            --primary-quaternary: #48c9c2;
+            --primary-text: #1f2447;
+            --primary-text-dim: #5c6489;
+            --primary-shadow: rgba(74, 60, 184, 0.16);
             
             /* Purple Ombre Theme */
             --purple-bg: #1a0033;
@@ -50,7 +52,11 @@
 
         body {
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
-            background: linear-gradient(160deg, var(--primary-bg) 0%, #eef1ff 50%, #fdf2fa 100%);
+            background:
+                radial-gradient(circle at 8% 12%, rgba(91, 85, 255, 0.13), transparent 28%),
+                radial-gradient(circle at 88% 10%, rgba(255, 111, 159, 0.12), transparent 26%),
+                radial-gradient(circle at 74% 86%, rgba(72, 201, 194, 0.10), transparent 24%),
+                linear-gradient(160deg, var(--primary-bg) 0%, #eef1ff 52%, #fdf3fb 100%);
             background-attachment: fixed;
             color: var(--primary-text);
             overflow-x: hidden;
@@ -78,11 +84,12 @@
         }
 
         .header {
-            background: linear-gradient(135deg, var(--primary-surface) 0%, var(--primary-bg) 100%);
-            padding: 2rem;
+            background: linear-gradient(135deg, rgba(255,255,255,0.9) 0%, rgba(243,244,255,0.78) 52%, rgba(255,246,251,0.82) 100%);
+            padding: 2.5rem 2rem 2.2rem;
             border-bottom: 2px solid var(--primary-accent);
             position: relative;
             overflow: hidden;
+            backdrop-filter: blur(20px);
         }
 
         .header::before {
@@ -169,6 +176,42 @@
             z-index: 1;
             max-width: 1400px;
             margin: 0 auto;
+            display: grid;
+            grid-template-columns: minmax(0, 1.3fr) minmax(280px, 0.7fr);
+            gap: 2rem;
+            align-items: end;
+        }
+
+        .hero-copy {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+            max-width: 52rem;
+        }
+
+        .header-kicker {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.55rem;
+            width: fit-content;
+            padding: 0.45rem 0.85rem;
+            border-radius: 999px;
+            border: 1px solid rgba(91, 85, 255, 0.18);
+            background: rgba(255, 255, 255, 0.72);
+            color: var(--primary-text-dim);
+            font-size: 0.78rem;
+            letter-spacing: 0.16rem;
+            text-transform: uppercase;
+            font-weight: 700;
+        }
+
+        .header-kicker::before {
+            content: '';
+            width: 0.62rem;
+            height: 0.62rem;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--primary-accent), var(--primary-secondary));
+            box-shadow: 0 0 0 0.18rem rgba(91, 85, 255, 0.12);
         }
 
         h1 {
@@ -178,9 +221,10 @@
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
             background-clip: text;
-            margin-bottom: 0.5rem;
+            margin-bottom: 0;
             animation: gradient 3s ease infinite;
             background-size: 200% 200%;
+            line-height: 0.98;
         }
 
         @keyframes gradient {
@@ -192,7 +236,130 @@
         .subtitle {
             color: var(--primary-text-dim);
             font-size: 1.2rem;
-            margin-bottom: 1.5rem;
+            margin-bottom: 0;
+            max-width: 44rem;
+            line-height: 1.7;
+        }
+
+        .hero-chip-row {
+            display: flex;
+            gap: 0.65rem;
+            flex-wrap: wrap;
+        }
+
+        .hero-chip {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.55rem 0.9rem;
+            border-radius: 999px;
+            background: rgba(255,255,255,0.74);
+            border: 1px solid rgba(91, 85, 255, 0.14);
+            color: var(--primary-text);
+            font-size: 0.82rem;
+            font-weight: 600;
+            letter-spacing: 0.02rem;
+        }
+
+        .hero-chip::before {
+            content: '';
+            width: 0.45rem;
+            height: 0.45rem;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--primary-secondary), var(--primary-tertiary));
+        }
+
+        .hero-actions {
+            display: flex;
+            gap: 0.9rem;
+            flex-wrap: wrap;
+        }
+
+        .hero-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.82rem 1.15rem;
+            border-radius: 0.95rem;
+            background: rgba(255,255,255,0.86);
+            border: 1px solid rgba(91, 85, 255, 0.18);
+            color: var(--primary-text);
+            text-decoration: none;
+            font-weight: 700;
+            transition: transform 0.25s ease, box-shadow 0.25s ease, border-color 0.25s ease;
+        }
+
+        .hero-link:hover {
+            transform: translateY(-2px);
+            border-color: var(--primary-accent);
+            box-shadow: 0 12px 28px var(--primary-shadow);
+        }
+
+        .hero-link.primary {
+            background: linear-gradient(120deg, var(--primary-accent), var(--primary-secondary));
+            color: white;
+            border-color: transparent;
+        }
+
+        .hero-sidecard {
+            position: relative;
+            padding: 1.35rem 1.2rem;
+            border-radius: 1.4rem;
+            background: linear-gradient(160deg, rgba(255,255,255,0.82), rgba(244,245,255,0.7));
+            border: 1px solid rgba(91, 85, 255, 0.14);
+            box-shadow: 0 18px 44px rgba(40, 44, 90, 0.08);
+            overflow: hidden;
+        }
+
+        .hero-sidecard::after {
+            content: '';
+            position: absolute;
+            inset: auto -15% -30% auto;
+            width: 12rem;
+            height: 12rem;
+            border-radius: 50%;
+            background: radial-gradient(circle, rgba(255,111,159,0.15), rgba(91,85,255,0));
+            pointer-events: none;
+        }
+
+        .hero-sidecard h3 {
+            font-size: 0.88rem;
+            text-transform: uppercase;
+            letter-spacing: 0.15rem;
+            color: var(--primary-accent);
+            margin-bottom: 0.85rem;
+        }
+
+        .hero-sidecard p {
+            color: var(--primary-text-dim);
+            line-height: 1.6;
+            font-size: 0.95rem;
+            margin-bottom: 0.9rem;
+        }
+
+        .hero-proof-list {
+            display: grid;
+            gap: 0.75rem;
+        }
+
+        .hero-proof-item {
+            padding: 0.8rem 0.9rem;
+            border-radius: 1rem;
+            background: rgba(255,255,255,0.72);
+            border: 1px solid rgba(91, 85, 255, 0.1);
+        }
+
+        .hero-proof-item strong {
+            display: block;
+            color: var(--primary-text);
+            margin-bottom: 0.2rem;
+            font-size: 0.9rem;
+        }
+
+        .hero-proof-item span {
+            color: var(--primary-text-dim);
+            font-size: 0.84rem;
+            line-height: 1.45;
         }
 
         .theme-switcher {
@@ -206,8 +373,8 @@
 
         .theme-btn {
             padding: 0.5rem 1rem;
-            border: 2px solid var(--primary-accent);
-            background: var(--primary-surface);
+            border: 1px solid rgba(91, 85, 255, 0.16);
+            background: rgba(255, 255, 255, 0.82);
             color: var(--primary-text);
             border-radius: 25px;
             cursor: pointer;
@@ -217,17 +384,127 @@
 
         .theme-btn:hover, .theme-btn.active {
             background: var(--primary-accent);
+            color: white;
             transform: translateY(-2px);
-            box-shadow: 0 10px 20px rgba(0, 212, 255, 0.3);
+            box-shadow: 0 10px 20px rgba(91, 85, 255, 0.22);
+        }
+
+        .research-strip {
+            max-width: 1400px;
+            margin: 1.35rem auto 0;
+            padding: 0 2rem;
+            display: grid;
+            grid-template-columns: repeat(3, minmax(0, 1fr));
+            gap: 1rem;
+        }
+
+        .research-card {
+            padding: 1.15rem 1.15rem 1.05rem;
+            border-radius: 1.2rem;
+            background: rgba(255,255,255,0.78);
+            border: 1px solid rgba(91, 85, 255, 0.12);
+            box-shadow: 0 16px 34px rgba(53, 60, 122, 0.08);
+        }
+
+        .research-card h4 {
+            color: var(--primary-accent);
+            margin-bottom: 0.45rem;
+            font-size: 0.95rem;
+            letter-spacing: 0.08rem;
+            text-transform: uppercase;
+        }
+
+        .research-card p {
+            color: var(--primary-text-dim);
+            line-height: 1.58;
+            font-size: 0.92rem;
+        }
+
+        .entry-grid {
+            max-width: 1400px;
+            margin: 1rem auto 0;
+            padding: 0 2rem;
+            display: grid;
+            grid-template-columns: repeat(4, minmax(0, 1fr));
+            gap: 1rem;
+        }
+
+        .entry-card {
+            position: relative;
+            padding: 1.15rem 1.15rem 1.05rem;
+            border-radius: 1.2rem;
+            background: linear-gradient(160deg, rgba(255,255,255,0.84), rgba(245, 246, 255, 0.72));
+            border: 1px solid rgba(91, 85, 255, 0.14);
+            box-shadow: 0 16px 34px rgba(53, 60, 122, 0.08);
+            overflow: hidden;
+        }
+
+        .entry-card::after {
+            content: '';
+            position: absolute;
+            right: -2rem;
+            bottom: -2rem;
+            width: 7rem;
+            height: 7rem;
+            border-radius: 50%;
+            background: radial-gradient(circle, rgba(91, 85, 255, 0.12), rgba(91, 85, 255, 0));
+            pointer-events: none;
+        }
+
+        .entry-kicker {
+            display: inline-block;
+            margin-bottom: 0.55rem;
+            font-size: 0.78rem;
+            letter-spacing: 0.14rem;
+            text-transform: uppercase;
+            color: var(--primary-accent);
+            font-weight: 700;
+        }
+
+        .entry-card h4 {
+            color: var(--primary-text);
+            font-size: 1.05rem;
+            margin-bottom: 0.4rem;
+        }
+
+        .entry-card p {
+            color: var(--primary-text-dim);
+            line-height: 1.58;
+            font-size: 0.92rem;
+            margin-bottom: 0.85rem;
+        }
+
+        .entry-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.45rem;
+            padding: 0.72rem 0.98rem;
+            border-radius: 999px;
+            border: 1px solid rgba(91, 85, 255, 0.15);
+            background: rgba(255,255,255,0.85);
+            color: var(--primary-text);
+            text-decoration: none;
+            font-weight: 700;
+            cursor: pointer;
+            appearance: none;
+            font: inherit;
+            transition: transform 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease;
+        }
+
+        .entry-link:hover {
+            transform: translateY(-1px);
+            border-color: var(--primary-accent);
+            box-shadow: 0 10px 22px rgba(53, 60, 122, 0.12);
         }
 
         .intro-section {
-            background: var(--primary-surface);
+            background: rgba(255,255,255,0.84);
             padding: 2rem;
             margin: 2rem auto;
             max-width: 1400px;
             border-radius: 20px;
             border-left: 4px solid var(--primary-accent);
+            box-shadow: 0 18px 42px rgba(53, 60, 122, 0.08);
         }
 
         .intro-section h2 {
@@ -248,12 +525,12 @@
         }
 
         .controls {
-            background: var(--primary-surface);
+            background: rgba(255,255,255,0.84);
             padding: 2rem;
             margin: 2rem auto;
             max-width: 1400px;
             border-radius: 20px;
-            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+            box-shadow: 0 14px 38px rgba(46, 50, 99, 0.1);
             backdrop-filter: blur(10px);
         }
 
@@ -658,6 +935,7 @@
             border-radius: 20px;
             text-align: center;
             border: 2px solid var(--primary-accent);
+            box-shadow: 0 18px 42px rgba(53, 60, 122, 0.08);
         }
 
         .author-citation h3 {
@@ -722,9 +1000,10 @@
             margin: 1.5rem auto 0;
             padding: 1.25rem 1.75rem;
             border-radius: 16px;
-            background: linear-gradient(120deg, rgba(108, 92, 231, 0.10), rgba(255, 110, 168, 0.10));
+            background: linear-gradient(120deg, rgba(91, 85, 255, 0.10), rgba(255, 111, 159, 0.10));
             border-left: 4px solid var(--primary-secondary);
             animation: fadeIn 0.8s ease both;
+            box-shadow: 0 14px 36px rgba(53, 60, 122, 0.08);
         }
 
         @keyframes fadeIn {
@@ -742,6 +1021,7 @@
 
         .story-strip h3 { color: var(--primary-accent); margin: 0.25rem 0 0.4rem; }
         .story-strip p { color: var(--primary-text-dim); line-height: 1.7; margin: 0; }
+        .story-strip strong { color: var(--primary-text); font-weight: 700; }
 
         .chip-row { display: flex; gap: 0.5rem; flex-wrap: wrap; margin: 1rem 0; }
 
@@ -1124,7 +1404,7 @@
                 path = path.slice(0, qi);
             }
             if (path === '/api/health')
-                return Promise.resolve(J({ status: 'ok', service: 'streamlens-analytics', version: 'static' }));
+                return Promise.resolve(J({ status: 'ok', service: 'stream', publisher: 'loopchii', version: 'static' }));
             if (path === '/api/analyze') {
                 var n = qs.n_samples || '5000';
                 if (SIZES.indexOf(n) === -1) n = '5000';
@@ -1370,6 +1650,10 @@
         .mv-refresh button:hover { border-color: var(--indigo); color: var(--indigo); }
 
         @media (max-width: 880px) {
+            .header-content { grid-template-columns: 1fr; }
+            .research-strip { grid-template-columns: 1fr; padding: 0 1rem; }
+            .entry-grid { grid-template-columns: 1fr; padding: 0 1rem; }
+            .hero-actions { flex-direction: column; align-items: stretch; }
             .mv-grid-2, .mv-grid-net, .mv-whatif { grid-template-columns: 1fr; }
             .mv-statline { grid-template-columns: 1fr 1fr; }
             .mv-corr-row { grid-template-columns: 9rem 1fr 3rem; }
@@ -1383,13 +1667,44 @@
 
     <div class="header">
         <div class="theme-switcher">
-            <button class="theme-btn active" onclick="setTheme('primary', this)">Primary</button>
-            <button class="theme-btn" onclick="setTheme('purple', this)">Purple Ombre</button>
-            <button class="theme-btn" onclick="setTheme('pastel', this)">Pastel</button>
+            <button class="theme-btn active" onclick="setTheme('primary', this)">Signal</button>
+            <button class="theme-btn" onclick="setTheme('purple', this)">Nocturne</button>
+            <button class="theme-btn" onclick="setTheme('pastel', this)">Bloom</button>
         </div>
         <div class="header-content">
-            <h1>StreamLens Analytics</h1>
-            <div class="subtitle">Advanced Representation & Bias Analysis in Streaming Media (2015-2026)</div>
+            <div class="hero-copy">
+                <span class="header-kicker">Loopchii Research Surface</span>
+                <h1>Stream</h1>
+                <div class="subtitle">A public analysis surface for representation, attention, and measurable bias in streaming media. Built to be inspectable, reproducible, and honest about where the data is synthetic, where it is real, and where the claims stop.</div>
+                <div class="hero-chip-row">
+                    <span class="hero-chip">Synthetic base clearly labeled</span>
+                    <span class="hero-chip">Real YouTube music module</span>
+                    <span class="hero-chip">Static dashboard + live API</span>
+                </div>
+                <div class="hero-actions">
+                    <a class="hero-link primary" href="https://github.com/loopchii/Stream" target="_blank" rel="noopener noreferrer">Read the repository</a>
+                    <a class="hero-link" href="/docs" target="_blank" rel="noopener noreferrer">Inspect the API schema</a>
+                    <a class="hero-link" href="javascript:void(0)" onclick="showTab('music', document.querySelector('[data-tab=music]'));">Jump to real data</a>
+                </div>
+            </div>
+            <aside class="hero-sidecard">
+                <h3>What This Surface Proves</h3>
+                <p>Not a black-box dashboard. Not a hidden model. A public research instrument with bounded claims, visible methods, and enough structure for engineers, researchers, and skeptical readers to interrogate it properly.</p>
+                <div class="hero-proof-list">
+                    <div class="hero-proof-item">
+                        <strong>Open methods</strong>
+                        <span>The statistical pipeline is in the repo and the dashboard points back to it.</span>
+                    </div>
+                    <div class="hero-proof-item">
+                        <strong>Claim boundary</strong>
+                        <span>The synthetic dataset is disclosed throughout, and the real music module is separated on purpose.</span>
+                    </div>
+                    <div class="hero-proof-item">
+                        <strong>Published posture</strong>
+                        <span>This is public work with a clear research voice, not a generic SaaS landing page.</span>
+                    </div>
+                </div>
+            </aside>
         </div>
         <div id="particleField"></div>
     </div>
@@ -1407,28 +1722,71 @@
     <div class="story-strip" id="storyStrip">
         <span class="act" id="storyAct">Act I — The Question</span>
         <h3 id="storyTitle">Who gets to be the story?</h3>
-        <p id="storyText">Streaming reaches billions of hours of attention every day. The faces, voices, and lives on screen quietly teach us who counts as a hero, an expert, a love interest — or background. StreamLens turns that question into numbers you can interrogate yourself: start on the Dashboard, dig into the raw data in Explore, read what the pipeline found in Insights, browse 50+ named biases in the Bias Library, and learn the math in Learn.</p>
+        <p id="storyText">Streaming reaches billions of hours of attention every day. The faces, voices, and lives on screen quietly teach us who counts as a hero, an expert, a love interest, or background. <strong>Stream</strong> turns that cultural pressure into a surface you can inspect: start on the Dashboard, pull apart the rows in Explore, read the live findings in Insights, and then check the methods before you believe any of it.</p>
+    </div>
+
+    <div class="research-strip">
+        <div class="research-card">
+            <h4>Published Intent</h4>
+            <p>This is a public Loopchii research surface. It is meant to teach, test, and provoke better questions about media representation without pretending a dashboard is the whole truth.</p>
+        </div>
+        <div class="research-card">
+            <h4>Bounded Honesty</h4>
+            <p>The main representation dataset is synthetic and explicitly labeled. The music virality module is real and kept separate so readers can tell exactly what they are looking at.</p>
+        </div>
+        <div class="research-card">
+            <h4>Useful Friction</h4>
+            <p>The point is not passive browsing. The point is to compare signals, challenge assumptions, and leave with a sharper sense of what media systems reward or erase.</p>
+        </div>
+    </div>
+
+    <div class="entry-grid">
+        <div class="entry-card">
+            <span class="entry-kicker">For Engineers</span>
+            <h4>Inspect the moving parts</h4>
+            <p>Start with the live schema if you want the payloads, response shapes, public lens catalog, and media-lab endpoints before you look at the visuals.</p>
+            <a class="entry-link" href="/docs" target="_blank" rel="noopener noreferrer">Open API docs</a>
+        </div>
+        <div class="entry-card">
+            <span class="entry-kicker">For Researchers</span>
+            <h4>Check the methods first</h4>
+            <p>Read the notebook-style public walkthrough if you want the assumptions, processing path, and measurement posture before interpretation.</p>
+            <a class="entry-link" href="https://htmlpreview.github.io/?https://github.com/loopchii/Stream/blob/main/StreamLen_processors.html" target="_blank" rel="noopener noreferrer">Read the walkthrough</a>
+        </div>
+        <div class="entry-card">
+            <span class="entry-kicker">For Skeptics</span>
+            <h4>Stress the risky paths</h4>
+            <p>The public repo now includes a media-liability lab and a real-data music module. Start there if you want attention loops, public risk logic, and the non-synthetic layer first.</p>
+            <button class="entry-link" onclick="showTab('music', document.querySelector('[data-tab=music]'));">Jump to music virality</button>
+        </div>
+        <div class="entry-card">
+            <span class="entry-kicker">For Contributors</span>
+            <h4>Improve the public surface</h4>
+            <p>Help with clarity, reproducibility, visual quality, and source hygiene. The public repo should feel useful the first time someone lands here.</p>
+            <a class="entry-link" href="https://github.com/loopchii/Stream/blob/main/contributing.md" target="_blank" rel="noopener noreferrer">Read contribution guide</a>
+        </div>
     </div>
 
     <div id="tab-dashboard" class="tab-panel active">
 
     <div class="intro-section">
-        <h2>Interactive Bias Detection Platform</h2>
-        <p>This dashboard visualizes representation patterns across 6 major streaming platforms and 6 content genres from 2015-2026. Each visualization updates dynamically based on your selections, revealing how bias manifests differently across platforms, genres, and time.</p>
+        <h2>Published Research Surface</h2>
+        <p>Stream does not ask you to trust a conclusion because it sounds right. It exposes the measurable parts: distribution, parity, inequality, network structure, and long-range trend. The goal is not to flatten culture into a score. The goal is to make hidden asymmetries legible enough to interrogate.</p>
+        <p>The dashboard covers six major streaming platforms, six content genres, multiple media formats, and the full 2015-2026 period. Every tab pushes a different part of the question forward: the overview, the rows, the findings, the field knowledge, the methods, and the verdict layer where the numbers become a judgment.</p>
         
-        <h3 style="color: var(--primary-accent); margin-top: 1.5rem; margin-bottom: 1rem;">Control Guide</h3>
+        <h3 style="color: var(--primary-accent); margin-top: 1.5rem; margin-bottom: 1rem;">How To Read It</h3>
         <ul>
-            <li><strong>Year Slider:</strong> Observe temporal evolution - watch all metrics change as you slide through the decade</li>
-            <li><strong>Platform Filter:</strong> Compare streaming services - each has distinct diversity strategies and biases</li>
-            <li><strong>Genre Filter:</strong> Analyze content types - Action shows highest male bias, Documentary lowest</li>
-            <li><strong>Color System:</strong> Each bubble has a unique color based on platform (color family) and genre (shade variation)</li>
+            <li><strong>Year slider:</strong> move through the decade and watch the same system change rather than comparing disconnected snapshots.</li>
+            <li><strong>Platform and genre filters:</strong> ask whether the bias is universal or local to a production culture.</li>
+            <li><strong>Bias Library and Learn:</strong> use the field knowledge and the math together; neither is enough on its own.</li>
+            <li><strong>Music Virality:</strong> switch to the real-data module when you want the public, non-synthetic attention layer.</li>
         </ul>
     </div>
 
     <div class="controls">
         <div class="control-instructions">
-            <h3>Real-Time Analysis Controls</h3>
-            <p>Every adjustment triggers recalculation across all visualizations. The data represents synthetic patterns based on empirical research of streaming media bias from 2015-2024.</p>
+            <h3>Interrogate The Surface</h3>
+            <p>Every adjustment recomputes the visible metrics. The main representation dataset is synthetic and seeded on purpose so the method stays inspectable. The separate Music Virality tab is built on real YouTube data and is labeled as such everywhere it appears.</p>
         </div>
         <div class="control-group">
             <div class="control-item">
@@ -1797,7 +2155,7 @@
                 <h2 class="viz-title">The Bias Library</h2>
                 <div class="viz-explanation">
                     <h4>50+ Named Biases, Explained</h4>
-                    <p>Every entry is a documented bias pattern studied in media-representation research — what it is, what it looks like, and why it matters. Entries marked <strong style="color:#1b9e77;">measured here</strong> are quantified live by the StreamLens pipeline; the rest are field knowledge to sharpen what you look for. Filter by category or search.</p>
+                    <p>Every entry is a documented bias pattern studied in media-representation research — what it is, what it looks like, and why it matters. Entries marked <strong style="color:#1b9e77;">measured here</strong> are quantified live by the Stream pipeline; the rest are field knowledge to sharpen what you look for. Filter by category or search.</p>
                 </div>
                 <div class="chip-row" id="biasChips"></div>
                 <div class="control-group" style="grid-template-columns: 1fr; margin-bottom: 0.5rem;">
@@ -1820,7 +2178,7 @@
                 <h2 class="viz-title">Learn the Methods</h2>
                 <div class="viz-explanation">
                     <h4>Understand Every Metric</h4>
-                    <p>Each card explains one of the statistical methods used by StreamLens, with a hands-on way to see it in action.</p>
+                    <p>Each card explains one of the statistical methods used by Stream, with a hands-on way to see it in action.</p>
                 </div>
                 <div class="learn-grid" id="learnGrid">
                     <div class="learn-card"><p>Loading content…</p></div>
@@ -2143,10 +2501,10 @@
     </div>
 
     <div class="author-citation">
-        <h3>About This Analysis</h3>
-        <p>StreamLens Analytics quantifies representation asymmetries in streaming media using statistical and network-analysis methods, computed live on a clearly-labeled synthetic dataset. The Music Virality module analyses 100 real YouTube music videos (10.59 billion views) from an actual 2025 dataset.</p>
+        <h3>About This Published Surface</h3>
+        <p>Stream is a public Loopchii research surface for measuring representation asymmetries, attention concentration, and the social shape of media systems. The representation dashboard runs on a clearly labeled synthetic dataset so the math stays reproducible. The Music Virality module is separate because it is built on real YouTube data and should be read differently.</p>
         <p class="author-name">Created by Cazandra Aporbo, MS</p>
-        <p style="font-size: 0.9rem; margin-top: 0.5rem;">Mathematical Framework Development: September 10, 2024 - Present</p>
+        <p style="font-size: 0.9rem; margin-top: 0.5rem;">Mathematical framework development: September 10, 2024 - present</p>
     </div>
 
     <script>
@@ -2315,7 +2673,7 @@
                     <p>${b.definition}</p>
                     <p><em>Example:</em> ${b.example}</p>
                     <p class="why">Why it matters: ${b.why_it_matters}</p>
-                    ${b.measured_here ? '<span class="measured">● Measured live by StreamLens</span>' : ''}
+                    ${b.measured_here ? '<span class="measured">● Measured live by Stream</span>' : ''}
                 </div>`).join('') || '<div class="bias-card"><p>No bias types match your search.</p></div>';
             },
 
@@ -3389,7 +3747,7 @@
             insights: ['Act III — The Findings', 'What the numbers actually say.',
                 'These findings are generated by the analysis pipeline from the current dataset — not written in advance. They quantify where representation is improving, where it stalls, and which gaps only appear when you look at intersections.'],
             library: ['Act IV — The Patterns', 'Bias has names. Learn to spot them.',
-                'Over fifty documented bias patterns from media research, each explained in plain language: what it is, what it looks like on screen, and why it matters. The ones StreamLens can quantify are marked; the rest train your eye.'],
+                'Over fifty documented bias patterns from media research, each explained in plain language: what it is, what it looks like on screen, and why it matters. The ones Stream can quantify are marked; the rest train your eye.'],
             learn: ['Act V — The Methods', 'Trust the math because you understand it.',
                 'Every metric in this app is explained here — Shannon entropy, chi-square, homophily, intersectional ratios — with pointers into the actual source code so you can verify that what is claimed is what is computed.'],
             scorecard: ['Act VI — The Verdict', 'Put a grade on it.',

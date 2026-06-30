@@ -65,7 +65,7 @@ def get_api_key(explicit: Optional[str] = None) -> Optional[str]:
     if key:
         return key
     # Repo-scoped secret file (Linux remotes): KEY=VALUE lines.
-    secret_path = Path("/run/repo_secrets/StreamLens-Analytics/.env.secrets")
+    secret_path = Path("/run/repo_secrets/Stream/.env.secrets")
     if secret_path.exists():
         for line in secret_path.read_text().splitlines():
             if line.startswith("YOUTUBE_API_KEY="):
