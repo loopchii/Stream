@@ -462,6 +462,12 @@ def music_predictability():
     return music_cache.report()["predictability"]
 
 
+@app.get("/api/music/resonance")
+def music_resonance():
+    """Public resonance proxy: repetition, concentration, and release pressure."""
+    return music_cache.report()["resonance"]
+
+
 @app.get("/api/music/songs")
 def music_songs(
     limit: int = Query(default=100, ge=1, le=1000),

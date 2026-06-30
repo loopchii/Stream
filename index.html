@@ -1484,6 +1484,7 @@
             if (path === '/api/music/archetypes') return load('music/archetypes.json').then(J);
             if (path === '/api/music/network') return load('music/network.json').then(J);
             if (path === '/api/music/predictability') return load('music/predictability.json').then(J);
+            if (path === '/api/music/resonance') return load('music/resonance.json').then(J);
             if (path === '/api/music/status') return load('music/status.json').then(J);
             if (path === '/api/music/bias') return load('music/bias.json').then(J);
             if (path === '/api/music/genres') return load('music/genres.json').then(J);
@@ -1646,6 +1647,141 @@
         .mv-gauge .verdict { font-size: 0.86rem; color: var(--ink-dim); margin-top: 0.9rem; line-height: 1.5; min-height: 2.6em; }
         .mv-meter { height: 10px; border-radius: 999px; background: rgba(40,46,86,0.10); overflow: hidden; margin-top: 1rem; }
         .mv-meter > span { display: block; height: 100%; border-radius: 999px; background: linear-gradient(90deg, var(--indigo), var(--teal)); transition: width 0.7s cubic-bezier(0.2,0.8,0.2,1); }
+
+        /* Resonance mapper */
+        .mv-resonance-shell { display: grid; grid-template-columns: 1.15fr 0.85fr; gap: 1rem; align-items: stretch; }
+        .mv-resonance-stage {
+            display: flex; flex-direction: column; gap: 0.9rem;
+            background: linear-gradient(180deg, rgba(8,14,26,0.98), rgba(18,22,44,0.96));
+            border: 1px solid rgba(102, 126, 234, 0.16);
+            box-shadow: 0 24px 50px rgba(12,18,34,0.24);
+            position: relative;
+            overflow: hidden;
+        }
+        .mv-resonance-stage > * { position: relative; z-index: 1; }
+        .mv-resonance-stage::before {
+            content: '';
+            position: absolute;
+            inset: auto -18% -24% auto;
+            width: 46%;
+            height: 46%;
+            background: radial-gradient(circle, rgba(240,119,159,0.16), transparent 68%);
+            animation: resonanceGlow 6.8s ease-in-out infinite;
+            pointer-events: none;
+            z-index: 0;
+        }
+        .mv-resonance-stage::after {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(120deg, transparent 0%, rgba(255,255,255,0.03) 45%, transparent 60%);
+            transform: translateX(-40%);
+            animation: resonanceSweep 9s linear infinite;
+            pointer-events: none;
+            z-index: 0;
+        }
+        .mv-resonance-scene {
+            position: relative;
+            width: 100%;
+            min-height: 400px;
+            border-radius: 20px;
+            overflow: hidden;
+            background:
+                radial-gradient(circle at 20% 20%, rgba(240,119,159,0.20), transparent 28%),
+                radial-gradient(circle at 80% 12%, rgba(85,102,246,0.26), transparent 30%),
+                linear-gradient(180deg, rgba(12,18,38,1), rgba(8,12,24,1));
+        }
+        .mv-resonance-meta {
+            display: grid;
+            grid-template-columns: repeat(4, minmax(0, 1fr));
+            gap: 0.55rem;
+        }
+        .mv-mini-stat {
+            border-radius: 14px;
+            padding: 0.8rem 0.75rem;
+            background: rgba(255,255,255,0.06);
+            border: 1px solid rgba(255,255,255,0.08);
+            text-align: center;
+        }
+        .mv-mini-stat span { display: block; font-size: 1.2rem; font-weight: 800; color: #fff; }
+        .mv-mini-stat small { display: block; margin-top: 0.15rem; font-size: 0.7rem; text-transform: uppercase; letter-spacing: 1.3px; color: rgba(255,255,255,0.72); }
+        .mv-resonance-caption {
+            border-radius: 14px;
+            padding: 0.85rem 0.9rem;
+            background: rgba(255,255,255,0.06);
+            border: 1px solid rgba(255,255,255,0.08);
+            color: rgba(255,255,255,0.86);
+            font-size: 0.9rem;
+            line-height: 1.6;
+        }
+        .mv-resonance-side {
+            display: flex;
+            flex-direction: column;
+            gap: 0.9rem;
+            background: linear-gradient(160deg, rgba(255,255,255,0.96), rgba(244,246,255,0.9));
+        }
+        .mv-resonance-header h4 { margin: 0; font-size: 1.05rem; color: var(--ink); }
+        .mv-resonance-header p { margin: 0.45rem 0 0; color: var(--ink-dim); font-size: 0.9rem; line-height: 1.55; }
+        .mv-resonance-list {
+            display: grid;
+            gap: 0.65rem;
+            max-height: 320px;
+            overflow: auto;
+            padding-right: 0.2rem;
+        }
+        .mv-res-track {
+            position: relative;
+            border-radius: 16px;
+            padding: 0.85rem 0.9rem 0.85rem 1rem;
+            border: 1px solid rgba(85,102,246,0.12);
+            background: linear-gradient(145deg, rgba(255,255,255,1), rgba(244,246,255,0.88));
+            cursor: pointer;
+            overflow: hidden;
+            transition: transform 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease;
+        }
+        .mv-res-track:hover { transform: translateY(-2px); box-shadow: 0 12px 24px rgba(12,18,34,0.08); border-color: rgba(85,102,246,0.25); }
+        .mv-res-track.active { border-color: rgba(240,119,159,0.45); box-shadow: 0 16px 28px rgba(240,119,159,0.14); }
+        .mv-res-track.active::after {
+            content: '';
+            position: absolute;
+            inset: auto -16% -30% auto;
+            width: 58%;
+            height: 58%;
+            background: radial-gradient(circle, rgba(85,102,246,0.16), transparent 68%);
+            pointer-events: none;
+            z-index: 0;
+        }
+        .mv-res-track::before {
+            content: '';
+            position: absolute;
+            inset: 0 auto 0 0;
+            width: 4px;
+            background: linear-gradient(180deg, var(--start, #5566f6), var(--end, #0fb6a8));
+        }
+        .mv-res-track .h { display: flex; justify-content: space-between; gap: 0.8rem; align-items: baseline; }
+        .mv-res-track .title { font-weight: 700; color: var(--ink); line-height: 1.35; }
+        .mv-res-track .meta { font-size: 0.76rem; color: var(--ink-dim); text-transform: uppercase; letter-spacing: 1.2px; }
+        .mv-res-track .row { display: flex; justify-content: space-between; gap: 0.75rem; margin-top: 0.45rem; font-size: 0.82rem; color: var(--ink-dim); }
+        .mv-res-track .sig { display: flex; flex-wrap: wrap; gap: 0.35rem; margin-top: 0.55rem; }
+        .mv-res-track .sig span { font-size: 0.7rem; padding: 0.16rem 0.45rem; border-radius: 999px; background: rgba(85,102,246,0.08); color: var(--indigo); }
+        .mv-resonance-foot {
+            margin-top: auto;
+            border-radius: 14px;
+            padding: 0.85rem 0.9rem;
+            background: rgba(85,102,246,0.06);
+            color: var(--ink-dim);
+            font-size: 0.88rem;
+            line-height: 1.6;
+        }
+        @keyframes resonanceGlow {
+            0%, 100% { transform: scale(0.96); opacity: 0.55; }
+            50% { transform: scale(1.06); opacity: 0.95; }
+        }
+        @keyframes resonanceSweep {
+            0% { transform: translateX(-42%); opacity: 0.18; }
+            50% { opacity: 0.42; }
+            100% { transform: translateX(42%); opacity: 0.18; }
+        }
 
         /* Songs explorer */
         .mv-tablewrap { overflow-x: auto; border: 1px solid var(--line); border-radius: 16px; }
@@ -2992,9 +3128,35 @@
                 </div>
             </div>
 
-            <!-- VII. What-If Predictor -->
+            <!-- VII. Tensor Resonance Mapper -->
+            <div class="mv-movement" id="mvResonance">
+                <div class="mv-mhead"><span class="mv-mnum">07</span><h3>Tensor Resonance Mapper</h3></div>
+                <p class="mv-lead">This panel treats repeating attention as a public proxy for oscillation. It does not inspect audio waveforms or private hardware traces. It looks at the visible shape of the catalog - duration fit, attention concentration, release timing, and tag/title echo - and turns that into a live resonance map you can click through.</p>
+                <div class="mv-resonance-shell">
+                    <div class="mv-panel mv-resonance-stage">
+                        <div id="mvResonanceScene" class="mv-resonance-scene"></div>
+                        <div class="mv-resonance-meta">
+                            <div class="mv-mini-stat"><span id="mvResOsc">—</span><small>Oscillation</small></div>
+                            <div class="mv-mini-stat"><span id="mvResFric">—</span><small>Friction</small></div>
+                            <div class="mv-mini-stat"><span id="mvResStab">—</span><small>Stability</small></div>
+                            <div class="mv-mini-stat"><span id="mvResGate">—</span><small>Gate window</small></div>
+                        </div>
+                        <div class="mv-resonance-caption" id="mvResTakeaway">Loading resonance map…</div>
+                    </div>
+                    <div class="mv-panel mv-resonance-side">
+                        <div class="mv-resonance-header">
+                            <h4>Holographic Exhaust</h4>
+                            <p>Click a track to focus the scene. The highest-resonance tracks are the ones whose attention pattern stays narrow, repeated, and durable.</p>
+                        </div>
+                        <div class="mv-resonance-list" id="mvResonanceList"></div>
+                        <div class="mv-resonance-foot" id="mvResGenreFoot"></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- VIII. What-If Predictor -->
             <div class="mv-movement" id="mvWhatIf">
-                <div class="mv-mhead"><span class="mv-mnum">07</span><h3>What-If Virality Predictor</h3></div>
+                <div class="mv-mhead"><span class="mv-mnum">08</span><h3>What-If Virality Predictor</h3></div>
                 <p class="mv-lead">Set the parameters of a hypothetical music upload and the trained model predicts where it would rank among the real top 100. All predictions use the same RandomForest model trained on actual YouTube data, so you can see how a change in one variable shifts the whole ranking story.</p>
                 <div class="mv-panel">
                     <div class="mv-whatif">
@@ -3030,9 +3192,9 @@
                 </div>
             </div>
 
-            <!-- VIII. Bias Analysis -->
+            <!-- IX. Bias Analysis -->
             <div class="mv-movement" id="mvBias">
-                <div class="mv-mhead"><span class="mv-mnum">08</span><h3>Bias in the Top 100</h3></div>
+                <div class="mv-mhead"><span class="mv-mnum">09</span><h3>Bias in the Top 100</h3></div>
                 <p class="mv-lead">Who gets to dominate the charts? We measure gender representation, genre gatekeeping, collaboration patterns, language dominance, engagement disparities, and how attention concentrates &mdash; across <strong id="mvBiasTotalSongs">636</strong> real songs from 3 public datasets. The point is not to moralize the chart; it is to show where the pressure comes from, which genre families dominate, and which variables explain the shape of the chart best.</p>
                 <div class="mv-panel">
                     <div class="mv-bias-grade" id="mvBiasGrade">
@@ -3115,16 +3277,16 @@
                 </div>
             </div>
 
-            <!-- IX. 3D Archetype Landscape -->
+            <!-- X. 3D Archetype Landscape -->
             <div class="mv-movement" id="mv3DLandscape">
-                <div class="mv-mhead"><span class="mv-mnum">09</span><h3>3D Virality Landscape</h3></div>
+                <div class="mv-mhead"><span class="mv-mnum">10</span><h3>3D Virality Landscape</h3></div>
                 <p class="mv-lead">The same archetype clusters rendered in three dimensions &mdash; views, virality, and channel size form the axes. Drag to rotate, scroll to zoom. Each sphere is a real song; colour encodes the cluster. This helps distinguish a true strategy from a one-off spike.</p>
                 <div class="mv-panel"><div class="mv-chart tall" id="mv3DScatter" style="min-height:480px;"></div></div>
             </div>
 
-            <!-- X. Songs Explorer -->
+            <!-- XI. Songs Explorer -->
             <div class="mv-movement" id="mvSongsExplorer">
-                <div class="mv-mhead"><span class="mv-mnum">10</span><h3>Real Songs Explorer</h3></div>
+                <div class="mv-mhead"><span class="mv-mnum">11</span><h3>Real Songs Explorer</h3></div>
                 <p class="mv-lead">The raw dataset behind every chart above. Search, sort by any column, and verify the numbers for yourself. If a summary feels too clean, this is where you test it against the source rows.</p>
                 <input type="text" class="mv-search" id="mvSongSearch" placeholder="Search songs or channels&hellip;">
                 <div class="mv-tablewrap" style="max-height:520px; overflow-y:auto;">
@@ -4569,7 +4731,10 @@
         let resizeTimer = null;
         window.addEventListener('resize', () => {
             clearTimeout(resizeTimer);
-            resizeTimer = setTimeout(() => StreamLensApp.createNetworkGraph(), 250);
+            resizeTimer = setTimeout(() => {
+                StreamLensApp.createNetworkGraph();
+                if (MusicViz && typeof MusicViz.resizeResonance === 'function') MusicViz.resizeResonance();
+            }, 250);
         });
 
         // ==================== MUSIC VIRALITY (REAL DATA) ====================
@@ -4581,6 +4746,11 @@
             _sortAsc: false,
             _official: 1,
             _role: 'artist',
+            _resonanceIndex: 0,
+            _resonanceScene: null,
+            _resonanceRenderer: null,
+            _resonanceFrame: null,
+            _resonanceSelected: null,
             _wiDebounce: null,
             _echartsInstances: [],
             _ARCH_COLORS: ['#5566f6','#0fb6a8','#f4a259','#f0779f','#7c3aed'],
@@ -4591,6 +4761,7 @@
                 business: { accent: '#5566f6', soft: 'rgba(85,102,246,0.12)', title: 'What would a buyer care about?' },
                 research: { accent: '#7c3aed', soft: 'rgba(124,58,237,0.12)', title: 'What survives scrutiny?' }
             },
+            _RES_COLORS: ['#f0779f','#5566f6','#0fb6a8','#f4a259','#7c3aed','#34d399','#f43f5e'],
 
             fmt(n) {
                 if (n >= 1e9) return (n/1e9).toFixed(2) + 'B';
@@ -4602,7 +4773,7 @@
             load() {
                 if (this._loaded) return;
                 this._loaded = true;
-                const ep = ['overview','powerlaw','inequality','correlations','archetypes','network','predictability','songs','status','bias'];
+                const ep = ['overview','powerlaw','inequality','correlations','archetypes','network','predictability','resonance','songs','status','bias'];
                 Promise.all(ep.map(e => fetch('/api/music/' + e).then(r => r.json())))
                     .then(results => {
                         const keys = ep;
@@ -4622,6 +4793,7 @@
                 this.renderArchetypes();
                 this.renderNetwork();
                 this.renderPredictability();
+                this.renderResonance();
                 this.renderBias();
                 this.render3DScatter();
                 this.renderSongs();
@@ -4876,6 +5048,172 @@
                     tooltip: { formatter: p => p.name + ': ' + (p.value*100).toFixed(1) + '%' },
                     animation: true
                 });
+            },
+
+            resizeResonance() {
+                if (!this._resonanceRenderer || !this._resonanceScene || !this._resonanceCamera) return;
+                const container = document.getElementById('mvResonanceScene');
+                if (!container) return;
+                const width = container.clientWidth || 640;
+                const height = container.clientHeight || 400;
+                this._resonanceRenderer.setSize(width, height, false);
+                this._resonanceCamera.aspect = width / height;
+                this._resonanceCamera.updateProjectionMatrix();
+            },
+
+            renderResonance() {
+                const d = this._data.resonance;
+                if (!d) return;
+                const score = d.scorecard || {};
+                const tracks = d.top_tracks || [];
+                const container = document.getElementById('mvResonanceScene');
+                const list = document.getElementById('mvResonanceList');
+                const foot = document.getElementById('mvResGenreFoot');
+                if (!container || !list) return;
+
+                document.getElementById('mvResOsc').textContent = (score.oscillation || 0).toFixed(3);
+                document.getElementById('mvResFric').textContent = (score.friction || 0).toFixed(3);
+                document.getElementById('mvResStab').textContent = (score.stability || 0).toFixed(3);
+                document.getElementById('mvResGate').textContent = (score.halt_window_ms || 0) + ' ms';
+                document.getElementById('mvResTakeaway').textContent = d.interpretation || '';
+                if (foot) {
+                    const leadGenre = (d.genre_pressure || [])[0];
+                    foot.innerHTML = leadGenre
+                        ? '<strong>Highest-pressure genre:</strong> ' + leadGenre.genre + ' · ' + (leadGenre.view_share * 100).toFixed(1) + '% of views'
+                        : 'Resonance is computed from the visible structure of the catalog.';
+                }
+
+                if (!this._resonanceRenderer || !this._resonanceScene) {
+                    const width = container.clientWidth || 640;
+                    const height = container.clientHeight || 400;
+                    const scene = new THREE.Scene();
+                    const camera = new THREE.PerspectiveCamera(46, width / height, 0.1, 100);
+                    camera.position.set(0, 0.6, 8.5);
+                    const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
+                    renderer.setPixelRatio(window.devicePixelRatio || 1);
+                    renderer.setSize(width, height);
+                    if (THREE.SRGBColorSpace) {
+                        renderer.outputColorSpace = THREE.SRGBColorSpace;
+                    } else if (THREE.sRGBEncoding !== undefined) {
+                        renderer.outputEncoding = THREE.sRGBEncoding;
+                    }
+                    container.innerHTML = '';
+                    container.appendChild(renderer.domElement);
+
+                    const root = new THREE.Group();
+                    scene.add(root);
+
+                    const coreGeo = new THREE.IcosahedronGeometry(1.0, 1);
+                    const coreMat = new THREE.MeshBasicMaterial({ color: 0x9aa7ff, transparent: true, opacity: 0.9, wireframe: false });
+                    const core = new THREE.Mesh(coreGeo, coreMat);
+                    root.add(core);
+
+                    const rings = [];
+                    const ringSpecs = [
+                        { radius: 1.8, tube: 0.04, color: 0xf0779f, rotation: [0.8, 0.1, 0.4] },
+                        { radius: 2.35, tube: 0.035, color: 0x5566f6, rotation: [0.2, 1.2, 0.6] },
+                        { radius: 3.0, tube: 0.03, color: 0x0fb6a8, rotation: [1.0, 0.4, 1.1] }
+                    ];
+                    ringSpecs.forEach(spec => {
+                        const ring = new THREE.Mesh(
+                            new THREE.TorusGeometry(spec.radius, spec.tube, 12, 180),
+                            new THREE.MeshBasicMaterial({ color: spec.color, transparent: true, opacity: 0.7 })
+                        );
+                        ring.rotation.set(spec.rotation[0], spec.rotation[1], spec.rotation[2]);
+                        root.add(ring);
+                        rings.push(ring);
+                    });
+
+                    const particles = [];
+                    const particleGeo = new THREE.SphereGeometry(0.065, 12, 12);
+                    for (let i = 0; i < 28; i++) {
+                        const color = this._RES_COLORS[i % this._RES_COLORS.length];
+                        const p = new THREE.Mesh(
+                            particleGeo,
+                            new THREE.MeshBasicMaterial({ color, transparent: true, opacity: 0.92 })
+                        );
+                        p.userData = {
+                            angle: (Math.PI * 2 * i) / 28,
+                            radius: 2.15 + (i % 4) * 0.18,
+                            speed: 0.006 + (i % 5) * 0.0012,
+                            tilt: (i % 2 ? 1 : -1) * (0.18 + (i % 3) * 0.04)
+                        };
+                        root.add(p);
+                        particles.push(p);
+                    }
+
+                    const state = { scene, camera, renderer, root, core, rings, particles, pulse: 0.6, hue: 0 };
+                    this._resonanceScene = scene;
+                    this._resonanceCamera = camera;
+                    this._resonanceRenderer = renderer;
+                    this._resonanceState = state;
+
+                    const animate = () => {
+                        if (!this._resonanceRenderer) return;
+                        const rs = this._resonanceState;
+                        if (!rs) return;
+                        rs.root.rotation.y += 0.0035 + rs.pulse * 0.0015;
+                        rs.root.rotation.x = Math.sin(performance.now() * 0.00022) * 0.12;
+                        rs.core.rotation.x += 0.01;
+                        rs.core.rotation.y -= 0.014;
+                        rs.core.scale.setScalar(1 + rs.pulse * 0.22 + Math.sin(performance.now() * 0.0018) * 0.02);
+                        rs.rings.forEach((ring, idx) => {
+                            ring.rotation.x += 0.002 + idx * 0.0007;
+                            ring.rotation.y += 0.0015 + idx * 0.0006;
+                            ring.scale.setScalar(1 + rs.pulse * (0.05 + idx * 0.01));
+                        });
+                        rs.particles.forEach((particle, idx) => {
+                            const data = particle.userData;
+                            const t = performance.now() * (0.00045 + data.speed);
+                            const radius = data.radius + Math.sin(t * 1.9 + idx) * (0.08 + rs.pulse * 0.08);
+                            particle.position.set(
+                                Math.cos(data.angle + t) * radius,
+                                Math.sin(data.angle * 2 + t * 1.4) * (0.6 + rs.pulse * 0.35),
+                                Math.sin(data.angle + t * 0.9) * radius * data.tilt
+                            );
+                            particle.scale.setScalar(0.8 + rs.pulse * 0.4 + Math.sin(t * 4 + idx) * 0.08);
+                        });
+                        rs.renderer.render(rs.scene, rs.camera);
+                        this._resonanceFrame = requestAnimationFrame(animate);
+                    };
+                    animate();
+                }
+
+                const state = this._resonanceState;
+                if (state) {
+                    state.pulse = Math.min(1.15, Math.max(0.35, score.oscillation || 0.6));
+                    state.core.material.color.set(this._RES_COLORS[Math.min(this._RES_COLORS.length - 1, Math.floor((score.oscillation || 0.5) * this._RES_COLORS.length))]);
+                }
+
+                list.innerHTML = tracks.map((t, i) => {
+                    const colorA = this._RES_COLORS[i % this._RES_COLORS.length];
+                    const colorB = this._RES_COLORS[(i + 2) % this._RES_COLORS.length];
+                    return '<div class="mv-res-track' + (i === (this._resonanceSelected || 0) ? ' active' : '') + '" data-index="' + i + '" style="--start:' + colorA + ';--end:' + colorB + ';">' +
+                        '<div class="h"><div class="title">' + t.title + '</div><div class="meta">' + (t.genre || 'Unknown') + '</div></div>' +
+                        '<div class="row"><span>' + t.channel + '</span><span>' + Math.round((t.resonance_score || 0) * 100) + '/100 resonance</span></div>' +
+                        '<div class="row"><span>Oscillation ' + (t.oscillation || 0).toFixed(3) + '</span><span>Stability ' + (t.stability || 0).toFixed(3) + '</span></div>' +
+                        '<div class="sig">' + (t.signals || []).map(function(s) { return '<span>' + s + '</span>'; }).join('') + '</div>' +
+                    '</div>';
+                }).join('');
+
+                list.querySelectorAll('.mv-res-track').forEach(card => {
+                    card.addEventListener('click', () => {
+                        this._resonanceSelected = parseInt(card.dataset.index, 10) || 0;
+                        this.renderResonance();
+                    });
+                });
+
+                if (tracks.length) {
+                    if (this._resonanceSelected == null || this._resonanceSelected >= tracks.length) {
+                        this._resonanceSelected = 0;
+                    }
+                    const selected = tracks[this._resonanceSelected];
+                    if (selected && state) {
+                        const intensity = selected.resonance_score || 0.5;
+                        state.pulse = Math.max(0.3, Math.min(1.2, intensity));
+                        document.getElementById('mvResTakeaway').textContent = selected.title + ' · ' + selected.channel + ' · ' + selected.genre + ' · resonance ' + Math.round(intensity * 100) + '/100';
+                    }
+                }
             },
 
             renderSongs() {
