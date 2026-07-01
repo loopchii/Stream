@@ -7302,6 +7302,39 @@
             border-color: rgba(255, 231, 188, 0.34);
             box-shadow: 0 14px 28px rgba(8, 12, 26, 0.22);
         }
+        .mv-role-action:focus-visible {
+            outline: 1px solid rgba(240, 119, 159, 0.7);
+            outline-offset: 2px;
+        }
+        .mv-role-action.active {
+            border-color: rgba(240, 231, 255, 0.5);
+            background:
+                radial-gradient(circle at top right, rgba(240, 119, 159, 0.22), transparent 34%),
+                linear-gradient(155deg, rgba(240, 119, 159, 0.16), rgba(91, 102, 246, 0.1));
+            box-shadow: 0 16px 34px rgba(240, 119, 159, 0.28);
+            transform: translateY(-3px);
+        }
+        .mv-role-action.flash {
+            animation: mv-role-action-flash 0.5s ease;
+        }
+        .mv-role-action.active::after {
+            color: rgba(255, 244, 214, 0.98);
+            transform: translate(2px, -2px);
+        }
+        @keyframes mv-role-action-flash {
+            0% {
+                transform: translateY(-3px) scale(0.99);
+                box-shadow: 0 20px 44px rgba(240, 119, 159, 0.2);
+            }
+            50% {
+                transform: translateY(-6px) scale(1.01);
+                box-shadow: 0 22px 52px rgba(255, 244, 214, 0.33);
+            }
+            100% {
+                transform: translateY(-3px);
+                box-shadow: 0 16px 34px rgba(240, 119, 159, 0.28);
+            }
+        }
         .mv-role-action:hover::after,
         .mv-role-action:focus::after {
             transform: translate(2px, -2px);
@@ -10687,7 +10720,7 @@
                             <div class="mv-role-signals" id="mvRoleSignals"></div>
                             <div class="mv-role-question" id="mvRoleQuestion">Preparing the question this lens should force before anyone repeats the conclusion.</div>
                             <div class="mv-role-actions" id="mvRoleActions">
-                                <button type="button" class="mv-role-action">
+                            <button type="button" class="mv-role-action" aria-pressed="false">
                                     <span class="k">Next move</span>
                                     <span class="v">Preparing route</span>
                                     <span class="s">The strongest follow-up paths for this reader will appear here.</span>
@@ -11994,12 +12027,12 @@
                         if (route.target === 'mvAuditPanel' && typeof MusicViz !== 'undefined' && MusicViz && typeof MusicViz.toggleAudit === 'function') {
                             MusicViz.toggleAudit(true);
                         }
-                        const target = document.getElementById(route.target);
-                        if (target) {
-                            target.scrollIntoView({ behavior: 'smooth', block: 'start' });
-                            this.pulseSection(target);
+                        if (route.tab) {
+                            this.focusTabSection(route.tab, route.target, { maxAttempts: 16, delayMs: 80, pulse: false });
+                            return;
                         }
-                    }, route.tab ? 180 : 0);
+                        this.focusSectionById(route.target, { pulse: false });
+                    }, route.tab ? 220 : 0);
                 }
             },
 
@@ -15026,11 +15059,19 @@
         };
 
         function showTab(tab, button) {
+            const normalized = String(tab || 'dashboard');
+            const panelId = 'tab-' + normalized;
+            const panel = document.getElementById(panelId);
+            if (!panel) {
+                return false;
+            }
             document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
-            document.getElementById('tab-' + tab).classList.add('active');
+            panel.classList.add('active');
             document.querySelectorAll('.nav-tab').forEach(b => b.classList.remove('active'));
-            if (button) button.classList.add('active');
-            const story = STORY[tab];
+            if (button && button.classList) button.classList.add('active');
+            const navTab = document.querySelector('.nav-tab[data-tab="' + normalized + '"]');
+            if (navTab) navTab.classList.add('active');
+            const story = STORY[normalized];
             if (story) {
                 const strip = document.getElementById('storyStrip');
                 document.getElementById('storyAct').textContent = story[0];
@@ -15040,20 +15081,21 @@
                 void strip.offsetWidth;
                 strip.style.animation = '';
             }
-            if (tab === 'dashboard') {
+            if (normalized === 'dashboard') {
                 StreamLensApp.updateAllVisualizations();
                 setTimeout(() => StreamLensApp.resizeDashboardField(), 40);
             }
-            StreamLensApp.ensureTabData(tab);
-            if (tab === 'scorecard') {
+            StreamLensApp.ensureTabData(normalized);
+            if (normalized === 'scorecard') {
                 StreamLensApp.loadVerdict();
             }
-            if (tab === 'music') {
+            if (normalized === 'music') {
                 MusicViz.load();
                 requestAnimationFrame(() => MusicViz.scheduleVisibleRefresh('tab-switch'));
             }
-            StreamLensApp.setActiveTab(tab);
+            StreamLensApp.setActiveTab(normalized);
             StreamLensApp.scrollToTabStart();
+            return true;
         }
 
         // ==================== THEME MANAGEMENT ====================
@@ -15292,6 +15334,12 @@
             _loading: false,
             _loadPromise: null,
             _roleSwitchBound: false,
+            _roleActionBound: false,
+            _activeRoleActionTab: null,
+            _activeRoleActionTarget: null,
+            _roleActionSelectionToken: 0,
+            _roleActionSelections: Object.create(null),
+            _roleActionPulseTimer: null,
             _movementNotesDecorated: false,
             _ARCH_COLORS: ['#5566f6','#0fb6a8','#f4a259','#f0779f','#7c3aed'],
             _COMM_COLORS: ['#5566f6','#0fb6a8','#f4a259','#f0779f','#7c3aed','#16a34a','#ef4444','#eab308'],
@@ -15842,6 +15890,59 @@
                 }
             },
 
+            focusSectionById(id, options) {
+                const opts = options || {};
+                const target = document.getElementById(id);
+                if (!target) return false;
+                target.scrollIntoView({ behavior: opts.behavior || 'smooth', block: opts.block || 'start' });
+                if (opts.pulse !== false && typeof StreamLensApp !== 'undefined' && StreamLensApp && typeof StreamLensApp.pulseSection === 'function') {
+                    window.setTimeout(() => StreamLensApp.pulseSection(target), opts.pulseDelay || 220);
+                }
+                return true;
+            },
+
+            scrollSectionWithRetries(id, options) {
+                const opts = options || {};
+                const attempt = Math.max(0, Number(opts.attempt || 0));
+                const maxAttempts = Math.max(1, Number(opts.maxAttempts || 14));
+                const delayMs = Math.max(60, Number(opts.delayMs || 90));
+                if (this.focusSectionById(id, opts)) {
+                    return;
+                }
+                if (attempt >= maxAttempts) {
+                    return;
+                }
+                window.setTimeout(() => {
+                    this.scrollSectionWithRetries(id, Object.assign({}, opts, { attempt: attempt + 1 }));
+                }, delayMs + attempt * 18);
+            },
+
+            focusTabSection(tab, id, options) {
+                const targetId = id ? String(id) : '';
+                if (!targetId) return false;
+                const panel = document.getElementById('tab-' + (tab || 'music'));
+                if (!panel) {
+                    this.scrollSectionWithRetries(targetId, options);
+                    return true;
+                }
+                const target = document.getElementById(targetId);
+                if (target && panel.contains(target)) {
+                    this.scrollSectionWithRetries(targetId, options);
+                    return true;
+                }
+                const guided = panel.querySelector('[data-guide-key]');
+                if (guided && guided.id) {
+                    this.scrollSectionWithRetries(guided.id, options);
+                    return true;
+                }
+                const fallback = panel.querySelector('[id]');
+                if (fallback && fallback.id) {
+                    this.scrollSectionWithRetries(fallback.id, options);
+                    return true;
+                }
+                return false;
+            },
+
             bindMusicRoute() {
                 const route = document.getElementById('mvRoute');
                 const steps = Array.from(document.querySelectorAll('.mv-route-step[data-target]'));
@@ -16069,13 +16170,16 @@
             load() {
                 if (this._loaded) {
                     this.bindRoleSwitch();
+                    this.bindRoleActions();
                     this.decorateMovementNotes();
                     this.bindMusicRoute();
                     this.updateFieldnote(this._activeMovementId || 'mvPowerLaw');
                     this.initTelemetryBand();
+                    this.setActiveRoleActionState();
                     return this._loadPromise || Promise.resolve(this._data);
                 }
                 this.bindRoleSwitch();
+                this.bindRoleActions();
                 this.renderRoleLoading(this._role || 'artist');
                 if (this._loading) return this._loadPromise;
                 this._loading = true;
@@ -16109,6 +16213,7 @@
                         this.bindMusicRoute();
                         this.updateFieldnote('mvPowerLaw');
                         this.initTelemetryBand();
+                        this.setActiveRoleActionState();
                         this.bindSliders();
                         this.triggerSimulate();
                         return this._data;
@@ -18487,12 +18592,23 @@
 
             setRole(role, button) {
                 this._role = role;
+                this._roleActionSelectionToken += 1;
+                const persisted = this.getRoleActionSelection(role);
+                if (persisted) {
+                    this._activeRoleActionTab = persisted.tab;
+                    this._activeRoleActionTarget = persisted.target;
+                } else {
+                    this._activeRoleActionTab = null;
+                    this._activeRoleActionTarget = null;
+                }
                 this.syncRoleSwitch(button);
                 if (!this._data.bias || !this._data.bias.role_perspectives) {
                     this.renderRoleLoading(role);
+                    this.setActiveRoleActionState();
                     return;
                 }
                 this.renderRoleLens();
+                this.setActiveRoleActionState();
             },
 
             renderRoleLoading(role) {
@@ -18560,14 +18676,14 @@
                         { label: 'Check the row layer', note: 'When in doubt, drop back down to the public songs instead of waiting on prose.', tab: 'music', target: 'mvSongsExplorer' },
                         { label: 'Re-open methods', note: 'If the field still feels brittle, inspect the assumptions and coverage posture first.', tab: 'learn', target: 'learnDataSystem' }
                     ].map((move) => (
-                        '<button type="button" class="mv-role-action" data-role-tab="' + move.tab + '" data-role-target="' + move.target + '">'
+                        '<button type="button" class="mv-role-action" aria-pressed="false" data-role-tab="' + move.tab + '" data-role-target="' + move.target + '">'
                         + '<span class="k">Next move</span>'
                         + '<span class="v">' + move.label + '</span>'
                         + '<span class="s">' + move.note + '</span>'
                         + '</button>'
                     )).join('');
-                    this.bindRoleActions();
                 }
+                this.setActiveRoleActionState();
                 this.renderRoleBridge(activeRole, null, null, true);
                 if (takeaway) takeaway.textContent = 'The role stays selected even while the evidence surface is still loading. Once the public rows land, the same card will refill without changing the lens.';
             },
@@ -18663,30 +18779,75 @@
             },
 
             bindRoleActions() {
+                if (this._roleActionBound) return;
                 const host = document.getElementById('mvRoleActions');
                 if (!host) return;
-                host.querySelectorAll('.mv-role-action[data-role-tab]').forEach((btn) => {
-                    btn.addEventListener('click', () => {
-                        const tab = btn.dataset.roleTab || 'music';
-                        const target = btn.dataset.roleTarget || '';
-                        const nav = Array.from(document.querySelectorAll('.nav-tab')).find((node) => (node.getAttribute('onclick') || '').includes("'" + tab + "'")) || null;
-                        showTab(tab, nav);
-                        if (!target) return;
+                host.addEventListener('click', (event) => {
+                    const btn = event.target.closest('.mv-role-action[data-role-tab]');
+                    if (!btn || !host.contains(btn)) return;
+                    const tab = btn.dataset.roleTab || 'music';
+                    const target = btn.dataset.roleTarget || '';
+                    const nav = this.resolveRoleActionTab(tab);
+                    const activeRole = this._role || 'artist';
+                    this.rememberRoleActionSelection(activeRole, tab, target);
+                    this.setActiveRoleActionState(tab, target);
+                    btn.classList.add('flash');
+                    if (this._roleActionPulseTimer) clearTimeout(this._roleActionPulseTimer);
+                    this._roleActionPulseTimer = setTimeout(function () {
+                        btn.classList.remove('flash');
+                    }, 500);
+                    const switched = showTab(tab, nav);
+                    if (!switched && tab === 'music') {
+                        this._activeRoleActionTab = 'music';
+                        this._activeRoleActionTarget = target;
+                    }
+                    if (!target) return;
+                    const gotoTarget = () => {
                         if (tab === 'music') {
-                            this.jumpToSection(target);
+                            const handled = this.focusTabSection('music', target, { maxAttempts: 20, delayMs: 80 });
+                            if (!handled) {
+                                this.focusTabSection('music', 'mvBias', { maxAttempts: 10, delayMs: 80 });
+                            }
                             return;
                         }
-                        requestAnimationFrame(() => {
-                            const node = document.getElementById(target);
-                            if (node) {
-                                node.scrollIntoView({ behavior: 'smooth', block: 'start' });
-                                if (typeof StreamLensApp !== 'undefined' && StreamLensApp && typeof StreamLensApp.pulseSection === 'function') {
-                                    window.setTimeout(() => StreamLensApp.pulseSection(node), 220);
-                                }
-                            }
-                        });
-                    });
+                        const handled = this.focusTabSection(tab, target, { maxAttempts: 16, delayMs: 80 });
+                        if (!handled) {
+                            this.focusTabSection(tab, tab === 'learn' ? 'learnDataSystem' : 'tab-' + tab, { maxAttempts: 10, delayMs: 80 });
+                        }
+                    };
+                    if (tab === 'music' && !this._loaded) {
+                        this.load().finally(gotoTarget);
+                        return;
+                    }
+                    if (tab === 'music' && this._loading && typeof this._loadPromise === 'object') {
+                        this._loadPromise.finally(gotoTarget);
+                        return;
+                    }
+                    gotoTarget();
                 });
+                this._roleActionBound = true;
+                this.setActiveRoleActionState();
+            },
+
+            getRoleActionSelection(role) {
+                const key = (role || 'artist');
+                const selection = this._roleActionSelections[key];
+                if (!selection) return null;
+                return {
+                    tab: selection.tab || 'music',
+                    target: selection.target || ''
+                };
+            },
+
+            rememberRoleActionSelection(role, tab, target) {
+                const key = (role || 'artist');
+                const normalizedTab = tab || 'music';
+                const normalizedTarget = target || '';
+                this._roleActionSelections[key] = {
+                    tab: normalizedTab,
+                    target: normalizedTarget,
+                    updated_at: Date.now()
+                };
             },
 
             renderRoleLens() {
@@ -18759,16 +18920,70 @@
                     const moves = Array.isArray(lens.next_moves) ? lens.next_moves : [];
                     actions.innerHTML = moves.length
                         ? moves.map((move) => (
-                            '<button type="button" class="mv-role-action" data-role-tab="' + (move.tab || 'music') + '" data-role-target="' + (move.target || '') + '">'
+                            '<button type="button" class="mv-role-action" aria-pressed="false" data-role-tab="' + (move.tab || 'music') + '" data-role-target="' + (move.target || '') + '">'
                             + '<span class="k">' + ((move.tab || 'music') === 'music' ? 'Open this lane' : 'Cross-check next') + '</span>'
                             + '<span class="v">' + (move.label || 'Open next surface') + '</span>'
                             + '<span class="s">' + (move.note || 'Use the next surface to pressure-test the current read.') + '</span>'
                             + '</button>'
                         )).join('')
-                        : '<button type="button" class="mv-role-action" data-role-tab="music" data-role-target="mvSongsExplorer"><span class="k">Open this lane</span><span class="v">Walk the source rows</span><span class="s">Stay close to the evidence when the summary starts sounding too neat.</span></button>';
-                    this.bindRoleActions();
+                        : '<button type="button" class="mv-role-action" aria-pressed="false" data-role-tab="music" data-role-target="mvSongsExplorer"><span class="k">Open this lane</span><span class="v">Walk the source rows</span><span class="s">Stay close to the evidence when the summary starts sounding too neat.</span></button>';
                 }
+                this.setActiveRoleActionState();
                 this.renderRoleBridge(role, lens, surface, false);
+            },
+
+            resolveRoleActionTab(tab) {
+                const navTabs = Array.from(document.querySelectorAll('.nav-tab[data-tab]'));
+                if (!navTabs.length) return null;
+                const normalizedTab = String(tab || 'music');
+                if (typeof CSS !== 'undefined' && CSS.escape) {
+                    const escaped = CSS.escape(normalizedTab);
+                    const direct = document.querySelector('.nav-tab[data-tab="' + escaped + '"]');
+                    if (direct) return direct;
+                } else {
+                    const direct = navTabs.find((node) => node.getAttribute('data-tab') === normalizedTab);
+                    if (direct) return direct;
+                }
+                return navTabs.find((node) => {
+                    const call = node.getAttribute('onclick') || '';
+                    return call.includes('\'' + normalizedTab + '\'') || call.includes('"' + normalizedTab + '"');
+                }) || null;
+            },
+
+            setActiveRoleActionState(tab, target) {
+                const host = document.getElementById('mvRoleActions');
+                if (!host) return;
+                const actions = Array.from(host.querySelectorAll('.mv-role-action[data-role-tab]'));
+                if (!actions.length) return;
+
+                const role = this._role || 'artist';
+                const persisted = this.getRoleActionSelection(role);
+                const selectedTab = tab || this._activeRoleActionTab || (persisted && persisted.tab) || null;
+                const selectedTarget = typeof target === 'undefined'
+                    ? (typeof this._activeRoleActionTarget === 'string' ? this._activeRoleActionTarget : (persisted && persisted.target || null))
+                    : (target || '');
+                let selected = null;
+
+                if (selectedTab !== null && selectedTarget !== null) {
+                    selected = actions.find((action) =>
+                        action.dataset.roleTab === selectedTab && (action.dataset.roleTarget || '') === (selectedTarget || '')
+                    );
+                }
+                if (!selected && selectedTab !== null) {
+                    selected = actions.find((action) => action.dataset.roleTab === selectedTab);
+                }
+                if (!selected) {
+                    selected = actions[0];
+                }
+
+                actions.forEach((action) => {
+                    const isSelected = action === selected;
+                    action.classList.toggle('active', isSelected);
+                    action.setAttribute('aria-pressed', isSelected ? 'true' : 'false');
+                });
+                this._activeRoleActionTab = selected.dataset.roleTab || 'music';
+                this._activeRoleActionTarget = selected.dataset.roleTarget || '';
+                this.rememberRoleActionSelection(role, this._activeRoleActionTab, this._activeRoleActionTarget);
             },
 
             roleLensSurface(role) {
